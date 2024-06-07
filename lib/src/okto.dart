@@ -136,8 +136,20 @@ class Okto {
   /// GET
   /// Method to get order history with optional filters
   Future<OrderHistoryResponse> orderHistory({int offset = 0, int limit = 1, String? orderId, OrderState? orderState}) async {
+    String? orderStateToPass;
+    switch (orderState) {
+      case OrderState.pending:
+        orderStateToPass = 'PENDING';
+      case OrderState.success:
+        orderStateToPass = 'SUCCESS';
+      case OrderState.failed:
+        orderStateToPass = 'FAILED';
+        break;
+      default:
+        orderStateToPass = 'SUCCESS';
+    }
     final authToken = await tokenManager.getAuthToken();
-    final queryParameters = {'offset': offset.toString(), 'limit': limit.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderState};
+    final queryParameters = {'offset': offset.toString(), 'limit': limit.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderStateToPass};
     final queryString = Uri(queryParameters: queryParameters).query;
     final response = await httpClient.get(endpoint: '/api/v1/orders?$queryString', authToken: authToken);
     return OrderHistoryResponse.fromMap(response);
