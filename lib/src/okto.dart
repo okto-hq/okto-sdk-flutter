@@ -239,12 +239,11 @@ class Okto {
     String surfaceColor = '0xFF1F0A2F',
     String backgroundColor = '0xFF000000',
   }) async {
-    late final WebViewController controller;
+    WebViewController controller = WebViewController();
     final authToken = await tokenManager.getAuthToken();
 
-    void runJavaScriptParameters() {
-      final jsCode = '''
-      window.localStorage.setItem('authToken', $authToken);
+    String getInjectedJs() {
+      String injectJs = '''
       window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
       window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
       window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
@@ -255,20 +254,24 @@ class Okto {
       window.localStorage.setItem('surfaceColor', '$surfaceColor');
       window.localStorage.setItem('backgroundColor', '$backgroundColor');
     ''';
-      controller.runJavaScript(jsCode);
+
+      if (authToken != null) {
+        injectJs += "window.localStorage.setItem('authToken', '$authToken');";
+      }
+      return injectJs;
     }
 
     showModalBottomSheet(
         context: context,
+        enableDrag: true,
         builder: (BuildContext context) {
-          controller = WebViewController()
+          controller
             ..setJavaScriptMode(JavaScriptMode.unrestricted)
-            ..setBackgroundColor(const Color(0x00000000))
             ..setNavigationDelegate(
               NavigationDelegate(
                 onProgress: (int progress) {},
                 onPageStarted: (String url) {
-                  runJavaScriptParameters();
+                  controller.runJavaScript(getInjectedJs());
                 },
                 onPageFinished: (String url) {},
                 onHttpError: (HttpResponseError error) {},
