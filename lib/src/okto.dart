@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class Okto {
+  /// Client Side Api Key received from OKto
   final String apiKey;
   final HttpClient httpClient;
   final TokenManager tokenManager;
@@ -29,8 +30,8 @@ class Okto {
       : httpClient = HttpClient(apiKey: apiKey),
         tokenManager = TokenManager(HttpClient(apiKey: apiKey));
 
-  /// POST
   /// Method to authenticate a new user using the id token received from google_sign_in
+  /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthenticationResponse> authenticate({required String idToken}) async {
     _idToken = idToken;
     final response = await httpClient.post(endpoint: '/api/v1/authenticate', body: {'id_token': idToken});
@@ -39,16 +40,19 @@ class Okto {
     return authResponse;
   }
 
-  Future<AuthTokenResponse> authenticateWithUserId({required String userId, required String idToken}) async {
-    _idToken = idToken;
-    final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': idToken});
+  /// Method to authenticate a user using the user id and JWT token
+  /// This method gives an AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
+  /// Do not call [setPin] if you are authenticating with this method
+  Future<AuthTokenResponse> authenticateWithUserId({required String userId, required String jwtToken}) async {
+    _idToken = jwtToken;
+    final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
     return authTokenResponse;
   }
 
-  /// POST
-  /// Method to set a pin for the user
+  /// Necessary to set pin for the user after authentiction using [authenticate] method
+  /// This method gives an AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
   Future<AuthTokenResponse> setPin({required String pin}) async {
     if (_idToken == null) throw Exception('Id token is not set. Please authenticate with google sign in first.');
     if (_oktoToken == null) throw Exception('Okto Auth token is not set. Please authenticate first.');
@@ -70,64 +74,67 @@ class Okto {
     await tokenManager.refreshToken();
   }
 
-  /// GET
   /// Method to get the user details
+  /// Returns an [UserDetails] object
   Future<UserDetails> userDetails() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/user_from_token', authToken: authToken);
     return UserDetails.fromMap(response);
   }
 
-  /// POST
   /// Method to create a new wallet for the user
+  /// Returns a [WalletResponse] object
   Future<WalletResponse> createWallet() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.post(endpoint: '/api/v1/wallet', body: {}, authToken: authToken);
     return WalletResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get the user wallets
+  /// Returns a [WalletResponse] object
   Future<WalletResponse> getWallets() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/wallet', authToken: authToken);
     return WalletResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get supported networks
+  /// Returns a [NetworkDetails] object
   Future<NetworkDetails> supportedNetworks() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/supported/networks', authToken: authToken);
     return NetworkDetails.fromMap(response);
   }
 
-  /// GET
   /// Method to get supported tokens with pagination
+  /// Returns a [TokenResponse] object
+  /// Default value of page is 1 and size is 10
   Future<TokenResponse> supportedTokens({int page = 1, int size = 10}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/supported/tokens?page=$page&size=$size', authToken: authToken);
     return TokenResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get the user portfolio
+  /// Returns a [UserPortfolioResponse] object
   Future<UserPortfolioResponse> userPortfolio() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio', authToken: authToken);
     return UserPortfolioResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get the user portfolio activity
+  /// Returns a [UserPortfolioActivityResponse] object
+  /// Default value of limit is 10 and offset is 1
   Future<UserPortfolioActivityResponse> getUserPortfolioActivity({int limit = 10, int offset = 1}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio/activity?limit=$limit&offset=$offset', authToken: authToken);
     return UserPortfolioActivityResponse.fromMap(response);
   }
 
-  /// POST
   /// Method to transfer tokens from one wallet to another
+  /// Returns a [TransferTokenResponse] object
+  /// Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
   Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.post(
@@ -142,8 +149,9 @@ class Okto {
     return TransferTokenResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get order history with optional filters
+  /// Returns a [OrderHistoryResponse] object
+  /// Default value of offset is 0 and limit is 1 and orderState is SUCCESS
   Future<OrderHistoryResponse> orderHistory({int offset = 0, int limit = 1, String? orderId, OrderState? orderState}) async {
     String? orderStateToPass;
     switch (orderState) {
@@ -164,8 +172,9 @@ class Okto {
     return OrderHistoryResponse.fromMap(response);
   }
 
-  /// POST
   /// Method to transfer nft
+  /// Returns a [TransferTokenResponse] object
+  /// Operation Types: "NFT_TRANSFER"
   Future<TransferTokenResponse> transferNft({
     required String operationType,
     required String networkName,
@@ -192,8 +201,10 @@ class Okto {
     return TransferTokenResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get the order details for nft
+  /// Returns a [OrderDetailsNftResponse] object
+  /// Default value of page is 1 and size is 500
+  /// Optional parameters: orderId, orderState
   Future<OrderDetailsNftResponse> orderDetailsNft({int page = 1, int size = 500, String? orderId, String? orderState}) async {
     final authToken = await tokenManager.getAuthToken();
     final queryParams = {'page': page.toString(), 'size': size.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderState};
@@ -202,8 +213,8 @@ class Okto {
     return OrderDetailsNftResponse.fromMap(response);
   }
 
-  /// POST
   /// Method to execute a raw transaction
+  /// Returns a [RawTransactionExecuteResponse] object
   Future<RawTransactionExecuteResponse> rawTransactionExecute(
       {required String networkName, required String fromAddress, required String toAddress, required String data, required String value}) async {
     final authToken = await tokenManager.getAuthToken();
@@ -218,8 +229,9 @@ class Okto {
     return RawTransactionExecuteResponse.fromMap(response);
   }
 
-  /// GET
   /// Method to get the status of a raw transaction
+  /// Returns a [RawTransactionExecuteResponse] object
+  /// Pass the orderId received from the [rawTransactionExecute] method
   Future<RawTransactionExecuteResponse> rawTransactionStatus({required String orderId}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/rawtransaction/status?order_id=$orderId', authToken: authToken);
