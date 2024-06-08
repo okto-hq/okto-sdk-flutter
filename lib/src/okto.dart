@@ -262,6 +262,9 @@ class Okto {
     }
 
     showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
         context: context,
         enableDrag: true,
         builder: (BuildContext context) {
@@ -279,7 +282,10 @@ class Okto {
               ),
             )
             ..loadRequest(Uri.parse('https://3p.okto.tech/'));
-          return WebViewWidget(controller: controller);
+          return ClipRRect(
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            child: WebViewWidget(controller: controller),
+          );
         });
   }
 }
