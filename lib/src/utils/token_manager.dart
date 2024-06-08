@@ -47,7 +47,7 @@ class TokenManager {
           'x-device-token': oldDeviceToken,
         });
 
-    final tokenResponse = TokenResponse.fromJson(response);
-    await storeTokens(tokenResponse.data.authToken, tokenResponse.data.refreshAuthToken, tokenResponse.data.deviceToken);
+    final authTokenResponse = AuthTokenResponse.fromJson(response);
+    await storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
   }
 }

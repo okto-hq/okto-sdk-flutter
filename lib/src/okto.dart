@@ -6,6 +6,7 @@ import 'package:okto_wallet_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_wallet_sdk/src/models/client/order_details_nft_model.dart';
 import 'package:okto_wallet_sdk/src/models/client/order_history_model.dart';
 import 'package:okto_wallet_sdk/src/models/client/raw_transaction_execute_model.dart';
+import 'package:okto_wallet_sdk/src/models/client/token_model.dart';
 import 'package:okto_wallet_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_wallet_sdk/src/models/client/user_model.dart';
 import 'package:okto_wallet_sdk/src/models/client/user_portfilio_activity_model.dart';
@@ -38,16 +39,17 @@ class Okto {
     return authResponse;
   }
 
-  Future<TokenResponse> authenticateWithUserId({required String userId, required String idToken}) async {
+  Future<AuthTokenResponse> authenticateWithUserId({required String userId, required String idToken}) async {
     _idToken = idToken;
     final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': idToken});
-    final tokenResponse = TokenResponse.fromMap(response);
-    return tokenResponse;
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
+    await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+    return authTokenResponse;
   }
 
   /// POST
   /// Method to set a pin for the user
-  Future<TokenResponse> setPin({required String pin}) async {
+  Future<AuthTokenResponse> setPin({required String pin}) async {
     if (_idToken == null) throw Exception('Id token is not set. Please authenticate with google sign in first.');
     if (_oktoToken == null) throw Exception('Okto Auth token is not set. Please authenticate first.');
     final response = await httpClient.post(endpoint: '/api/v1/set_pin', body: {
@@ -57,9 +59,9 @@ class Okto {
       'purpose': 'set_pin', // purpose of the request.
     });
 
-    final tokenResponse = TokenResponse.fromMap(response);
-    await tokenManager.storeTokens(tokenResponse.data.authToken, tokenResponse.data.refreshAuthToken, tokenResponse.data.deviceToken);
-    return tokenResponse;
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
+    await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+    return authTokenResponse;
   }
 
   /// POST
@@ -88,7 +90,7 @@ class Okto {
   /// Method to get the user wallets
   Future<WalletResponse> getWallets() async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.get(endpoint: '/api/v1/user_wallets', authToken: authToken);
+    final response = await httpClient.get(endpoint: '/api/v1/wallet', authToken: authToken);
     return WalletResponse.fromMap(response);
   }
 
@@ -129,7 +131,7 @@ class Okto {
   Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.post(
-        endpoint: '/api/v1/transfer',
+        endpoint: '/api/v1/transfer/tokens/execute',
         body: {
           'network_name': networkName,
           'token_address': tokenAddress,

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-class TokenResponse {
+class AuthTokenResponse {
   final String status;
-  final TokenData data;
-  TokenResponse({
+  final AuthTokenData data;
+  AuthTokenResponse({
     required this.status,
     required this.data,
   });
@@ -15,24 +15,24 @@ class TokenResponse {
     };
   }
 
-  factory TokenResponse.fromMap(Map<String, dynamic> map) {
-    return TokenResponse(
+  factory AuthTokenResponse.fromMap(Map<String, dynamic> map) {
+    return AuthTokenResponse(
       status: map['status'] ?? '',
-      data: TokenData.fromMap(map['data']),
+      data: AuthTokenData.fromMap(map['data']),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory TokenResponse.fromJson(String source) => TokenResponse.fromMap(json.decode(source));
+  factory AuthTokenResponse.fromJson(String source) => AuthTokenResponse.fromMap(json.decode(source));
 }
 
-class TokenData {
+class AuthTokenData {
   final String authToken;
   final String message;
   final String refreshAuthToken;
   final String deviceToken;
-  TokenData({
+  AuthTokenData({
     required this.authToken,
     required this.message,
     required this.refreshAuthToken,
@@ -48,8 +48,8 @@ class TokenData {
     };
   }
 
-  factory TokenData.fromMap(Map<String, dynamic> map) {
-    return TokenData(
+  factory AuthTokenData.fromMap(Map<String, dynamic> map) {
+    return AuthTokenData(
       authToken: map['auth_token'] ?? '',
       message: map['message'] ?? '',
       refreshAuthToken: map['refresb_auth_token'] ?? '',
@@ -59,5 +59,5 @@ class TokenData {
 
   String toJson() => json.encode(toMap());
 
-  factory TokenData.fromJson(String source) => TokenData.fromMap(json.decode(source));
+  factory AuthTokenData.fromJson(String source) => AuthTokenData.fromMap(json.decode(source));
 }
