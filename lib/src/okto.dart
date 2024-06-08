@@ -38,6 +38,13 @@ class Okto {
     return authResponse;
   }
 
+  Future<TokenResponse> authenticateWithUserId({required String userId, required String idToken}) async {
+    _idToken = idToken;
+    final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': idToken});
+    final tokenResponse = TokenResponse.fromMap(response);
+    return tokenResponse;
+  }
+
   /// POST
   /// Method to set a pin for the user
   Future<TokenResponse> setPin({required String pin}) async {
