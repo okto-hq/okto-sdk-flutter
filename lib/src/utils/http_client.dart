@@ -27,36 +27,6 @@ class HttpClient {
     return await _processResponse(res);
   }
 
-  // Future<dynamic> post({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
-  //   final headers = {
-  //     'Accept': '*/*',
-  //     'Content-Type': 'application/json',
-  //     'Accept': 'application/json',
-  //     'x-api-key': apiKey,
-  //     if (authToken != null) 'Authorization': 'Bearer $authToken',
-  //     ...?additionalHeaders,
-  //   };
-
-  //   final response = await http.post(
-  //     Uri.parse('$baseUrl$endpoint'),
-  //     headers: headers,
-  //     body: jsonEncode(body),
-  //   );
-  //   // return _processResponse(response);
-  // }
-
-  // Future<dynamic> get(String endpoint, {String? authToken, Map<String, String>? additionalHeaders}) async {
-  //   final headers = {
-  //     'accept': 'application/json',
-  //     'x-api-key': apiKey,
-  //     if (authToken != null) 'Authorization': 'Bearer $authToken',
-  //     ...?additionalHeaders,
-  //   };
-
-  //   final response = await http.get(Uri.parse('$baseUrl$endpoint'), headers: headers);
-
-  // }
-
   Future<dynamic> get({required String endpoint, String? authToken, Map<String, String>? additionalHeaders}) async {
     var headersList = {
       'Accept': '/',
