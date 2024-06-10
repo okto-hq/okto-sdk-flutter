@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/authentication_model.dart';
@@ -217,15 +216,11 @@ class Okto {
 
   /// Method to execute a raw transaction
   /// Returns a [RawTransactionExecuteResponse] object
-  Future<RawTransactionExecuteResponse> rawTransactionExecute(
-      {required String networkName, required String fromAddress, required String toAddress, required String data, required String value}) async {
+  Future<RawTransactionExecuteResponse> rawTransactionExecute({required String networkName, required String fromAddress, required Map<String, dynamic> transaction}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.post(
       endpoint: '/api/v1/rawtransaction/execute',
-      body: {
-        'network_name': networkName,
-        'transaction': {'from': fromAddress, 'to': toAddress, 'data': data, 'value': value}
-      },
+      body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,
     );
     return RawTransactionExecuteResponse.fromMap(response);
