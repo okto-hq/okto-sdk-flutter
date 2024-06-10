@@ -7,6 +7,7 @@ import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/raw_transaction_status_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
@@ -227,12 +228,12 @@ class Okto {
   }
 
   /// Method to get the status of a raw transaction
-  /// Returns a [RawTransactionExecuteResponse] object
+  /// Returns a [RawTransactionStatusResponse] object
   /// Pass the orderId received from the [rawTransactionExecute] method
-  Future<RawTransactionExecuteResponse> rawTransactionStatus({required String orderId}) async {
+  Future<RawTransactionStatusResponse> rawTransactionStatus({required String orderId}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/rawtransaction/status?order_id=$orderId', authToken: authToken);
-    return RawTransactionExecuteResponse.fromMap(response);
+    return RawTransactionStatusResponse.fromMap(response);
   }
 
   /// Show Bottom Sheet
