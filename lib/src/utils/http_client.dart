@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:okto_wallet_sdk/constants/url.dart';
-import 'package:okto_wallet_sdk/src/exceptions/api_exception.dart';
+import 'package:okto_flutter_sdk/constants/url.dart';
+import 'package:okto_flutter_sdk/src/exceptions/api_exception.dart';
+
 
 class HttpClient {
   final String apiKey;

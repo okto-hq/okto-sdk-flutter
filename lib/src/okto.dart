@@ -1,22 +1,24 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:okto_wallet_sdk/src/models/client/authentication_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/network_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/auth_token_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/order_details_nft_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/order_history_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/raw_transaction_execute_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/token_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/transfer_token_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/user_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/user_portfilio_activity_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/user_portfolio_model.dart';
-import 'package:okto_wallet_sdk/src/models/client/wallet_model.dart';
-import 'package:okto_wallet_sdk/src/utils/enums.dart';
-import 'package:okto_wallet_sdk/src/utils/http_client.dart';
-import 'package:okto_wallet_sdk/src/utils/token_manager.dart';
+
 import 'package:flutter/material.dart';
+import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/authentication_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/token_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
+import 'package:okto_flutter_sdk/src/utils/enums.dart';
+import 'package:okto_flutter_sdk/src/utils/http_client.dart';
+import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import 'models/client/user_model.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
