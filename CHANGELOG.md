@@ -7,3 +7,4 @@
 
 ## 0.0.3
 - Fix: Transaction object in Raw transaction execute.
+- Fix: Response of raw transaction status.
