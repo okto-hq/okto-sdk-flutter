@@ -1,6 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:okto_wallet_sdk/okto_wallet_sdk.dart';
-import 'package:okto_wallet_sdk/src/utils/check_auth_token.dart';
+import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
+import 'package:okto_flutter_sdk/src/utils/check_auth_token.dart';
+import 'package:okto_flutter_sdk/src/utils/http_client.dart';
+
 
 class TokenManager {
   final FlutterSecureStorage secureStorage;
