@@ -4,3 +4,7 @@
 
 ## 0.0.2
 - Changed the name from `okto_wallet_sdk` to `okto_flutter_sdk`
+
+## 0.0.3
+- Fix: Transaction object in Raw transaction execute.
+- Fix: Response of raw transaction status.

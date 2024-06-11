@@ -56,8 +56,8 @@ Add the following dependency to your `pubspec.yaml` file:
 ### Authentication
 
 - Authenticate with Google Sign-In
-      Authenticate a new user using the ID token received from Google Sign-In.
-      `final auth = await okto.authenticate(idToken: idToken);`
+  Authenticate a new user using the ID token received from Google Sign-In.
+  `final auth = await okto.authenticate(idToken: idToken);`
 
       after authenticating we have to call the set pin method.
       `final setPin = await okto.setPin(pin: '123453');`
@@ -65,126 +65,115 @@ Add the following dependency to your `pubspec.yaml` file:
        and that's it...
 
 - Authenticate with User ID and JWT Token
-     `await okto.authenticateWithUserId(userId: userId, jwtToken: jwtToken);`
+  `await okto.authenticateWithUserId(userId: userId, jwtToken: jwtToken);`
 
 ## User Detials
 
 - Get the user details
-`final user =  await okto.userDetails();`
+  `final user =  await okto.userDetails();`
 
 ## Wallet Management
 
 - Create a new wallet for the user:
-    `final userWallet = await okto.createWallet();`
+  `final userWallet = await okto.createWallet();`
 
 - Get the user wallets:
-    `final userWallets = await okto.getWallets();`
+  `final userWallets = await okto.getWallets();`
 
 ## Supported Networks and Tokens
 
 - Get Supported Networks
-    `final supportedNetworks = await okto.supportedNetworks();`
+  `final supportedNetworks = await okto.supportedNetworks();`
 
-    - Get Supported Tokens
+  - Get Supported Tokens
     `final supportedTokens = await okto.supportedTokens();`
     You can provide optional parameters like page and size.
 
 ## User Portfolio
 
 - Get the user portfolio
-    `final userPortfolio = await okto.userPortfolio();`
+  `final userPortfolio = await okto.userPortfolio();`
 
 - Get the user portfolio activity.
-    `final userPortfolioActivity = await okto.getUserPortfolioActivity();`
-    You can providen optional parameters like limit and offset.
+  `final userPortfolioActivity = await okto.getUserPortfolioActivity();`
+  You can providen optional parameters like limit and offset.
 
 ## Token Transfer
 
 - Transfer Tokens
-    Transfer tokens from one wallet to another.
+  Transfer tokens from one wallet to another.
 
-    ```
-    final transferToken = await okto.transferToken(
-    networkName: networkName,
-    tokenAddress: tokenAddress,
-    quantity: quantity,
-    recipientAddress: recipientAddress,
-    );
+  ```
+  final transferToken = await okto.transferToken(
+  networkName: networkName,
+  tokenAddress: tokenAddress,
+  quantity: quantity,
+  recipientAddress: recipientAddress,
+  );
 
-    ```
+  ```
 
 - Transfer NFT
-    Transfer an NFT.
-     ```
-    final transferNft = await okto.transferNft(
-    operationType: operationType,
-    networkName: networkName,
-    collectionAddress: collectionAddress,
-    collectionName: collectionName,
-    quantity: quantity,
-    recipientAddress: recipientAddress,
-    nftAddress: nftAddress,
-    );
-    ```
+  Transfer an NFT.
+  ```
+  final transferNft = await okto.transferNft(
+  operationType: operationType,
+  networkName: networkName,
+  collectionAddress: collectionAddress,
+  collectionName: collectionName,
+  quantity: quantity,
+  recipientAddress: recipientAddress,
+  nftAddress: nftAddress,
+  );
+  ```
 
 Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
 
 ## Order Management
 
 - Get order history:
-    `final orderHistory = await okto.orderHistory()`
-    You can provide optional parameters like:
-        - Offset
-        - limit
-        - orderId
-        - orderState
+  `final orderHistory = await okto.orderHistory()`
+  You can provide optional parameters like: - Offset - limit - orderId - orderState
 
 - Get order details for an NFT.
-    `final orderDetailsNft = await okto.orderDetailsNft();`
-        You can provide optional parameters like:
-        - page
-        - size
-        - orderId
-        - orderState
+  `final orderDetailsNft = await okto.orderDetailsNft();`
+  You can provide optional parameters like: - page - size - orderId - orderState
 
 ## Raw Transactions
 
 - Execute Raw Transaction
-    ```
-    final rawTransaction =  await okto.rawTransactionExecute(
-    networkName: networkName,
-    fromAddress: fromAddress,
-    toAddress: toAddress,
-    data: data,
-    value: value,
-    );
-    ```
+  ```
+  final rawTransaction =  await okto.rawTransactionExecute(
+  networkName: networkName,
+  transaction: transaction
+  );
+  ```
 
 Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
-
+transaction = The revelant transaction object of the network
 
 - Raw Transaction Status:
-    `final rawTransactionStatus = await okto.rawTransactionStatus(orderId: orderId);`
+  `final rawTransactionStatus = await okto.rawTransactionStatus(orderId: orderId);`
 
 orderId that we get from the `rawTransaction` object.
-
 
 ## UI Components
 
 - Open Bottom Sheet
-    `await okto.openBottomSheet(context: context);`
+  `await okto.openBottomSheet(context: context);`
 
-    This opens up a okto widget inside a bottom sheet of your flutter app.
+  This opens up a okto widget inside a bottom sheet of your flutter app.
 
-    You can customize all of these, according to your needs.
-    ```
-    textPrimaryColor: textPrimaryColor,
-    textSecondaryColor: textSecondaryColor,
-    textTertiaryColor: textTertiaryColor,
-    accentColor: accentColor,
-    accent2Color: accent2Color,
-    strokBorderColor: strokBorderColor,
-    strokDividerColor: strokDividerColor,
-    surfaceColor: surfaceColor,
-    backgroundColor: backgroundColor,
-    ```
+  You can customize all of these, according to your needs.
+
+  ```
+  textPrimaryColor: textPrimaryColor,
+  textSecondaryColor: textSecondaryColor,
+  textTertiaryColor: textTertiaryColor,
+  accentColor: accentColor,
+  accent2Color: accent2Color,
+  strokBorderColor: strokBorderColor,
+  strokDividerColor: strokDividerColor,
+  surfaceColor: surfaceColor,
+  backgroundColor: backgroundColor,
+  ```
