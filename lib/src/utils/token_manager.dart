@@ -3,7 +3,6 @@ import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/utils/check_auth_token.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 
-
 class TokenManager {
   final FlutterSecureStorage secureStorage;
   final HttpClient httpClient;
@@ -51,5 +50,14 @@ class TokenManager {
 
     final authTokenResponse = AuthTokenResponse.fromJson(response);
     await storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+  }
+
+  Future<bool> deleteToken() async {
+    try {
+      await secureStorage.deleteAll();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
