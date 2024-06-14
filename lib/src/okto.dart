@@ -25,12 +25,13 @@ class Okto {
   final String apiKey;
   final HttpClient httpClient;
   final TokenManager tokenManager;
+  final BuildType buildType;
   String? _oktoToken;
   String? _idToken;
 
-  Okto(this.apiKey)
-      : httpClient = HttpClient(apiKey: apiKey),
-        tokenManager = TokenManager(HttpClient(apiKey: apiKey));
+  Okto(this.apiKey, this.buildType)
+      : httpClient = HttpClient(apiKey: apiKey, buildType: buildType),
+        tokenManager = TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
 
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
@@ -234,6 +235,12 @@ class Okto {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/rawtransaction/status?order_id=$orderId', authToken: authToken);
     return RawTransactionStatusResponse.fromMap(response);
+  }
+
+  /// Log-out of the okto wallet
+  Future<bool> logout() async {
+    bool result = await tokenManager.deleteToken();
+    return result;
   }
 
   /// Show Bottom Sheet
