@@ -71,6 +71,17 @@ class Okto {
     return authTokenResponse;
   }
 
+  /// Use to check if the current session in the app is logged in or not.
+  /// Use this method to show login page or home page for an user.
+  Future<bool> isLoggedIn() async {
+    try {
+      await tokenManager.getAuthToken();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// POST
   /// Method to refresh the user token
   Future refreshToken() async {
