@@ -32,7 +32,7 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
               alignment: Alignment.center,
               margin: const EdgeInsets.all(40),
               child: const Text(
-                'Create Wallet',
+                'Get Wallet',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
               ),
             ),
@@ -42,7 +42,7 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
                   _wallets = fetchWallets();
                 });
               },
-              child: const Text('Create Wallet'),
+              child: const Text('Get Wallet'),
             ),
             Expanded(
               child: _wallets == null
