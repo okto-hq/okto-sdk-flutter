@@ -9,5 +9,9 @@
 - Fix: Transaction object in Raw transaction execute.
 - Fix: Response of raw transaction status.
 
-## 0.0.04
+## 0.0.4
 - Fix: Added support for buildtypes.
+
+## 0.0.5
+- Added example app
+- Feat: Method to check if a user is logged in.
