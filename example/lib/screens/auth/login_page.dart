@@ -1,5 +1,5 @@
-import 'package:example/screens/login_with_google_page.dart';
-import 'package:example/screens/login_with_userid.dart';
+import 'package:example/screens/auth/login_with_google_page.dart';
+import 'package:example/screens/auth/login_with_userid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,9 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final googleIdToken = 'ID_TOKEN_RECEIVED_FROM_GOOGLE_SIGN_IN'; // Replace this with your goggle OAuth2 id_token
-  final userId = 'YOUR_USER_ID'; // Replace this with your user_id
-  final jwtToken = 'YOUR_JWT_TOKEN'; // Replace this with your JWT Token
 
   // Note
   // Okto sdk does not handle JWT generation or Google Sign in.

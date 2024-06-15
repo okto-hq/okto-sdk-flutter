@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class LoginWithUserId extends StatefulWidget {
-  const LoginWithUserId({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<LoginWithUserId> createState() => _LoginWithUserIdState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _LoginWithUserIdState extends State<LoginWithUserId> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
+    return Scaffold(
       backgroundColor: const Color(0xff5166EE),
       body: SafeArea(
         child: Column(
@@ -20,13 +20,11 @@ class _LoginWithUserIdState extends State<LoginWithUserId> {
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(40),
                 child: const Text(
-                  'Login with userId',
+                  'Home Page',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
                 ),
               ),
             ),
-            ElevatedButton(onPressed: () async {}, child: const Text('Login with userId')),
-            const SizedBox(height: 20)
           ],
         ),
       ),
