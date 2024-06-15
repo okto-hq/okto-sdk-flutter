@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:okto_flutter_sdk/src/exceptions/api_exception.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 
@@ -29,6 +30,21 @@ class HttpClient {
     return await _processResponse(res);
   }
 
+  Future<dynamic> defaultPost({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
+    final baseUrl = _getBaseUrl(buildType);
+    final headers = {
+      'Accept': '/',
+      'x-api-key': apiKey,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      if (authToken != null) 'Authorization': 'Bearer $authToken',
+      ...?additionalHeaders,
+    };
+    final requestBody = jsonEncode(body);
+    final response = await http.post(Uri.parse('$baseUrl$endpoint'), headers: headers, body: requestBody);
+    return await _defaultProcessResponse(response);
+  }
+
   Future<dynamic> get({required String endpoint, String? authToken, Map<String, String>? additionalHeaders}) async {
     final baseUrl = _getBaseUrl(buildType);
     var headersList = {
@@ -51,6 +67,14 @@ class HttpClient {
       return jsonDecode(resBody);
     } else {
       throw ApiException(response.statusCode, resBody);
+    }
+  }
+
+    dynamic _defaultProcessResponse(Response response) async {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return jsonDecode(response.body);
+    } else {
+      throw ApiException(response.statusCode, response.body);
     }
   }
 

@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/authentication_model.dart';
@@ -17,7 +16,6 @@ import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
 import 'models/client/user_model.dart';
 
 class Okto {
@@ -48,7 +46,7 @@ class Okto {
   /// Do not call [setPin] if you are authenticating with this method
   Future<AuthTokenResponse> authenticateWithUserId({required String userId, required String jwtToken}) async {
     _idToken = jwtToken;
-    final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
+    final response = await httpClient.defaultPost(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
     return authTokenResponse;
@@ -100,7 +98,7 @@ class Okto {
   /// Returns a [WalletResponse] object
   Future<WalletResponse> createWallet() async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.post(endpoint: '/api/v1/wallet', body: {}, authToken: authToken);
+    final response = await httpClient.defaultPost(endpoint: '/api/v1/wallet', body: {}, authToken: authToken);
     return WalletResponse.fromMap(response);
   }
 
@@ -151,15 +149,8 @@ class Okto {
   /// Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
   Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.post(
-        endpoint: '/api/v1/transfer/tokens/execute',
-        body: {
-          'network_name': networkName,
-          'token_address': tokenAddress,
-          'quantity': quantity,
-          'recipient_address': recipientAddress,
-        },
-        authToken: authToken);
+    final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
+    final response = await httpClient.defaultPost(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -199,7 +190,7 @@ class Okto {
     required String nftAddress,
   }) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.post(
+    final response = await httpClient.defaultPost(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -231,7 +222,7 @@ class Okto {
   /// Returns a [RawTransactionExecuteResponse] object
   Future<RawTransactionExecuteResponse> rawTransactionExecute({required String networkName, required String fromAddress, required Map<String, dynamic> transaction}) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.post(
+    final response = await httpClient.defaultPost(
       endpoint: '/api/v1/rawtransaction/execute',
       body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,
