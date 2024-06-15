@@ -124,8 +124,9 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    await okto.logout();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    // await okto.logout();
+                    final userPortfolio = await okto.userPortfolio();
+                    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                   } catch (e) {
                     print(e);
                   }
