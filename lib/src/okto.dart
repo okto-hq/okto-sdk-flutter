@@ -220,7 +220,7 @@ class Okto {
 
   /// Method to execute a raw transaction
   /// Returns a [RawTransactionExecuteResponse] object
-  Future<RawTransactionExecuteResponse> rawTransactionExecute({required String networkName, required String fromAddress, required Map<String, dynamic> transaction}) async {
+  Future<RawTransactionExecuteResponse> rawTransactionExecute({required String networkName, required Map<String, dynamic> transaction}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.defaultPost(
       endpoint: '/api/v1/rawtransaction/execute',
