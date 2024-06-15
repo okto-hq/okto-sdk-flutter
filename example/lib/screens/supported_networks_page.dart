@@ -14,8 +14,8 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
 
   Future<NetworkDetails> getSupportedNetworks() async {
     try {
-      final supportedNetworls = await okto.supportedNetworks();
-      return supportedNetworls;
+      final supportedNetworks = await okto.supportedNetworks();
+      return supportedNetworks;
     } catch (e) {
       throw Exception(e);
     }
@@ -55,7 +55,7 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
                         } else if (snapshot.hasError) {
                           return Center(child: Text('Error: ${snapshot.error}'));
                         } else if (snapshot.hasData) {
-                          final supportedNetworls = snapshot.data!;
+                          final supportedNetworks = snapshot.data!;
                           return Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Column(
@@ -65,18 +65,18 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: supportedNetworls.data.network.length,
+                                      itemCount: supportedNetworks.data.network.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
                                           margin: const EdgeInsets.all(5),
                                           child: ListTile(
                                             title: Text(
-                                              'Network name: ${supportedNetworls.data.network[index].networkName}',
+                                              'Network name: ${supportedNetworks.data.network[index].networkName}',
                                               style: const TextStyle(color: Colors.white, fontSize: 20),
                                             ),
                                             subtitle: Text(
-                                              'Chain ID : ${supportedNetworls.data.network[index].chainId}',
+                                              'Chain ID : ${supportedNetworks.data.network[index].chainId}',
                                               style: const TextStyle(color: Colors.white, fontSize: 20),
                                             ),
                                           ),
