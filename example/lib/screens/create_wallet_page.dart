@@ -12,7 +12,7 @@ class CreateWalletPage extends StatefulWidget {
 class _CreateWalletPageState extends State<CreateWalletPage> {
   Future<WalletResponse>? _createdWallet;
 
-  Future<WalletResponse> fetchUserDetails() async {
+  Future<WalletResponse> createWallets() async {
     try {
       final createdWallet = await okto.createWallet();
       return createdWallet;
@@ -39,7 +39,7 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _createdWallet = fetchUserDetails();
+                  _createdWallet = createWallets();
                 });
               },
               child: const Text('Create Wallet'),
