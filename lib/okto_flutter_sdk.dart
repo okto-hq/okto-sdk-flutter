@@ -1,4 +1,4 @@
-library okto_wallet_sdk;
+library okto_flutter_sdk;
 
 export 'src/okto.dart';
 export 'src/models/client/authentication_model.dart';

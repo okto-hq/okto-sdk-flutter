@@ -59,14 +59,14 @@ class AggregatedData {
   final String holdingsCount;
   final String holdingsPriceInr;
   final String holdingsPriceUsdt;
-  final String totalHoldingsPriceInr;
-  final String totalHoldingsPriceUsdt;
+  final String totalHoldingPriceInr;
+  final String totalHoldingPriceUsdt;
   AggregatedData({
     required this.holdingsCount,
     required this.holdingsPriceInr,
     required this.holdingsPriceUsdt,
-    required this.totalHoldingsPriceInr,
-    required this.totalHoldingsPriceUsdt,
+    required this.totalHoldingPriceInr,
+    required this.totalHoldingPriceUsdt,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,8 +74,8 @@ class AggregatedData {
       'holdings_count': holdingsCount,
       'holdings_price_inr': holdingsPriceInr,
       'holdings_price_usdt': holdingsPriceUsdt,
-      'total_holdings_price_inr': totalHoldingsPriceInr,
-      'total_holdings_price_usdt': totalHoldingsPriceUsdt,
+      'total_holding_price_inr': totalHoldingPriceInr,
+      'total_holding_price_usdt': totalHoldingPriceUsdt,
     };
   }
 
@@ -84,8 +84,8 @@ class AggregatedData {
       holdingsCount: map['holdings_count'] ?? '',
       holdingsPriceInr: map['holdings_price_inr'] ?? '',
       holdingsPriceUsdt: map['holdings_price_usdt'] ?? '',
-      totalHoldingsPriceInr: map['total_holdings_price_inr'] ?? '',
-      totalHoldingsPriceUsdt: map['total_holdings_price_usdt'] ?? '',
+      totalHoldingPriceInr: map['total_holding_price_inr'] ?? '',
+      totalHoldingPriceUsdt: map['total_holdins_price_usdt'] ?? '',
     );
   }
 
