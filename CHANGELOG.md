@@ -15,3 +15,6 @@
 ## 0.0.5
 - Added example app
 - Feat: Method to check if a user is logged in.
+
+## 0.0.6
+- Changed the requirements for `http`
