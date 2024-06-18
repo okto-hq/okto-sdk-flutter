@@ -1,6 +1,6 @@
 name: okto_flutter_sdk
 description: "Official OKTO SDK for Flutter"
-version: 0.0.5
+version: 0.0.6
 homepage:
 
 environment:
@@ -12,8 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_secure_storage: ^9.2.2
-  http: ^1.2.1
-  logger: ^2.3.0
+  http: '>=0.13.0'
   webview_flutter: ^4.8.0
 
 dev_dependencies:
