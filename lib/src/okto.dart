@@ -98,7 +98,7 @@ class Okto {
   /// Returns a [WalletResponse] object
   Future<WalletResponse> createWallet() async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.defaultPost(endpoint: '/api/v1/wallet', body: {}, authToken: authToken);
+    final response = await httpClient.post(endpoint: '/api/v1/wallet', body: {}, authToken: authToken);
     return WalletResponse.fromMap(response);
   }
 
