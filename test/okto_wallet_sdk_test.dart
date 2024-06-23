@@ -1131,5 +1131,86 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('rawTransactionExecute returns RawTransactionExecuteResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      final transaction = {'to': '0x123', 'value': '1000000000'};
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'jobId': 'job123',
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/rawtransaction/execute',
+        body: {'network_name': networkName, 'transaction': transaction},
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.rawTransactionExecute(
+        networkName: networkName,
+        transaction: transaction,
+      );
+
+      // Assert
+      expect(result, isA<RawTransactionExecuteResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.jobId, equals('job123'));
+    });
+
+    test('rawTransactionExecute handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      final transaction = {'to': '0x123', 'value': '1000000000'};
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Failed to execute transaction',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/rawtransaction/execute',
+        body: {'network_name': networkName, 'transaction': transaction},
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('rawTransactionExecute handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      final transaction = {'to': '0x123', 'value': '1000000000'};
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/rawtransaction/execute',
+        body: {'network_name': networkName, 'transaction': transaction},
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('rawTransactionExecute handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      final transaction = {'to': '0x123', 'value': '1000000000'};
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/rawtransaction/execute',
+        body: {'network_name': networkName, 'transaction': transaction},
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
