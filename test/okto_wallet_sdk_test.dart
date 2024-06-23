@@ -688,5 +688,116 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('transferTokens returns TransferTokenResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      const tokenAddress = '0xTokenAddress';
+      const quantity = '1.0';
+      const recipientAddress = '0xRecipientAddress';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'order_id': 'order123',
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/transfers/tokens/execute',
+        body: {
+          'network_name': networkName,
+          'token_address': tokenAddress,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.transferTokens(
+        networkName: networkName,
+        tokenAddress: tokenAddress,
+        quantity: quantity,
+        recipientAddress: recipientAddress,
+      );
+
+      // Assert
+      expect(result, isA<TransferTokenResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.orderId, equals('order123'));
+    });
+
+    test('transferTokens handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      const tokenAddress = '0xTokenAddress';
+      const quantity = '1.0';
+      const recipientAddress = '0xRecipientAddress';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Transfer failed',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/transfers/tokens/execute',
+        body: {
+          'network_name': networkName,
+          'token_address': tokenAddress,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('transferTokens handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      const tokenAddress = '0xTokenAddress';
+      const quantity = '1.0';
+      const recipientAddress = '0xRecipientAddress';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/transfers/tokens/execute',
+        body: {
+          'network_name': networkName,
+          'token_address': tokenAddress,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('transferTokens handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const networkName = 'Ethereum';
+      const tokenAddress = '0xTokenAddress';
+      const quantity = '1.0';
+      const recipientAddress = '0xRecipientAddress';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/transfers/tokens/execute',
+        body: {
+          'network_name': networkName,
+          'token_address': tokenAddress,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
