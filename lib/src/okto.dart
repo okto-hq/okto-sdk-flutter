@@ -31,6 +31,15 @@ class Okto {
       : httpClient = HttpClient(apiKey: apiKey, buildType: buildType),
         tokenManager = TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
 
+  // Factory constructor for testing
+  @visibleForTesting
+  factory Okto.test(String apiKey, BuildType buildType, HttpClient httpClient, TokenManager tokenManager) {
+    return Okto._test(apiKey, buildType, httpClient, tokenManager);
+  }
+
+  // Private constructor for testing
+  Okto._test(this.apiKey, this.buildType, this.httpClient, this.tokenManager);
+
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthenticationResponse> authenticate({required String idToken}) async {
