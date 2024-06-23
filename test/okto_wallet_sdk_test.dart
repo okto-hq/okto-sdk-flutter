@@ -468,5 +468,114 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('userPortfolio returns UserPortfolioResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'aggregated_data': {
+            'holdings_count': '10',
+            'holdings_price_inr': '100000',
+            'holdings_price_usdt': '1200',
+            'total_holding_price_inr': '150000',
+            'total_holdins_price_usdt': '2000',
+          },
+          'group_tokens': [
+            {
+              'id': '1',
+              'name': 'Bitcoin',
+              'symbol': 'BTC',
+              'short_name': 'BTC',
+              'token_image': 'btc.png',
+              'network_id': 'bitcoin',
+              'is_primary': true,
+              'balance': '0.5',
+              'holdings_price_usdt': '20000',
+              'holdings_price_inr': '1500000',
+              'aggregation_type': 'crypto',
+            },
+            {
+              'id': '2',
+              'name': 'Ethereum',
+              'symbol': 'ETH',
+              'short_name': 'ETH',
+              'token_image': 'eth.png',
+              'network_id': 'ethereum',
+              'is_primary': false,
+              'balance': '10',
+              'holdings_price_usdt': '2000',
+              'holdings_price_inr': '150000',
+              'aggregation_type': 'crypto',
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.userPortfolio();
+
+      // Assert
+      expect(result, isA<UserPortfolioResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.aggregatedData.holdingsCount, equals('10'));
+      expect(result.data.aggregatedData.holdingsPriceInr, equals('100000'));
+      expect(result.data.aggregatedData.holdingsPriceUsdt, equals('1200'));
+      expect(result.data.aggregatedData.totalHoldingPriceInr, equals('150000'));
+      expect(result.data.aggregatedData.totalHoldingPriceUsdt, equals('2000'));
+      expect(result.data.groupTokens.length, equals(2));
+      expect(result.data.groupTokens[0].name, equals('Bitcoin'));
+      expect(result.data.groupTokens[0].balance, equals('0.5'));
+      expect(result.data.groupTokens[1].name, equals('Ethereum'));
+      expect(result.data.groupTokens[1].balance, equals('10'));
+    });
+
+    test('userPortfolio handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Unable to retrieve user portfolio',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('userPortfolio handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('userPortfolio handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
