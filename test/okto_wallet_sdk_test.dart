@@ -279,7 +279,6 @@ void main() {
         endpoint: '/api/v1/wallet',
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => fakeErrorResponse);
-
     });
 
     test('getWallets handles network error', () async {
@@ -291,7 +290,6 @@ void main() {
         endpoint: '/api/v1/wallet',
         authToken: fakeAuthToken,
       )).thenThrow(Exception('Network error'));
-
     });
 
     test('getWallets handles invalid response format', () async {
@@ -307,7 +305,85 @@ void main() {
         endpoint: '/api/v1/wallet',
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
+    });
 
+    test('supportedNetworks returns NetworkDetails on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'network': [
+            {
+              'network_name': 'Ethereum',
+              'chain_id': '1',
+            },
+            {
+              'network_name': 'Bitcoin',
+              'chain_id': '2',
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/networks',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.supportedNetworks();
+
+      // Assert
+      expect(result, isA<NetworkDetails>());
+      expect(result.status, equals('success'));
+      expect(result.data.network.length, equals(2));
+      expect(result.data.network[0].networkName, equals('Ethereum'));
+      expect(result.data.network[0].chainId, equals('1'));
+      expect(result.data.network[1].networkName, equals('Bitcoin'));
+      expect(result.data.network[1].chainId, equals('2'));
+    });
+
+    test('supportedNetworks handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Unable to retrieve supported networks',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/networks',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('supportedNetworks handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/networks',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('supportedNetworks handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/networks',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
     });
   });
 }
