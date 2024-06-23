@@ -577,5 +577,116 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('getUserPortfolioActivity returns UserPortfolioActivityResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'count': 2,
+          'activity': [
+            {
+              'symbol': 'BTC',
+              'image': 'btc.png',
+              'name': 'Bitcoin',
+              'short_name': 'BTC',
+              'id': '1',
+              'group_id': 'g1',
+              'description': 'Bought 0.5 BTC',
+              'quantity': '0.5',
+              'order_type': 'buy',
+              'transfer_type': 'deposit',
+              'status': 'completed',
+              'timestamp': 1625812800,
+              'tx_hash': 'hash1',
+              'network_id': 'bitcoin',
+              'network_name': 'Bitcoin Network',
+              'network_explorer_url': 'https://btc.com/',
+              'network_symbol': 'BTC',
+            },
+            {
+              'symbol': 'ETH',
+              'image': 'eth.png',
+              'name': 'Ethereum',
+              'short_name': 'ETH',
+              'id': '2',
+              'group_id': 'g2',
+              'description': 'Transferred 2 ETH',
+              'quantity': '2',
+              'order_type': 'transfer',
+              'transfer_type': 'withdrawal',
+              'status': 'pending',
+              'timestamp': 1625812801,
+              'tx_hash': 'hash2',
+              'network_id': 'ethereum',
+              'network_name': 'Ethereum Network',
+              'network_explorer_url': 'https://etherscan.io/',
+              'network_symbol': 'ETH',
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio/activity?limit=10&offset=1',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.getUserPortfolioActivity();
+
+      // Assert
+      expect(result, isA<UserPortfolioActivityResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.count, equals(2));
+      expect(result.data.activity.length, equals(2));
+      expect(result.data.activity[0].symbol, equals('BTC'));
+      expect(result.data.activity[0].description, equals('Bought 0.5 BTC'));
+      expect(result.data.activity[1].symbol, equals('ETH'));
+      expect(result.data.activity[1].description, equals('Transferred 2 ETH'));
+    });
+
+    test('getUserPortfolioActivity handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Unable to retrieve user portfolio activity',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio/activity?limit=10&offset=1',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('getUserPortfolioActivity handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio/activity?limit=10&offset=1',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('getUserPortfolioActivity handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/portfolio/activity?limit=10&offset=1',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
