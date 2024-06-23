@@ -799,5 +799,92 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('orderHistory returns OrderHistoryResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const offset = 0;
+      const limit = 1;
+      const orderId = 'order123';
+      const orderState = OrderState.success;
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'total': 1,
+          'jobs': [
+            {
+              'order_id': 'order123',
+              'order_type': 'BUY',
+              'network_name': 'Ethereum',
+              'status': 'SUCCESS',
+              'transaction_hash': '0x123abc',
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/orders?offset=$offset&limit=$limit&order_id=$orderId&order_state=SUCCESS',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.orderHistory(offset: offset, limit: limit, orderId: orderId, orderState: orderState);
+
+      // Assert
+      expect(result, isA<OrderHistoryResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.total, equals(1));
+      expect(result.data.jobs.first.orderId, equals('order123'));
+      expect(result.data.jobs.first.status, equals('SUCCESS'));
+    });
+
+    test('orderHistory handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const offset = 0;
+      const limit = 1;
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Failed to fetch order history',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/orders?offset=$offset&limit=$limit&order_state=SUCCESS',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('orderHistory handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const offset = 0;
+      const limit = 1;
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/orders?offset=$offset&limit=$limit&order_state=SUCCESS',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('orderHistory handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const offset = 0;
+      const limit = 1;
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/orders?offset=$offset&limit=$limit&order_state=SUCCESS',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
