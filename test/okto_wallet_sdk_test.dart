@@ -886,5 +886,143 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('transferNft returns TransferTokenResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const operationType = 'TRANSFER';
+      const networkName = 'Ethereum';
+      const collectionAddress = '0x123abc';
+      const collectionName = 'CryptoKitties';
+      const quantity = '1';
+      const recipientAddress = '0x456def';
+      const nftAddress = '0x789ghi';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'order_id': 'order123',
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/nft/transfer',
+        body: {
+          'operation_type': operationType,
+          'network_name': networkName,
+          'collection_address': collectionAddress,
+          'collection_name': collectionName,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+          'nft_address': nftAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.transferNft(
+        operationType: operationType,
+        networkName: networkName,
+        collectionAddress: collectionAddress,
+        collectionName: collectionName,
+        quantity: quantity,
+        recipientAddress: recipientAddress,
+        nftAddress: nftAddress,
+      );
+
+      // Assert
+      expect(result, isA<TransferTokenResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.orderId, equals('order123'));
+    });
+
+    test('transferNft handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const operationType = 'TRANSFER';
+      const networkName = 'Ethereum';
+      const collectionAddress = '0x123abc';
+      const collectionName = 'CryptoKitties';
+      const quantity = '1';
+      const recipientAddress = '0x456def';
+      const nftAddress = '0x789ghi';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Failed to transfer NFT',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/nft/transfer',
+        body: {
+          'operation_type': operationType,
+          'network_name': networkName,
+          'collection_address': collectionAddress,
+          'collection_name': collectionName,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+          'nft_address': nftAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('transferNft handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const operationType = 'TRANSFER';
+      const networkName = 'Ethereum';
+      const collectionAddress = '0x123abc';
+      const collectionName = 'CryptoKitties';
+      const quantity = '1';
+      const recipientAddress = '0x456def';
+      const nftAddress = '0x789ghi';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/nft/transfer',
+        body: {
+          'operation_type': operationType,
+          'network_name': networkName,
+          'collection_address': collectionAddress,
+          'collection_name': collectionName,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+          'nft_address': nftAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('transferNft handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const operationType = 'TRANSFER';
+      const networkName = 'Ethereum';
+      const collectionAddress = '0x123abc';
+      const collectionName = 'CryptoKitties';
+      const quantity = '1';
+      const recipientAddress = '0x456def';
+      const nftAddress = '0x789ghi';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.defaultPost(
+        endpoint: '/api/v1/nft/transfer',
+        body: {
+          'operation_type': operationType,
+          'network_name': networkName,
+          'collection_address': collectionAddress,
+          'collection_name': collectionName,
+          'quantity': quantity,
+          'recipient_address': recipientAddress,
+          'nft_address': nftAddress,
+        },
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
