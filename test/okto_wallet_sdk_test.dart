@@ -385,5 +385,88 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('supportedTokens returns TokenResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'tokens': [
+            {
+              'token_name': 'USDT',
+              'token_address': '0x1234567890123456789012345678901234567890',
+              'network_name': 'Ethereum',
+            },
+            {
+              'token_name': 'DAI',
+              'token_address': '0x0987654321098765432109876543210987654321',
+              'network_name': 'Ethereum',
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/tokens?page=1&size=10',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.supportedTokens(page: 1, size: 10);
+
+      // Assert
+      expect(result, isA<TokenResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.tokens.length, equals(2));
+      expect(result.data.tokens[0].tokenName, equals('USDT'));
+      expect(result.data.tokens[0].tokenAddress, equals('0x1234567890123456789012345678901234567890'));
+      expect(result.data.tokens[0].networkName, equals('Ethereum'));
+      expect(result.data.tokens[1].tokenName, equals('DAI'));
+      expect(result.data.tokens[1].tokenAddress, equals('0x0987654321098765432109876543210987654321'));
+      expect(result.data.tokens[1].networkName, equals('Ethereum'));
+    });
+
+    test('supportedTokens handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Unable to retrieve supported tokens',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/tokens?page=1&size=10',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('supportedTokens handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/tokens?page=1&size=10',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('supportedTokens handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/supported/tokens?page=1&size=10',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
