@@ -1024,5 +1024,112 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('orderDetailsNft returns OrderDetailsNftResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const page = 1;
+      const size = 500;
+      const orderId = 'order123';
+      const orderState = 'SUCCESS';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'count': 1,
+          'nfts': [
+            {
+              'explorer_smart_contract_url': 'https://explorer.com/smart_contract',
+              'desctiption': 'NFT Description',
+              'type': 'Art',
+              'collection_id': 'collection123',
+              'collection_name': 'CryptoKitties',
+              'nft_token_id': 'token123',
+              'token_uri': 'https://token.com/uri',
+              'id': 'id123',
+              'image': 'https://image.com/nft.png',
+              'collection_address': '0x123abc',
+              'collection_image': 'https://image.com/collection.png',
+              'network_name': 'Ethereum',
+              'network_id': 'network123',
+              'nft_name': 'NFT Name',
+            }
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/nft/order_details?page=$page&size=$size&order_id=$orderId&order_state=$orderState',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.orderDetailsNft(
+        page: page,
+        size: size,
+        orderId: orderId,
+        orderState: orderState,
+      );
+
+      // Assert
+      expect(result, isA<OrderDetailsNftResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.count, equals(1));
+      expect(result.data.nfts.first.id, equals('id123'));
+      expect(result.data.nfts.first.explorerSmartContractUrl, equals('https://explorer.com/smart_contract'));
+    });
+
+    test('orderDetailsNft handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const page = 1;
+      const size = 500;
+      const orderId = 'order123';
+      const orderState = 'SUCCESS';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Failed to get order details',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/nft/order_details?page=$page&size=$size&order_id=$orderId&order_state=$orderState',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('orderDetailsNft handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const page = 1;
+      const size = 500;
+      const orderId = 'order123';
+      const orderState = 'SUCCESS';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/nft/order_details?page=$page&size=$size&order_id=$orderId&order_state=$orderState',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('orderDetailsNft handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const page = 1;
+      const size = 500;
+      const orderId = 'order123';
+      const orderState = 'SUCCESS';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/nft/order_details?page=$page&size=$size&order_id=$orderId&order_state=$orderState',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
