@@ -1212,5 +1212,86 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => invalidResponse);
     });
+
+    test('rawTransactionStatus returns RawTransactionStatusResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const orderId = 'order123';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'jobs': [
+            {
+              'order_id': 'order123',
+              'network_name': 'Ethereum',
+              'status': 'completed',
+              'transaction_hash': '0xabc123',
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/rawtransaction/status?order_id=$orderId',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.rawTransactionStatus(orderId: orderId);
+
+      // Assert
+      expect(result, isA<RawTransactionStatusResponse>());
+      expect(result.status, equals('success'));
+      expect(result.data.jobs.length, equals(1));
+      expect(result.data.jobs.first.orderId, equals('order123'));
+      expect(result.data.jobs.first.networkName, equals('Ethereum'));
+      expect(result.data.jobs.first.status, equals('completed'));
+      expect(result.data.jobs.first.transactionHash, equals('0xabc123'));
+    });
+
+    test('rawTransactionStatus handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const orderId = 'order123';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'Order not found',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/rawtransaction/status?order_id=$orderId',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+    });
+
+    test('rawTransactionStatus handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const orderId = 'order123';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/rawtransaction/status?order_id=$orderId',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+    });
+
+    test('rawTransactionStatus handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      const orderId = 'order123';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/rawtransaction/status?order_id=$orderId',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+    });
   });
 }
