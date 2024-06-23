@@ -50,5 +50,179 @@ void main() {
       // Verify that storeTokens was called with the correct arguments
       verify(mockTokenManager.storeTokens('fakeAuthToken', 'fakeRefreshToken', 'fakeDeviceToken')).called(1);
     });
+
+    test('userDetails returns UserDetails on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeResponse = {
+        'status': 'success',
+        'data': {
+          'email': 'test@example.com',
+          'user_id': 'user123',
+          'created_at': '2023-06-23T12:34:56Z',
+          'freezed': false,
+          'freeze_reason': '',
+        }
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/user_from_token',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.userDetails();
+
+      // Assert
+      expect(result, isA<UserDetails>());
+      expect(result.status, equals('success'));
+      expect(result.data.email, equals('test@example.com'));
+      expect(result.data.userId, equals('user123'));
+      expect(result.data.createdAt, equals('2023-06-23T12:34:56Z'));
+      expect(result.data.freezed, isFalse);
+      expect(result.data.freezeReason, isEmpty);
+    });
+
+    test('userDetails handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeErrorResponse = {
+        'status': 'error',
+        'message': 'User not found',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/user_from_token',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+
+      // Act
+    });
+
+    test('userDetails handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/user_from_token',
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+
+      // Act
+    });
+
+    test('userDetails handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final invalidResponse = {
+        'status': 'success',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.get(
+        endpoint: '/api/v1/user_from_token',
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+
+      // Act
+    });
+
+        test('createWallet returns WalletResponse on successful response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeResponse = {
+        'success': 'true',
+        'data': {
+          'wallets': [
+            {
+              'network_Name': 'Ethereum',
+              'address': '0x1234567890123456789012345678901234567890',
+              'success': true,
+            },
+            {
+              'network_Name': 'Bitcoin',
+              'address': '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
+              'success': true,
+            },
+          ],
+        },
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.post(
+        endpoint: '/api/v1/wallet',
+        body: {},
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeResponse);
+
+      // Act
+      final result = await okto.createWallet();
+
+      // Assert
+      expect(result, isA<WalletResponse>());
+      expect(result.success, equals('true'));
+      expect(result.data.wallets.length, equals(2));
+      expect(result.data.wallets[0].networkName, equals('Ethereum'));
+      expect(result.data.wallets[0].address, equals('0x1234567890123456789012345678901234567890'));
+      expect(result.data.wallets[0].success, isTrue);
+      expect(result.data.wallets[1].networkName, equals('Bitcoin'));
+      expect(result.data.wallets[1].address, equals('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2'));
+      expect(result.data.wallets[1].success, isTrue);
+    });
+
+    test('createWallet handles error response', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final fakeErrorResponse = {
+        'success': 'false',
+        'error': 'Unable to create wallet',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.post(
+        endpoint: '/api/v1/wallet',
+        body: {},
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => fakeErrorResponse);
+
+      // Act 
+    });
+
+    test('createWallet handles network error', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.post(
+        endpoint: '/api/v1/wallet',
+        body: {},
+        authToken: fakeAuthToken,
+      )).thenThrow(Exception('Network error'));
+
+      // Act 
+    });
+
+    test('createWallet handles invalid response format', () async {
+      // Arrange
+      const fakeAuthToken = 'fakeAuthToken';
+      final invalidResponse = {
+        'success': 'true',
+        'data': 'Invalid data format',
+      };
+
+      when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
+      when(mockHttpClient.post(
+        endpoint: '/api/v1/wallet',
+        body: {},
+        authToken: fakeAuthToken,
+      )).thenAnswer((_) async => invalidResponse);
+
+      // Act 
+    });
+
   });
 }
