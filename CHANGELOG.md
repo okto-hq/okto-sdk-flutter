@@ -18,3 +18,6 @@
 
 ## 0.0.6
 - Changed the requirements for `http`
+
+## 0.0.7
+- Added test cases
