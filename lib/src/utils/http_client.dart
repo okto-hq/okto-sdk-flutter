@@ -8,8 +8,9 @@ import 'package:okto_flutter_sdk/src/utils/enums.dart';
 class HttpClient {
   final String apiKey;
   final BuildType buildType;
+  final http.Client httpClient;
 
-  HttpClient({required this.apiKey, required this.buildType});
+  HttpClient({required this.apiKey, required this.buildType, http.Client? client}) : httpClient = client ?? http.Client();
 
   Future<dynamic> post({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
     final baseUrl = _getBaseUrl(buildType);
@@ -70,7 +71,7 @@ class HttpClient {
     }
   }
 
-    dynamic _defaultProcessResponse(Response response) async {
+  dynamic _defaultProcessResponse(Response response) async {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
     } else {

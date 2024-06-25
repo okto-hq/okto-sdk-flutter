@@ -1,6 +1,6 @@
 name: okto_flutter_sdk
 description: "Official OKTO SDK for Flutter"
-version: 0.0.6
+version: 0.0.7
 homepage:
 
 environment:
@@ -19,6 +19,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  mockito: ^5.4.4
+  test: ^1.24.9
+  build_runner: ^2.3.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
