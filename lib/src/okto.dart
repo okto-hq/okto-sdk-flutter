@@ -255,65 +255,85 @@ class Okto {
   }
 
   /// Show Bottom Sheet
-  Future openBottomSheet({
-    required BuildContext context,
-    String textPrimaryColor = '0xFFFFFFFF',
-    String textSecondaryColor = '0xFF000000',
-    String textTertiaryColor = '0xFF000000',
-    String accentColor = '0x80433454',
-    String accent2Color = '0x80905BF5',
-    String strokBorderColor = '0xFFACACAB',
-    String strokDividerColor = '0x4DA8A8A8',
-    String surfaceColor = '0xFF1F0A2F',
-    String backgroundColor = '0xFF000000',
-  }) async {
-    WebViewController controller = WebViewController();
-    final authToken = await tokenManager.getAuthToken();
+Future openBottomSheet({
+  required BuildContext context,
+  
+  /// Height ranges from 0.1 to 1.0
+  /// It can be used to define the height of bottomsheet
+  double height = 0.6,
 
-    String getInjectedJs() {
-      String injectJs = '''
-      window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
-      window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
-      window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
-      window.localStorage.setItem('accentColor', '$accentColor');
-      window.localStorage.setItem('accent2Color', '$accent2Color');
-      window.localStorage.setItem('strokBorderColor', '$strokBorderColor');
-      window.localStorage.setItem('strokDividerColor', '$strokDividerColor');
-      window.localStorage.setItem('surfaceColor', '$surfaceColor');
-      window.localStorage.setItem('backgroundColor', '$backgroundColor');
-    ''';
 
-      if (authToken != null) {
-        injectJs += "window.localStorage.setItem('authToken', '$authToken');";
-      }
-      return injectJs;
+  String textPrimaryColor = '0xFFFFFFFF',
+  String textSecondaryColor = '0xFFFFFFFF',
+  String textTertiaryColor = '0xFFFFFFFF',
+  String accentColor = '0x80433454',
+  String accent2Color = '0x80905BF5',
+  String strokBorderColor = '0xFFACACAB',
+  String strokDividerColor = '0x4DA8A8A8',
+  String surfaceColor = '0xFF1F0A2F',
+  String backgroundColor = '0xFF000000',
+}) async {
+  WebViewController controller = WebViewController();
+  final authToken = await tokenManager.getAuthToken();
+  final draggableScrollableController = DraggableScrollableController();
+
+  String getInjectedJs() {
+    String injectJs = '''
+    window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
+    window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
+    window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
+    window.localStorage.setItem('accentColor', '$accentColor');
+    window.localStorage.setItem('accent2Color', '$accent2Color');
+    window.localStorage.setItem('strokBorderColor', '$strokBorderColor');
+    window.localStorage.setItem('strokDividerColor', '$strokDividerColor');
+    window.localStorage.setItem('surfaceColor', '$surfaceColor');
+    window.localStorage.setItem('backgroundColor', '$backgroundColor');
+  ''';
+
+    if (authToken != null) {
+      injectJs += "window.localStorage.setItem('authToken', '$authToken');";
     }
-
-    showModalBottomSheet(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        ),
-        context: context,
-        enableDrag: true,
-        builder: (BuildContext context) {
-          controller
-            ..setJavaScriptMode(JavaScriptMode.unrestricted)
-            ..setNavigationDelegate(
-              NavigationDelegate(
-                onProgress: (int progress) {},
-                onPageStarted: (String url) {
-                  controller.runJavaScript(getInjectedJs());
-                },
-                onPageFinished: (String url) {},
-                onHttpError: (HttpResponseError error) {},
-                onWebResourceError: (WebResourceError error) {},
-              ),
-            )
-            ..loadRequest(Uri.parse('https://3p.okto.tech/'));
-          return ClipRRect(
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            child: WebViewWidget(controller: controller),
-          );
-        });
+    return injectJs;
   }
+
+  controller
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setNavigationDelegate(
+      NavigationDelegate(
+        onProgress: (int progress) {},
+        onPageStarted: (String url) {
+          controller.runJavaScript(getInjectedJs());
+        },
+        onPageFinished: (String url) {},
+        onHttpError: (HttpResponseError error) {},
+        onWebResourceError: (WebResourceError error) {},
+      ),
+    )
+    ..loadRequest(Uri.parse('https://3p.okto.tech/'));
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    enableDrag: true,
+    builder: (BuildContext context) {
+      return DraggableScrollableSheet(
+        controller:draggableScrollableController,
+        initialChildSize: height,
+        builder: (_, ScrollController scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Color(int.parse(backgroundColor)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: WebViewWidget(controller: controller),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 }
