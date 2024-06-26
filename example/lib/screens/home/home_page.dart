@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                         child: const Text('Raw Transaction Status')),
                     ElevatedButton(
                         onPressed: () async {
-                          await okto.openBottomSheet(context: context);
+                          await okto.openBottomSheet(context: context, height: 0.7);
                         },
                         child: const Text('Open BottomSheet')),
                   ],
@@ -124,9 +124,8 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    // await okto.logout();
-                    final userPortfolio = await okto.userPortfolio();
-                    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    await okto.logout();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                   } catch (e) {
                     print(e);
                   }

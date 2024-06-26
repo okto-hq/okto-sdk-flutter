@@ -10,9 +10,8 @@ class LoginWithUserId extends StatefulWidget {
 }
 
 class _LoginWithUserIdState extends State<LoginWithUserId> {
-  final userId = '11990'; // Replace this with your user_id
-  final jwtToken =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJvdHAiOiI1ODIzNDEiLCJhdXRoZW50aWNhdGVUb2tlbiI6ImE3OWNkNzA0LTNkMTMtNDQ4MC1hMDAxLTU5MjI5MjVlY2JkZiIsInBob25lIjoiODE3ODgyNTQ5OSIsInVzZXJpZCI6IjExOTkwIiwiQVBJX1RJTUUiOjE3MTc3NjQ4NzV9.13PeWjc2Y_aZwpm1f_U11UJtx_f4QlVrSPgC8usUONw'; // Replace this with your JWT Token
+  final userId = 'YOUR_USER_ID'; // Replace this with your user_id
+  final jwtToken = 'YOUR_JWT_TOKEN';
 
   @override
   Widget build(BuildContext context) {
