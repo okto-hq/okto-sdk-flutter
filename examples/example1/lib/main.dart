@@ -35,6 +35,8 @@ class MyApp extends StatelessWidget {
                 child: CircularProgressIndicator(),
               ),
             );
+          } else if (snapshot.hasError) {
+            return const InitPage();
           } else {
             // Show login or home page based on login status
             bool isLoggedIn = snapshot.data ?? false;
