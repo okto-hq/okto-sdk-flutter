@@ -91,8 +91,9 @@ class Okto {
 
   /// POST
   /// Method to refresh the user token
-  Future refreshToken() async {
-    await tokenManager.refreshToken();
+  Future<AuthTokenResponse> refreshToken() async {
+    final refreshToken = await tokenManager.refreshToken();
+    return refreshToken;
   }
 
   /// Method to get the user details
@@ -141,6 +142,7 @@ class Okto {
   Future<UserPortfolioResponse> userPortfolio() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio', authToken: authToken);
+    print(response);
     return UserPortfolioResponse.fromMap(response);
   }
 
@@ -150,6 +152,7 @@ class Okto {
   Future<UserPortfolioActivityResponse> getUserPortfolioActivity({int limit = 10, int offset = 1}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio/activity?limit=$limit&offset=$offset', authToken: authToken);
+    print(response);
     return UserPortfolioActivityResponse.fromMap(response);
   }
 
@@ -160,6 +163,7 @@ class Okto {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
     final response = await httpClient.defaultPost(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
+    print(response);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -183,6 +187,7 @@ class Okto {
     final queryParameters = {'offset': offset.toString(), 'limit': limit.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderStateToPass};
     final queryString = Uri(queryParameters: queryParameters).query;
     final response = await httpClient.get(endpoint: '/api/v1/orders?$queryString', authToken: authToken);
+    print(response);
     return OrderHistoryResponse.fromMap(response);
   }
 
@@ -211,6 +216,7 @@ class Okto {
           'nft_address': nftAddress
         },
         authToken: authToken);
+    print(response);
 
     return TransferTokenResponse.fromMap(response);
   }
@@ -224,6 +230,7 @@ class Okto {
     final queryParams = {'page': page.toString(), 'size': size.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderState};
     final queryString = Uri(queryParameters: queryParams).query;
     final response = await httpClient.get(endpoint: '/api/v1/nft/order_details?$queryString', authToken: authToken);
+    print(response);
     return OrderDetailsNftResponse.fromMap(response);
   }
 
@@ -236,6 +243,7 @@ class Okto {
       body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,
     );
+    print(response);
     return RawTransactionExecuteResponse.fromMap(response);
   }
 
@@ -245,6 +253,7 @@ class Okto {
   Future<RawTransactionStatusResponse> rawTransactionStatus({required String orderId}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/rawtransaction/status?order_id=$orderId', authToken: authToken);
+    print(response);
     return RawTransactionStatusResponse.fromMap(response);
   }
 
@@ -255,30 +264,28 @@ class Okto {
   }
 
   /// Show Bottom Sheet
-Future openBottomSheet({
-  required BuildContext context,
-  
-  /// Height ranges from 0.1 to 1.0
-  /// It can be used to define the height of bottomsheet
-  double height = 0.6,
+  Future openBottomSheet({
+    required BuildContext context,
 
+    /// Height ranges from 0.1 to 1.0
+    /// It can be used to define the height of bottomsheet
+    double height = 0.6,
+    String textPrimaryColor = '0xFFFFFFFF',
+    String textSecondaryColor = '0xFFFFFFFF',
+    String textTertiaryColor = '0xFFFFFFFF',
+    String accentColor = '0x80433454',
+    String accent2Color = '0x80905BF5',
+    String strokBorderColor = '0xFFACACAB',
+    String strokDividerColor = '0x4DA8A8A8',
+    String surfaceColor = '0xFF1F0A2F',
+    String backgroundColor = '0xFF000000',
+  }) async {
+    WebViewController controller = WebViewController();
+    final authToken = await tokenManager.getAuthToken();
+    final draggableScrollableController = DraggableScrollableController();
 
-  String textPrimaryColor = '0xFFFFFFFF',
-  String textSecondaryColor = '0xFFFFFFFF',
-  String textTertiaryColor = '0xFFFFFFFF',
-  String accentColor = '0x80433454',
-  String accent2Color = '0x80905BF5',
-  String strokBorderColor = '0xFFACACAB',
-  String strokDividerColor = '0x4DA8A8A8',
-  String surfaceColor = '0xFF1F0A2F',
-  String backgroundColor = '0xFF000000',
-}) async {
-  WebViewController controller = WebViewController();
-  final authToken = await tokenManager.getAuthToken();
-  final draggableScrollableController = DraggableScrollableController();
-
-  String getInjectedJs() {
-    String injectJs = '''
+    String getInjectedJs() {
+      String injectJs = '''
     window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
     window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
     window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
@@ -290,50 +297,50 @@ Future openBottomSheet({
     window.localStorage.setItem('backgroundColor', '$backgroundColor');
   ''';
 
-    if (authToken != null) {
-      injectJs += "window.localStorage.setItem('authToken', '$authToken');";
+      if (authToken != null) {
+        injectJs += "window.localStorage.setItem('authToken', '$authToken');";
+      }
+      return injectJs;
     }
-    return injectJs;
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {},
+          onPageStarted: (String url) {
+            controller.runJavaScript(getInjectedJs());
+          },
+          onPageFinished: (String url) {},
+          onHttpError: (HttpResponseError error) {},
+          onWebResourceError: (WebResourceError error) {},
+        ),
+      )
+      ..loadRequest(Uri.parse('https://3p.okto.tech/'));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      enableDrag: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          controller: draggableScrollableController,
+          initialChildSize: height,
+          builder: (_, ScrollController scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Color(int.parse(backgroundColor)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: WebViewWidget(controller: controller),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
-
-  controller
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setNavigationDelegate(
-      NavigationDelegate(
-        onProgress: (int progress) {},
-        onPageStarted: (String url) {
-          controller.runJavaScript(getInjectedJs());
-        },
-        onPageFinished: (String url) {},
-        onHttpError: (HttpResponseError error) {},
-        onWebResourceError: (WebResourceError error) {},
-      ),
-    )
-    ..loadRequest(Uri.parse('https://3p.okto.tech/'));
-
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    enableDrag: true,
-    builder: (BuildContext context) {
-      return DraggableScrollableSheet(
-        controller:draggableScrollableController,
-        initialChildSize: height,
-        builder: (_, ScrollController scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Color(int.parse(backgroundColor)),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: WebViewWidget(controller: controller),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
 }

@@ -30,7 +30,7 @@ class TokenManager {
     await secureStorage.write(key: 'device_token', value: deviceToken);
   }
 
-  Future<void> refreshToken() async {
+  Future<AuthTokenResponse> refreshToken() async {
     final oldRefreshToken = await secureStorage.read(key: 'refresh_auth_token');
     final oldDeviceToken = await secureStorage.read(key: 'device_token');
     final oldAuthToken = await secureStorage.read(key: 'auth_token');
@@ -50,6 +50,7 @@ class TokenManager {
 
     final authTokenResponse = AuthTokenResponse.fromJson(response);
     await storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+    return authTokenResponse;
   }
 
   Future<bool> deleteToken() async {
