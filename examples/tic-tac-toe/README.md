@@ -22,3 +22,8 @@
     - Go to `lib/core/game.dart`
     - Edit the `checkForWinners()` function, according to your need.
     - That's it.
+    
+    
+    
+    
+![okto ss](https://github.com/okto-hq/okto-sdk-flutter/assets/71646773/3dc31de5-7454-4cc4-b6e8-2244acaf4418)
