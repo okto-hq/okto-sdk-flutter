@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginWithGoogle extends StatefulWidget {
   const LoginWithGoogle({super.key});
@@ -10,8 +11,13 @@ class LoginWithGoogle extends StatefulWidget {
 }
 
 class _LoginWithGoogleState extends State<LoginWithGoogle> {
-  final googleIdToken = 'ID_TOKEN_RECEIVED_FROM_GOOGLE_SIGN_IN'; // Replace this with your goggle OAuth2 id_token
-
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'openid',
+    ],
+  );
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +38,16 @@ class _LoginWithGoogleState extends State<LoginWithGoogle> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    await okto.authenticate(idToken: googleIdToken);
-                    await okto.setPin(pin: 'USER_PIN'); // The user is required to set a pin after the first login
+                    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+                    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+                    googleUser!.clearAuthCache();
+                    if (googleAuth != null) {
+                      final String? idToken = googleAuth.idToken;
+                      await okto.authenticate(idToken: idToken!);
+                      await okto.setPin(pin: '123456');
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                    }
                     // ignore: use_build_context_synchronously
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
                   } catch (e) {
                     print(e);
                   }

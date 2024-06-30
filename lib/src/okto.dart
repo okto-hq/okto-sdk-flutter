@@ -142,7 +142,6 @@ class Okto {
   Future<UserPortfolioResponse> userPortfolio() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio', authToken: authToken);
-    print(response);
     return UserPortfolioResponse.fromMap(response);
   }
 
@@ -152,7 +151,6 @@ class Okto {
   Future<UserPortfolioActivityResponse> getUserPortfolioActivity({int limit = 10, int offset = 1}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio/activity?limit=$limit&offset=$offset', authToken: authToken);
-    print(response);
     return UserPortfolioActivityResponse.fromMap(response);
   }
 
@@ -163,7 +161,6 @@ class Okto {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
     final response = await httpClient.defaultPost(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
-    print(response);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -187,7 +184,6 @@ class Okto {
     final queryParameters = {'offset': offset.toString(), 'limit': limit.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderStateToPass};
     final queryString = Uri(queryParameters: queryParameters).query;
     final response = await httpClient.get(endpoint: '/api/v1/orders?$queryString', authToken: authToken);
-    print(response);
     return OrderHistoryResponse.fromMap(response);
   }
 
@@ -216,7 +212,6 @@ class Okto {
           'nft_address': nftAddress
         },
         authToken: authToken);
-    print(response);
 
     return TransferTokenResponse.fromMap(response);
   }
@@ -230,7 +225,6 @@ class Okto {
     final queryParams = {'page': page.toString(), 'size': size.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderState};
     final queryString = Uri(queryParameters: queryParams).query;
     final response = await httpClient.get(endpoint: '/api/v1/nft/order_details?$queryString', authToken: authToken);
-    print(response);
     return OrderDetailsNftResponse.fromMap(response);
   }
 
@@ -243,7 +237,6 @@ class Okto {
       body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,
     );
-    print(response);
     return RawTransactionExecuteResponse.fromMap(response);
   }
 
@@ -253,7 +246,6 @@ class Okto {
   Future<RawTransactionStatusResponse> rawTransactionStatus({required String orderId}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/rawtransaction/status?order_id=$orderId', authToken: authToken);
-    print(response);
     return RawTransactionStatusResponse.fromMap(response);
   }
 

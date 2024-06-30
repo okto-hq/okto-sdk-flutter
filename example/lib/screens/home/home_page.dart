@@ -48,7 +48,9 @@ class _HomePageState extends State<HomePage> {
                   alignment: WrapAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          final res = await okto.refreshToken();
+                          print(res.data.authToken);
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const UserDetailsPage()));
                         },
                         child: const Text('User Details')),

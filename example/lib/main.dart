@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/home/home_page.dart';
+import 'package:example/screens/init/init_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
             if (isLoggedIn) {
               return const HomePage();
             } else {
-              return const LoginPage();
+              return const InitPage();
             }
           }
         },

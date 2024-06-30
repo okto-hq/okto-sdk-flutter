@@ -10,19 +10,53 @@ class RawTransactioneExecutePage extends StatefulWidget {
 }
 
 class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage> {
-  final networkName = 'POLYGON_TESTNET';
-  final transaction = {
-    "from": "0x0342A54DD44E8744FD185579Af57845Cb0ac6cB0",
-    "to": "0x80322ea18633A1f713e987d65Ae78AcCDAB6e55e",
-    "data": "0x",
-    "value": "0x10000",
-  };
+  final networkName = 'SOLANA_DEVNET';
+  final TextEditingController instructionsController = TextEditingController(text: '''
+    [
+      {
+        "keys": [
+          {
+            "pubkey": "GQkXkHF8LTwyZiZUcBWwYJeJBFEqR4vRCV4J5Xe7zGiQ",
+            "isSigner": true,
+            "isWritable": true
+          },
+          {
+            "pubkey": "GEjBy2puN8a53darpz7CTbRvSb6wepzhK7s8C3Dww4yg",
+            "isSigner": false,
+            "isWritable": true
+          }
+        ],
+        "programId": "11111111111111111111111111111111",
+        "data": [
+          2,
+          0,
+          0,
+          0,
+          128,
+          150,
+          152,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+    ''');
+  final TextEditingController signersController = TextEditingController(text: '["GQkXkHF8LTwyZiZUcBWwYJeJBFEqR4vRCV4J5Xe7zGiQ"]');
 
   Future<RawTransactionExecuteResponse>? _rawTransactionExecuted;
 
   Future<RawTransactionExecuteResponse> rawTransactionExecute() async {
+    final transactionObject = {
+      'transaction': {
+        'instructions': instructionsController.text,
+        'signers': signersController.text,
+      },
+    };
     try {
-      final orderHistory = await okto.rawTransactionExecute(networkName: networkName, transaction: transaction);
+      final orderHistory = await okto.rawTransactionExecute(networkName: networkName, transaction: transactionObject);
       return orderHistory;
     } catch (e) {
       throw Exception(e);
