@@ -14,7 +14,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   Future<UserDetails> fetchUserDetails() async {
     try {
-      final userDetails = await okto.userDetails();
+      final userDetails = await okto!.userDetails();
       return userDetails;
     } catch (e) {
       throw Exception(e);

@@ -14,7 +14,7 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
 
   Future<NetworkDetails> getSupportedNetworks() async {
     try {
-      final supportedNetworks = await okto.supportedNetworks();
+      final supportedNetworks = await okto!.supportedNetworks();
       return supportedNetworks;
     } catch (e) {
       throw Exception(e);

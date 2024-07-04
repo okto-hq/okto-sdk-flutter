@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:tictactoe/constants/globals.dart';
 import 'package:tictactoe/login_screen.dart';
+import 'package:tictactoe/utils/okto.dart';
 
 class InitPage extends StatefulWidget {
   const InitPage({super.key});
@@ -11,6 +12,7 @@ class InitPage extends StatefulWidget {
 }
 
 class _InitPageState extends State<InitPage> {
+  Globals globals = Globals.instance;
   final apiController = TextEditingController();
 
   int _selectedChipIndex = -1;
@@ -47,21 +49,22 @@ class _InitPageState extends State<InitPage> {
           ElevatedButton(
             onPressed: () {
               if (_selectedChipIndex != -1) {
-                if (_selectedChipIndex == 0) {
+                     if (_selectedChipIndex == 0) {
                   setState(() {
-                    currentBuildType = BuildType.sandbox;
+                    globals.setBuildType(BuildType.sandbox);
                   });
                 } else if (_selectedChipIndex == 1) {
                   setState(() {
-                    currentBuildType = BuildType.staging;
+                    globals.setBuildType(BuildType.staging);
                   });
                 } else if (_selectedChipIndex == 2) {
                   setState(() {
-                    currentBuildType = BuildType.production;
+                    globals.setBuildType(BuildType.production);
                   });
                 }
                 setState(() {
-                  globalClientApiKey = apiController.text;
+                  globals.setApiKey(apiController.text);
+                  okto = Okto(globals.getApiKey(),globals.getBuildType());
                 });
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
               }

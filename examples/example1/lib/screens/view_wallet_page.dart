@@ -14,7 +14,7 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
 
   Future<WalletResponse> fetchWallets() async {
     try {
-      final wallets = await okto.getWallets();
+      final wallets = await okto!.getWallets();
       return wallets;
     } catch (e) {
       throw Exception(e);

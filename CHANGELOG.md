@@ -27,3 +27,4 @@
 
 ## 0.0.8
 - Exposed the `refreshToken` method, which returns `AuthTokenResponse`.
+- Fix: Google Authentication

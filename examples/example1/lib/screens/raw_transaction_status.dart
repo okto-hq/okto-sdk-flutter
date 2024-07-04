@@ -10,11 +10,12 @@ class RawTransactionStatusPage extends StatefulWidget {
 }
 
 class _RawTransactionStatusPageState extends State<RawTransactionStatusPage> {
+  final jobIdController = TextEditingController();
   Future<RawTransactionStatusResponse>? _rawTransactionStatus;
 
   Future<RawTransactionStatusResponse> rawTransactionStatus() async {
     try {
-      final rawTransaction = await okto.rawTransactionStatus(orderId: 'YOUR_ORDER_ID');
+      final rawTransaction = await okto!.rawTransactionStatus(orderId: jobIdController.text);
       return rawTransaction;
     } catch (e) {
       throw Exception(e);
@@ -35,6 +36,10 @@ class _RawTransactionStatusPageState extends State<RawTransactionStatusPage> {
                 'Raw Transaction Status',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
               ),
+            ),
+            TextField(
+              controller: jobIdController,
+              decoration: const InputDecoration(hintText: 'Paste Job id'),
             ),
             ElevatedButton(
               onPressed: () {

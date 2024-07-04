@@ -1,3 +1,4 @@
+import 'package:example/okto.dart';
 import 'package:example/screens/auth/login_page.dart';
 import 'package:example/utils/global_mode.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class InitPage extends StatefulWidget {
 }
 
 class _InitPageState extends State<InitPage> {
+  Globals globals = Globals.instance;
   final apiController = TextEditingController();
 
   int _selectedChipIndex = -1;
@@ -49,19 +51,20 @@ class _InitPageState extends State<InitPage> {
               if (_selectedChipIndex != -1) {
                 if (_selectedChipIndex == 0) {
                   setState(() {
-                    currentBuildType = BuildType.sandbox;
+                    globals.setBuildType(BuildType.sandbox);
                   });
                 } else if (_selectedChipIndex == 1) {
                   setState(() {
-                    currentBuildType = BuildType.staging;
+                    globals.setBuildType(BuildType.staging);
                   });
                 } else if (_selectedChipIndex == 2) {
                   setState(() {
-                    currentBuildType = BuildType.production;
+                    globals.setBuildType(BuildType.production);
                   });
                 }
                 setState(() {
-                  globalClientApiKey = apiController.text;
+                  globals.setApiKey(apiController.text);
+                  okto = Okto(globals.getApiKey(),globals.getBuildType());
                 });
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
               }

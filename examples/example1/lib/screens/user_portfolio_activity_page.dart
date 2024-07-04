@@ -14,7 +14,7 @@ class _UserPortfolioActivityPageState extends State<UserPortfolioActivityPage> {
 
   Future<UserPortfolioActivityResponse> getuserPortfolioActivity() async {
     try {
-      final userPortfolioActivity = await okto.getUserPortfolioActivity();
+      final userPortfolioActivity = await okto!.getUserPortfolioActivity();
       return userPortfolioActivity;
     } catch (e) {
       throw Exception(e);

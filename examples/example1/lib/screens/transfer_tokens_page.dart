@@ -19,7 +19,7 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
 
   Future<TransferTokenResponse> transferToken() async {
     try {
-      final transferToken = await okto.transferTokens(
+      final transferToken = await okto!.transferTokens(
         networkName: networkNameController.text,
         tokenAddress: tokenAddressController.text,
         quantity: quantityController.text,

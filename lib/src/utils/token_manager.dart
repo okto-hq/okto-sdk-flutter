@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/utils/check_auth_token.dart';
@@ -39,6 +40,7 @@ class TokenManager {
       throw Exception('Missing tokens required for refreshing. Please authenticate again.');
     }
 
+
     final response = await httpClient.post(
         endpoint: '/api/v1/refresh_token',
         body: {},
@@ -48,7 +50,7 @@ class TokenManager {
           'x-device-token': oldDeviceToken,
         });
 
-    final authTokenResponse = AuthTokenResponse.fromJson(response);
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
     await storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
     return authTokenResponse;
   }

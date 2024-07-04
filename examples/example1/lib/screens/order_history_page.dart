@@ -14,7 +14,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
   Future<OrderHistoryResponse> getOrderHistory() async {
     try {
-      final orderHistory = await okto.orderHistory();
+      final orderHistory = await okto!.orderHistory();
       return orderHistory;
     } catch (e) {
       throw Exception(e);

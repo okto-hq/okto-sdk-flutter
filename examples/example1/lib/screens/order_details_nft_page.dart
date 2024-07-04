@@ -14,7 +14,7 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
 
   Future<OrderDetailsNftResponse> getOrderDetailsNft() async {
     try {
-      final orderDetails = await okto.orderDetailsNft();
+      final orderDetails = await okto!.orderDetailsNft();
       return orderDetails;
     } catch (e) {
       throw Exception(e);

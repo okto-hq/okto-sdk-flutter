@@ -1,5 +1,6 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
 class RawTransactioneExecutePage extends StatefulWidget {
@@ -56,7 +57,7 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
       },
     };
     try {
-      final orderHistory = await okto.rawTransactionExecute(networkName: networkName, transaction: transactionObject);
+      final orderHistory = await okto!.rawTransactionExecute(networkName: networkName, transaction: transactionObject);
       return orderHistory;
     } catch (e) {
       throw Exception(e);
@@ -107,6 +108,11 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
                                   'Job id: ${transferNftResponse.data.jobId}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
+                                TextButton(
+                                    onPressed: () async {
+                                      Clipboard.setData(ClipboardData(text: transferNftResponse.data.jobId));
+                                    },
+                                    child: const Text('Copy job id'))
                               ],
                             ),
                           );

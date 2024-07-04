@@ -17,7 +17,7 @@ class _GamePageState extends State<GamePage> {
 
   Future<UserDetails> fetchUserDetails() async {
     try {
-      final userDetails = await okto.userDetails();
+      final userDetails = await okto!.userDetails();
       return userDetails;
     } catch (e) {
       throw Exception(e);

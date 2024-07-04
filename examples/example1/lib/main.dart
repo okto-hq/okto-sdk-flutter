@@ -1,10 +1,12 @@
 import 'package:example/okto.dart';
-import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:example/screens/init/init_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  okto = Okto(globals.getApiKey(), globals.getBuildType());
   runApp(const MyApp());
 }
 
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
 
   Future<bool> checkLoginStatus() async {
     // Simulate a network call or any async operation
-    return await okto.isLoggedIn();
+    return await okto!.isLoggedIn();
   }
 
   @override
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasError) {
+            print(snapshot.error.toString());
             return const InitPage();
           } else {
             // Show login or home page based on login status

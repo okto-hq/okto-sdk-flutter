@@ -21,7 +21,7 @@ class _TransferNftPageState extends State<TransferNftPage> {
   Future<TransferTokenResponse>? _transferNft;
   Future<TransferTokenResponse> transferNft() async {
     try {
-      final transferNft = await okto.transferNft(
+      final transferNft = await okto!.transferNft(
           networkName: networkNameController.text,
           quantity: quantityController.text,
           recipientAddress: recipientAddressController.text,
@@ -31,6 +31,7 @@ class _TransferNftPageState extends State<TransferNftPage> {
           nftAddress: nftAddressController.text);
       return transferNft;
     } catch (e) {
+      print(e.toString());
       throw Exception(e);
     }
   }

@@ -14,7 +14,7 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
 
   Future<WalletResponse> createWallets() async {
     try {
-      final createdWallet = await okto.createWallet();
+      final createdWallet = await okto!.createWallet();
       return createdWallet;
     } catch (e) {
       throw Exception(e);

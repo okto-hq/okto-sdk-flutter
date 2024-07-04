@@ -42,12 +42,18 @@ class Okto {
 
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
-  Future<AuthenticationResponse> authenticate({required String idToken}) async {
+  Future<dynamic> authenticate({required String idToken}) async {
     _idToken = idToken;
     final response = await httpClient.post(endpoint: '/api/v1/authenticate', body: {'id_token': idToken});
-    final authResponse = AuthenticationResponse.fromMap(response);
-    _oktoToken = authResponse.data.token;
-    return authResponse;
+    if (response['data']['action'] == 'signup') {
+      final authResponse = AuthenticationResponse.fromMap(response);
+      _oktoToken = authResponse.data.token;
+      return authResponse;
+    } else {
+      final authTokenResponse = AuthTokenResponse.fromMap(response);
+      await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+      return authTokenResponse;
+    }
   }
 
   /// Method to authenticate a user using the user id and JWT token
@@ -55,7 +61,7 @@ class Okto {
   /// Do not call [setPin] if you are authenticating with this method
   Future<AuthTokenResponse> authenticateWithUserId({required String userId, required String jwtToken}) async {
     _idToken = jwtToken;
-    final response = await httpClient.defaultPost(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
+    final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
     return authTokenResponse;
@@ -84,7 +90,7 @@ class Okto {
     try {
       await tokenManager.getAuthToken();
       return true;
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }
@@ -160,7 +166,7 @@ class Okto {
   Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
-    final response = await httpClient.defaultPost(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
+    final response = await httpClient.post(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -200,7 +206,7 @@ class Okto {
     required String nftAddress,
   }) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.defaultPost(
+    final response = await httpClient.post(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -212,7 +218,6 @@ class Okto {
           'nft_address': nftAddress
         },
         authToken: authToken);
-
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -232,7 +237,7 @@ class Okto {
   /// Returns a [RawTransactionExecuteResponse] object
   Future<RawTransactionExecuteResponse> rawTransactionExecute({required String networkName, required Map<String, dynamic> transaction}) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.defaultPost(
+    final response = await httpClient.post(
       endpoint: '/api/v1/rawtransaction/execute',
       body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,

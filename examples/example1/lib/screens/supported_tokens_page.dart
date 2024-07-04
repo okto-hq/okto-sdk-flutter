@@ -14,7 +14,7 @@ class _SupportedTokensPageState extends State<SupportedTokensPage> {
 
   Future<TokenResponse> getSupportedTokens() async {
     try {
-      final supportedTokens = await okto.supportedTokens();
+      final supportedTokens = await okto!.supportedTokens();
       return supportedTokens;
     } catch (e) {
       throw Exception(e);
