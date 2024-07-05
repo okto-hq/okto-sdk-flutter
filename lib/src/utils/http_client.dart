@@ -1,7 +1,6 @@
 import 'dart:convert';
-
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:okto_flutter_sdk/src/exceptions/api_exception.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 
@@ -13,37 +12,32 @@ class HttpClient {
   HttpClient({required this.apiKey, required this.buildType, http.Client? client}) : httpClient = client ?? http.Client();
 
   Future<dynamic> post({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
+    final dio = Dio();
     final baseUrl = _getBaseUrl(buildType);
-    var headersList = {
-      'Accept': '/',
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (authToken != null) 'Authorization': 'Bearer $authToken',
-      ...?additionalHeaders,
-    };
-    var reqBody = body;
-    var url = Uri.parse('$baseUrl$endpoint');
-    var req = http.Request('POST', url);
-    req.headers.addAll(headersList);
-    req.body = jsonEncode(reqBody);
-    var res = await req.send();
-    return await _processResponse(res);
-  }
-
-  Future<dynamic> defaultPost({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
-    final baseUrl = _getBaseUrl(buildType);
-    final headers = {
-      'Accept': '/',
-      'x-api-key': apiKey,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      if (authToken != null) 'Authorization': 'Bearer $authToken',
-      ...?additionalHeaders,
-    };
-    final requestBody = jsonEncode(body);
-    final response = await http.post(Uri.parse('$baseUrl$endpoint'), headers: headers, body: requestBody);
-    return await _defaultProcessResponse(response);
+    try {
+      final response = await dio.post(
+        '$baseUrl$endpoint',
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json',
+            if (authToken != null) 'Authorization': 'Bearer $authToken',
+            ...?additionalHeaders,
+          },
+        ),
+        data: body,
+      );
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // The server responded with an error
+        throw ApiException(e.response!.statusCode ?? 500, e.response!.data.toString());
+      } else {
+        // Something went wrong in setting up the request
+        throw ApiException(500, e.message ?? 'Unknown error occurred');
+      }
+    }
   }
 
   Future<dynamic> get({required String endpoint, String? authToken, Map<String, String>? additionalHeaders}) async {
@@ -68,14 +62,6 @@ class HttpClient {
       return jsonDecode(resBody);
     } else {
       throw ApiException(response.statusCode, resBody);
-    }
-  }
-
-  dynamic _defaultProcessResponse(Response response) async {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body);
-    } else {
-      throw ApiException(response.statusCode, response.body);
     }
   }
 

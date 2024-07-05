@@ -42,12 +42,18 @@ class Okto {
 
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
-  Future<AuthenticationResponse> authenticate({required String idToken}) async {
+  Future<dynamic> authenticate({required String idToken}) async {
     _idToken = idToken;
     final response = await httpClient.post(endpoint: '/api/v1/authenticate', body: {'id_token': idToken});
-    final authResponse = AuthenticationResponse.fromMap(response);
-    _oktoToken = authResponse.data.token;
-    return authResponse;
+    if (response['data']['action'] == 'signup') {
+      final authResponse = AuthenticationResponse.fromMap(response);
+      _oktoToken = authResponse.data.token;
+      return authResponse;
+    } else {
+      final authTokenResponse = AuthTokenResponse.fromMap(response);
+      await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+      return authTokenResponse;
+    }
   }
 
   /// Method to authenticate a user using the user id and JWT token
@@ -55,7 +61,7 @@ class Okto {
   /// Do not call [setPin] if you are authenticating with this method
   Future<AuthTokenResponse> authenticateWithUserId({required String userId, required String jwtToken}) async {
     _idToken = jwtToken;
-    final response = await httpClient.defaultPost(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
+    final response = await httpClient.post(endpoint: '/api/v1/jwt-authenticate', body: {'user_id': userId, 'auth_token': jwtToken});
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
     return authTokenResponse;
@@ -84,15 +90,16 @@ class Okto {
     try {
       await tokenManager.getAuthToken();
       return true;
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }
 
   /// POST
   /// Method to refresh the user token
-  Future refreshToken() async {
-    await tokenManager.refreshToken();
+  Future<AuthTokenResponse> refreshToken() async {
+    final refreshToken = await tokenManager.refreshToken();
+    return refreshToken;
   }
 
   /// Method to get the user details
@@ -159,7 +166,7 @@ class Okto {
   Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
-    final response = await httpClient.defaultPost(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
+    final response = await httpClient.post(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -199,7 +206,7 @@ class Okto {
     required String nftAddress,
   }) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.defaultPost(
+    final response = await httpClient.post(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -211,7 +218,6 @@ class Okto {
           'nft_address': nftAddress
         },
         authToken: authToken);
-
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -231,7 +237,7 @@ class Okto {
   /// Returns a [RawTransactionExecuteResponse] object
   Future<RawTransactionExecuteResponse> rawTransactionExecute({required String networkName, required Map<String, dynamic> transaction}) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.defaultPost(
+    final response = await httpClient.post(
       endpoint: '/api/v1/rawtransaction/execute',
       body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,
@@ -255,30 +261,28 @@ class Okto {
   }
 
   /// Show Bottom Sheet
-Future openBottomSheet({
-  required BuildContext context,
-  
-  /// Height ranges from 0.1 to 1.0
-  /// It can be used to define the height of bottomsheet
-  double height = 0.6,
+  Future openBottomSheet({
+    required BuildContext context,
 
+    /// Height ranges from 0.1 to 1.0
+    /// It can be used to define the height of bottomsheet
+    double height = 0.6,
+    String textPrimaryColor = '0xFFFFFFFF',
+    String textSecondaryColor = '0xFFFFFFFF',
+    String textTertiaryColor = '0xFFFFFFFF',
+    String accentColor = '0x80433454',
+    String accent2Color = '0x80905BF5',
+    String strokBorderColor = '0xFFACACAB',
+    String strokDividerColor = '0x4DA8A8A8',
+    String surfaceColor = '0xFF1F0A2F',
+    String backgroundColor = '0xFF000000',
+  }) async {
+    WebViewController controller = WebViewController();
+    final authToken = await tokenManager.getAuthToken();
+    final draggableScrollableController = DraggableScrollableController();
 
-  String textPrimaryColor = '0xFFFFFFFF',
-  String textSecondaryColor = '0xFFFFFFFF',
-  String textTertiaryColor = '0xFFFFFFFF',
-  String accentColor = '0x80433454',
-  String accent2Color = '0x80905BF5',
-  String strokBorderColor = '0xFFACACAB',
-  String strokDividerColor = '0x4DA8A8A8',
-  String surfaceColor = '0xFF1F0A2F',
-  String backgroundColor = '0xFF000000',
-}) async {
-  WebViewController controller = WebViewController();
-  final authToken = await tokenManager.getAuthToken();
-  final draggableScrollableController = DraggableScrollableController();
-
-  String getInjectedJs() {
-    String injectJs = '''
+    String getInjectedJs() {
+      String injectJs = '''
     window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
     window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
     window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
@@ -290,50 +294,50 @@ Future openBottomSheet({
     window.localStorage.setItem('backgroundColor', '$backgroundColor');
   ''';
 
-    if (authToken != null) {
-      injectJs += "window.localStorage.setItem('authToken', '$authToken');";
+      if (authToken != null) {
+        injectJs += "window.localStorage.setItem('authToken', '$authToken');";
+      }
+      return injectJs;
     }
-    return injectJs;
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {},
+          onPageStarted: (String url) {
+            controller.runJavaScript(getInjectedJs());
+          },
+          onPageFinished: (String url) {},
+          onHttpError: (HttpResponseError error) {},
+          onWebResourceError: (WebResourceError error) {},
+        ),
+      )
+      ..loadRequest(Uri.parse('https://3p.okto.tech/'));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      enableDrag: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          controller: draggableScrollableController,
+          initialChildSize: height,
+          builder: (_, ScrollController scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Color(int.parse(backgroundColor)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: WebViewWidget(controller: controller),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
-
-  controller
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setNavigationDelegate(
-      NavigationDelegate(
-        onProgress: (int progress) {},
-        onPageStarted: (String url) {
-          controller.runJavaScript(getInjectedJs());
-        },
-        onPageFinished: (String url) {},
-        onHttpError: (HttpResponseError error) {},
-        onWebResourceError: (WebResourceError error) {},
-      ),
-    )
-    ..loadRequest(Uri.parse('https://3p.okto.tech/'));
-
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    enableDrag: true,
-    builder: (BuildContext context) {
-      return DraggableScrollableSheet(
-        controller:draggableScrollableController,
-        initialChildSize: height,
-        builder: (_, ScrollController scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Color(int.parse(backgroundColor)),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: WebViewWidget(controller: controller),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
 }
