@@ -24,3 +24,7 @@
 - Optimized the `okto.openBottomSheet()`
 - Fixed rendering issue in the okto bottm sheet
 - Added an optional height parameter for the bottom sheet. 
+
+## 0.0.8
+- Exposed the `refreshToken` method, which returns `AuthTokenResponse`.
+- Fix: Google Authentication

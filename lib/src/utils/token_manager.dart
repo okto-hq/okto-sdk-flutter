@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/utils/check_auth_token.dart';
@@ -30,7 +31,7 @@ class TokenManager {
     await secureStorage.write(key: 'device_token', value: deviceToken);
   }
 
-  Future<void> refreshToken() async {
+  Future<AuthTokenResponse> refreshToken() async {
     final oldRefreshToken = await secureStorage.read(key: 'refresh_auth_token');
     final oldDeviceToken = await secureStorage.read(key: 'device_token');
     final oldAuthToken = await secureStorage.read(key: 'auth_token');
@@ -38,6 +39,7 @@ class TokenManager {
     if (oldRefreshToken == null || oldDeviceToken == null || oldAuthToken == null) {
       throw Exception('Missing tokens required for refreshing. Please authenticate again.');
     }
+
 
     final response = await httpClient.post(
         endpoint: '/api/v1/refresh_token',
@@ -48,8 +50,9 @@ class TokenManager {
           'x-device-token': oldDeviceToken,
         });
 
-    final authTokenResponse = AuthTokenResponse.fromJson(response);
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
     await storeTokens(authTokenResponse.data.authToken, authTokenResponse.data.refreshAuthToken, authTokenResponse.data.deviceToken);
+    return authTokenResponse;
   }
 
   Future<bool> deleteToken() async {
