@@ -7,7 +7,6 @@ class UserPortfolioResponse {
     required this.status,
     required this.data,
   });
-  
 
   Map<String, dynamic> toMap() {
     return {
@@ -29,24 +28,24 @@ class UserPortfolioResponse {
 }
 
 class UserPortfolioData {
-  final AggregatedData aggregatedData;
-  final List<GroupTokens> groupTokens;
+  final int total;
+  final List<Token> tokens;
   UserPortfolioData({
-    required this.aggregatedData,
-    required this.groupTokens,
+    required this.total,
+    required this.tokens,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'aggregated_data': aggregatedData.toMap(),
-      'group_tokens': groupTokens.map((x) => x.toMap()).toList(),
+      'total': total,
+      'tokens': tokens.map((x) => x.toMap()).toList(),
     };
   }
 
   factory UserPortfolioData.fromMap(Map<String, dynamic> map) {
     return UserPortfolioData(
-      aggregatedData: AggregatedData.fromMap(map['aggregated_data']),
-      groupTokens: List<GroupTokens>.from(map['group_tokens']?.map((x) => GroupTokens.fromMap(x))),
+      total: map['total']?.toInt() ?? 0,
+      tokens: List<Token>.from(map['tokens']?.map((x) => Token.fromMap(x))),
     );
   }
 
@@ -55,104 +54,45 @@ class UserPortfolioData {
   factory UserPortfolioData.fromJson(String source) => UserPortfolioData.fromMap(json.decode(source));
 }
 
-class AggregatedData {
-  final String holdingsCount;
-  final String holdingsPriceInr;
-  final String holdingsPriceUsdt;
-  final String totalHoldingPriceInr;
-  final String totalHoldingPriceUsdt;
-  AggregatedData({
-    required this.holdingsCount,
-    required this.holdingsPriceInr,
-    required this.holdingsPriceUsdt,
-    required this.totalHoldingPriceInr,
-    required this.totalHoldingPriceUsdt,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'holdings_count': holdingsCount,
-      'holdings_price_inr': holdingsPriceInr,
-      'holdings_price_usdt': holdingsPriceUsdt,
-      'total_holding_price_inr': totalHoldingPriceInr,
-      'total_holding_price_usdt': totalHoldingPriceUsdt,
-    };
-  }
-
-  factory AggregatedData.fromMap(Map<String, dynamic> map) {
-    return AggregatedData(
-      holdingsCount: map['holdings_count'] ?? '',
-      holdingsPriceInr: map['holdings_price_inr'] ?? '',
-      holdingsPriceUsdt: map['holdings_price_usdt'] ?? '',
-      totalHoldingPriceInr: map['total_holding_price_inr'] ?? '',
-      totalHoldingPriceUsdt: map['total_holdins_price_usdt'] ?? '',
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory AggregatedData.fromJson(String source) => AggregatedData.fromMap(json.decode(source));
-}
-
-class GroupTokens {
-  final String id;
-  final String name;
-  final String symbol;
-  final String shortName;
+class Token {
+  final String tokenName;
+  final String quantity;
+  final String amountInInr;
   final String tokenImage;
-  final String networkId;
-  final bool isPrimary;
-  final String balance;
-  final String holdingsPriceUsdt;
-  final String holdingsPriceInr;
-  final String aggregationType;
-  GroupTokens({
-    required this.id,
-    required this.name,
-    required this.symbol,
-    required this.shortName,
+  final String tokenAddress;
+  final String networkName;
+  Token({
+    required this.tokenName,
+    required this.quantity,
+    required this.amountInInr,
     required this.tokenImage,
-    required this.networkId,
-    required this.isPrimary,
-    required this.balance,
-    required this.holdingsPriceUsdt,
-    required this.holdingsPriceInr,
-    required this.aggregationType,
+    required this.tokenAddress,
+    required this.networkName,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'symbol': symbol,
-      'short_name': shortName,
+      'token_name': tokenName,
+      'quantity': quantity,
+      'amount_in_inr': amountInInr,
       'token_image': tokenImage,
-      'network_id': networkId,
-      'is_primary': isPrimary,
-      'balance': balance,
-      'holdings_price_usdt': holdingsPriceUsdt,
-      'holdings_price_inr': holdingsPriceInr,
-      'aggregation_type': aggregationType,
+      'token_address': tokenAddress,
+      'network_name': networkName,
     };
   }
 
-  factory GroupTokens.fromMap(Map<String, dynamic> map) {
-    return GroupTokens(
-      id: map['id'] ?? '',
-      name: map['name'] ?? '',
-      symbol: map['symbol'] ?? '',
-      shortName: map['short_name'] ?? '',
+  factory Token.fromMap(Map<String, dynamic> map) {
+    return Token(
+      tokenName: map['token_name'] ?? '',
+      quantity: map['quantity'] ?? '',
+      amountInInr: map['amount_in_inr'] ?? '',
       tokenImage: map['token_image'] ?? '',
-      networkId: map['network_id'] ?? '',
-      isPrimary: map['is_primary'] ?? false,
-      balance: map['balance'] ?? '',
-      holdingsPriceUsdt: map['holdings_price_usdt'] ?? '',
-      holdingsPriceInr: map['holdings_price_inr'] ?? '',
-      aggregationType: map['aggregation_type'] ?? '',
+      tokenAddress: map['token_address'] ?? '',
+      networkName: map['network_name'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory GroupTokens.fromJson(String source) => GroupTokens.fromMap(json.decode(source));
+  factory Token.fromJson(String source) => Token.fromMap(json.decode(source));
 }

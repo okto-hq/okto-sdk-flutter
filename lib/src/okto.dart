@@ -115,6 +115,7 @@ class Okto {
   Future<WalletResponse> createWallet() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.post(endpoint: '/api/v1/wallet', body: {}, authToken: authToken);
+    print(response);
     return WalletResponse.fromMap(response);
   }
 
@@ -123,6 +124,7 @@ class Okto {
   Future<WalletResponse> getWallets() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/wallet', authToken: authToken);
+    print(response);
     return WalletResponse.fromMap(response);
   }
 
@@ -131,6 +133,7 @@ class Okto {
   Future<NetworkDetails> supportedNetworks() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/supported/networks', authToken: authToken);
+    print(response);
     return NetworkDetails.fromMap(response);
   }
 
@@ -140,6 +143,7 @@ class Okto {
   Future<TokenResponse> supportedTokens({int page = 1, int size = 10}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/supported/tokens?page=$page&size=$size', authToken: authToken);
+    print(response);
     return TokenResponse.fromMap(response);
   }
 
@@ -148,6 +152,7 @@ class Okto {
   Future<UserPortfolioResponse> userPortfolio() async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio', authToken: authToken);
+    print(response);
     return UserPortfolioResponse.fromMap(response);
   }
 
@@ -157,6 +162,7 @@ class Okto {
   Future<UserPortfolioActivityResponse> getUserPortfolioActivity({int limit = 10, int offset = 1}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/portfolio/activity?limit=$limit&offset=$offset', authToken: authToken);
+    print(response);
     return UserPortfolioActivityResponse.fromMap(response);
   }
 
@@ -167,6 +173,7 @@ class Okto {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
     final response = await httpClient.post(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
+    print(response);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -190,6 +197,7 @@ class Okto {
     final queryParameters = {'offset': offset.toString(), 'limit': limit.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderStateToPass};
     final queryString = Uri(queryParameters: queryParameters).query;
     final response = await httpClient.get(endpoint: '/api/v1/orders?$queryString', authToken: authToken);
+    print(response);
     return OrderHistoryResponse.fromMap(response);
   }
 
@@ -251,6 +259,7 @@ class Okto {
   Future<RawTransactionStatusResponse> rawTransactionStatus({required String orderId}) async {
     final authToken = await tokenManager.getAuthToken();
     final response = await httpClient.get(endpoint: '/api/v1/rawtransaction/status?order_id=$orderId', authToken: authToken);
+    print(response);
     return RawTransactionStatusResponse.fromMap(response);
   }
 
