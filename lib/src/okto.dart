@@ -169,10 +169,10 @@ class Okto {
   /// Method to transfer tokens from one wallet to another
   /// Returns a [TransferTokenResponse] object
   /// Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
-  Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
+  Future<TransferTokenResponse> transferTokens({required String networkName, String? tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
-    final response = await httpClient.post(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
+    final response = await httpClient.post(endpoint: '/api/v1/transfer/tokens/execute', body: body, authToken: authToken);
     print(response);
     return TransferTokenResponse.fromMap(response);
   }
