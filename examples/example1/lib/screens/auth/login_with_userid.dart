@@ -10,8 +10,8 @@ class LoginWithUserId extends StatefulWidget {
 }
 
 class _LoginWithUserIdState extends State<LoginWithUserId> {
-  final userId = 'YOUR_USER_ID'; // Replace this with your user_id
-  final jwtToken = 'YOUR_JWT_TOKEN';
+  final userIdController = TextEditingController();
+  final jwtTokenController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +30,19 @@ class _LoginWithUserIdState extends State<LoginWithUserId> {
                 ),
               ),
             ),
+            TextField(
+              controller: userIdController,
+              decoration: const InputDecoration(label: Text('User Id')),
+            ),
+            TextField(
+              controller: jwtTokenController,
+              decoration: const InputDecoration(label: Text('Enter JWT')),
+            ),
+            const SizedBox(height: 50),
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    await okto!.authenticateWithUserId(userId: userId, jwtToken: jwtToken);
+                    await okto!.authenticateWithUserId(userId: userIdController.text, jwtToken: jwtTokenController.text);
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
                   } catch (e) {
                     print(e);

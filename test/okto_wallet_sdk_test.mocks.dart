@@ -3,15 +3,39 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i7;
+import 'dart:async' as _i22;
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i3;
-import 'package:http/http.dart' as _i2;
+import 'package:flutter/material.dart' as _i23;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i18;
+import 'package:http/http.dart' as _i17;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i5;
-import 'package:okto_flutter_sdk/src/utils/enums.dart' as _i6;
-import 'package:okto_flutter_sdk/src/utils/http_client.dart' as _i4;
-import 'package:okto_flutter_sdk/src/utils/token_manager.dart' as _i8;
+import 'package:mockito/src/dummies.dart' as _i20;
+import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart'
+    as _i4;
+import 'package:okto_flutter_sdk/src/models/client/network_model.dart' as _i7;
+import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart'
+    as _i14;
+import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart'
+    as _i12;
+import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart'
+    as _i15;
+import 'package:okto_flutter_sdk/src/models/client/raw_transaction_status_model.dart'
+    as _i16;
+import 'package:okto_flutter_sdk/src/models/client/token_model.dart' as _i8;
+import 'package:okto_flutter_sdk/src/models/client/transfer_nft_model.dart'
+    as _i13;
+import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart'
+    as _i11;
+import 'package:okto_flutter_sdk/src/models/client/user_model.dart' as _i5;
+import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart'
+    as _i10;
+import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart'
+    as _i9;
+import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart' as _i6;
+import 'package:okto_flutter_sdk/src/okto.dart' as _i19;
+import 'package:okto_flutter_sdk/src/utils/enums.dart' as _i21;
+import 'package:okto_flutter_sdk/src/utils/http_client.dart' as _i2;
+import 'package:okto_flutter_sdk/src/utils/token_manager.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -26,8 +50,8 @@ import 'package:okto_flutter_sdk/src/utils/token_manager.dart' as _i8;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeClient_0 extends _i1.SmartFake implements _i2.Client {
-  _FakeClient_0(
+class _FakeHttpClient_0 extends _i1.SmartFake implements _i2.HttpClient {
+  _FakeHttpClient_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -36,9 +60,8 @@ class _FakeClient_0 extends _i1.SmartFake implements _i2.Client {
         );
 }
 
-class _FakeFlutterSecureStorage_1 extends _i1.SmartFake
-    implements _i3.FlutterSecureStorage {
-  _FakeFlutterSecureStorage_1(
+class _FakeTokenManager_1 extends _i1.SmartFake implements _i3.TokenManager {
+  _FakeTokenManager_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -47,20 +70,668 @@ class _FakeFlutterSecureStorage_1 extends _i1.SmartFake
         );
 }
 
-class _FakeHttpClient_2 extends _i1.SmartFake implements _i4.HttpClient {
-  _FakeHttpClient_2(
+class _FakeAuthTokenResponse_2 extends _i1.SmartFake
+    implements _i4.AuthTokenResponse {
+  _FakeAuthTokenResponse_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
           parent,
           parentInvocation,
         );
+}
+
+class _FakeUserDetails_3 extends _i1.SmartFake implements _i5.UserDetails {
+  _FakeUserDetails_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeWalletResponse_4 extends _i1.SmartFake
+    implements _i6.WalletResponse {
+  _FakeWalletResponse_4(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeNetworkDetails_5 extends _i1.SmartFake
+    implements _i7.NetworkDetails {
+  _FakeNetworkDetails_5(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeTokenResponse_6 extends _i1.SmartFake implements _i8.TokenResponse {
+  _FakeTokenResponse_6(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeUserPortfolioResponse_7 extends _i1.SmartFake
+    implements _i9.UserPortfolioResponse {
+  _FakeUserPortfolioResponse_7(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeUserPortfolioActivityResponse_8 extends _i1.SmartFake
+    implements _i10.UserPortfolioActivityResponse {
+  _FakeUserPortfolioActivityResponse_8(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeTransferTokenResponse_9 extends _i1.SmartFake
+    implements _i11.TransferTokenResponse {
+  _FakeTransferTokenResponse_9(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeOrderHistoryResponse_10 extends _i1.SmartFake
+    implements _i12.OrderHistoryResponse {
+  _FakeOrderHistoryResponse_10(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeTransferNftResponse_11 extends _i1.SmartFake
+    implements _i13.TransferNftResponse {
+  _FakeTransferNftResponse_11(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeOrderDetailsNftResponse_12 extends _i1.SmartFake
+    implements _i14.OrderDetailsNftResponse {
+  _FakeOrderDetailsNftResponse_12(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeRawTransactionExecuteResponse_13 extends _i1.SmartFake
+    implements _i15.RawTransactionExecuteResponse {
+  _FakeRawTransactionExecuteResponse_13(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeRawTransactionStatusResponse_14 extends _i1.SmartFake
+    implements _i16.RawTransactionStatusResponse {
+  _FakeRawTransactionStatusResponse_14(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeClient_15 extends _i1.SmartFake implements _i17.Client {
+  _FakeClient_15(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeFlutterSecureStorage_16 extends _i1.SmartFake
+    implements _i18.FlutterSecureStorage {
+  _FakeFlutterSecureStorage_16(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+/// A class which mocks [Okto].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockOkto extends _i1.Mock implements _i19.Okto {
+  MockOkto() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get apiKey => (super.noSuchMethod(
+        Invocation.getter(#apiKey),
+        returnValue: _i20.dummyValue<String>(
+          this,
+          Invocation.getter(#apiKey),
+        ),
+      ) as String);
+
+  @override
+  _i2.HttpClient get httpClient => (super.noSuchMethod(
+        Invocation.getter(#httpClient),
+        returnValue: _FakeHttpClient_0(
+          this,
+          Invocation.getter(#httpClient),
+        ),
+      ) as _i2.HttpClient);
+
+  @override
+  _i3.TokenManager get tokenManager => (super.noSuchMethod(
+        Invocation.getter(#tokenManager),
+        returnValue: _FakeTokenManager_1(
+          this,
+          Invocation.getter(#tokenManager),
+        ),
+      ) as _i3.TokenManager);
+
+  @override
+  _i21.BuildType get buildType => (super.noSuchMethod(
+        Invocation.getter(#buildType),
+        returnValue: _i21.BuildType.staging,
+      ) as _i21.BuildType);
+
+  @override
+  _i22.Future<dynamic> authenticate({required String? idToken}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #authenticate,
+          [],
+          {#idToken: idToken},
+        ),
+        returnValue: _i22.Future<dynamic>.value(),
+      ) as _i22.Future<dynamic>);
+
+  @override
+  _i22.Future<_i4.AuthTokenResponse> authenticateWithUserId({
+    required String? userId,
+    required String? jwtToken,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #authenticateWithUserId,
+          [],
+          {
+            #userId: userId,
+            #jwtToken: jwtToken,
+          },
+        ),
+        returnValue:
+            _i22.Future<_i4.AuthTokenResponse>.value(_FakeAuthTokenResponse_2(
+          this,
+          Invocation.method(
+            #authenticateWithUserId,
+            [],
+            {
+              #userId: userId,
+              #jwtToken: jwtToken,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i4.AuthTokenResponse>);
+
+  @override
+  _i22.Future<_i4.AuthTokenResponse> setPin({required String? pin}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setPin,
+          [],
+          {#pin: pin},
+        ),
+        returnValue:
+            _i22.Future<_i4.AuthTokenResponse>.value(_FakeAuthTokenResponse_2(
+          this,
+          Invocation.method(
+            #setPin,
+            [],
+            {#pin: pin},
+          ),
+        )),
+      ) as _i22.Future<_i4.AuthTokenResponse>);
+
+  @override
+  _i22.Future<bool> isLoggedIn() => (super.noSuchMethod(
+        Invocation.method(
+          #isLoggedIn,
+          [],
+        ),
+        returnValue: _i22.Future<bool>.value(false),
+      ) as _i22.Future<bool>);
+
+  @override
+  _i22.Future<_i4.AuthTokenResponse> refreshToken() => (super.noSuchMethod(
+        Invocation.method(
+          #refreshToken,
+          [],
+        ),
+        returnValue:
+            _i22.Future<_i4.AuthTokenResponse>.value(_FakeAuthTokenResponse_2(
+          this,
+          Invocation.method(
+            #refreshToken,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i4.AuthTokenResponse>);
+
+  @override
+  _i22.Future<_i5.UserDetails> userDetails() => (super.noSuchMethod(
+        Invocation.method(
+          #userDetails,
+          [],
+        ),
+        returnValue: _i22.Future<_i5.UserDetails>.value(_FakeUserDetails_3(
+          this,
+          Invocation.method(
+            #userDetails,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i5.UserDetails>);
+
+  @override
+  _i22.Future<_i6.WalletResponse> createWallet() => (super.noSuchMethod(
+        Invocation.method(
+          #createWallet,
+          [],
+        ),
+        returnValue:
+            _i22.Future<_i6.WalletResponse>.value(_FakeWalletResponse_4(
+          this,
+          Invocation.method(
+            #createWallet,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i6.WalletResponse>);
+
+  @override
+  _i22.Future<_i6.WalletResponse> getWallets() => (super.noSuchMethod(
+        Invocation.method(
+          #getWallets,
+          [],
+        ),
+        returnValue:
+            _i22.Future<_i6.WalletResponse>.value(_FakeWalletResponse_4(
+          this,
+          Invocation.method(
+            #getWallets,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i6.WalletResponse>);
+
+  @override
+  _i22.Future<_i7.NetworkDetails> supportedNetworks() => (super.noSuchMethod(
+        Invocation.method(
+          #supportedNetworks,
+          [],
+        ),
+        returnValue:
+            _i22.Future<_i7.NetworkDetails>.value(_FakeNetworkDetails_5(
+          this,
+          Invocation.method(
+            #supportedNetworks,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i7.NetworkDetails>);
+
+  @override
+  _i22.Future<_i8.TokenResponse> supportedTokens({
+    int? page = 1,
+    int? size = 10,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #supportedTokens,
+          [],
+          {
+            #page: page,
+            #size: size,
+          },
+        ),
+        returnValue: _i22.Future<_i8.TokenResponse>.value(_FakeTokenResponse_6(
+          this,
+          Invocation.method(
+            #supportedTokens,
+            [],
+            {
+              #page: page,
+              #size: size,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i8.TokenResponse>);
+
+  @override
+  _i22.Future<_i9.UserPortfolioResponse> userPortfolio() => (super.noSuchMethod(
+        Invocation.method(
+          #userPortfolio,
+          [],
+        ),
+        returnValue: _i22.Future<_i9.UserPortfolioResponse>.value(
+            _FakeUserPortfolioResponse_7(
+          this,
+          Invocation.method(
+            #userPortfolio,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i9.UserPortfolioResponse>);
+
+  @override
+  _i22.Future<_i10.UserPortfolioActivityResponse> getUserPortfolioActivity({
+    int? limit = 10,
+    int? offset = 1,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getUserPortfolioActivity,
+          [],
+          {
+            #limit: limit,
+            #offset: offset,
+          },
+        ),
+        returnValue: _i22.Future<_i10.UserPortfolioActivityResponse>.value(
+            _FakeUserPortfolioActivityResponse_8(
+          this,
+          Invocation.method(
+            #getUserPortfolioActivity,
+            [],
+            {
+              #limit: limit,
+              #offset: offset,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i10.UserPortfolioActivityResponse>);
+
+  @override
+  _i22.Future<_i11.TransferTokenResponse> transferTokens({
+    required String? networkName,
+    String? tokenAddress,
+    required String? quantity,
+    required String? recipientAddress,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #transferTokens,
+          [],
+          {
+            #networkName: networkName,
+            #tokenAddress: tokenAddress,
+            #quantity: quantity,
+            #recipientAddress: recipientAddress,
+          },
+        ),
+        returnValue: _i22.Future<_i11.TransferTokenResponse>.value(
+            _FakeTransferTokenResponse_9(
+          this,
+          Invocation.method(
+            #transferTokens,
+            [],
+            {
+              #networkName: networkName,
+              #tokenAddress: tokenAddress,
+              #quantity: quantity,
+              #recipientAddress: recipientAddress,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i11.TransferTokenResponse>);
+
+  @override
+  _i22.Future<_i12.OrderHistoryResponse> orderHistory({
+    int? offset = 0,
+    int? limit = 1,
+    String? orderId,
+    _i21.OrderState? orderState,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #orderHistory,
+          [],
+          {
+            #offset: offset,
+            #limit: limit,
+            #orderId: orderId,
+            #orderState: orderState,
+          },
+        ),
+        returnValue: _i22.Future<_i12.OrderHistoryResponse>.value(
+            _FakeOrderHistoryResponse_10(
+          this,
+          Invocation.method(
+            #orderHistory,
+            [],
+            {
+              #offset: offset,
+              #limit: limit,
+              #orderId: orderId,
+              #orderState: orderState,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i12.OrderHistoryResponse>);
+
+  @override
+  _i22.Future<_i13.TransferNftResponse> transferNft({
+    required String? operationType,
+    required String? networkName,
+    required String? collectionAddress,
+    required String? collectionName,
+    required String? quantity,
+    required String? recipientAddress,
+    required String? nftAddress,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #transferNft,
+          [],
+          {
+            #operationType: operationType,
+            #networkName: networkName,
+            #collectionAddress: collectionAddress,
+            #collectionName: collectionName,
+            #quantity: quantity,
+            #recipientAddress: recipientAddress,
+            #nftAddress: nftAddress,
+          },
+        ),
+        returnValue: _i22.Future<_i13.TransferNftResponse>.value(
+            _FakeTransferNftResponse_11(
+          this,
+          Invocation.method(
+            #transferNft,
+            [],
+            {
+              #operationType: operationType,
+              #networkName: networkName,
+              #collectionAddress: collectionAddress,
+              #collectionName: collectionName,
+              #quantity: quantity,
+              #recipientAddress: recipientAddress,
+              #nftAddress: nftAddress,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i13.TransferNftResponse>);
+
+  @override
+  _i22.Future<_i14.OrderDetailsNftResponse> orderDetailsNft({
+    int? page = 1,
+    int? size = 500,
+    String? orderId,
+    String? orderState,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #orderDetailsNft,
+          [],
+          {
+            #page: page,
+            #size: size,
+            #orderId: orderId,
+            #orderState: orderState,
+          },
+        ),
+        returnValue: _i22.Future<_i14.OrderDetailsNftResponse>.value(
+            _FakeOrderDetailsNftResponse_12(
+          this,
+          Invocation.method(
+            #orderDetailsNft,
+            [],
+            {
+              #page: page,
+              #size: size,
+              #orderId: orderId,
+              #orderState: orderState,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i14.OrderDetailsNftResponse>);
+
+  @override
+  _i22.Future<_i15.RawTransactionExecuteResponse> rawTransactionExecute({
+    required String? networkName,
+    required Map<String, dynamic>? transaction,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rawTransactionExecute,
+          [],
+          {
+            #networkName: networkName,
+            #transaction: transaction,
+          },
+        ),
+        returnValue: _i22.Future<_i15.RawTransactionExecuteResponse>.value(
+            _FakeRawTransactionExecuteResponse_13(
+          this,
+          Invocation.method(
+            #rawTransactionExecute,
+            [],
+            {
+              #networkName: networkName,
+              #transaction: transaction,
+            },
+          ),
+        )),
+      ) as _i22.Future<_i15.RawTransactionExecuteResponse>);
+
+  @override
+  _i22.Future<_i16.RawTransactionStatusResponse> rawTransactionStatus(
+          {required String? orderId}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #rawTransactionStatus,
+          [],
+          {#orderId: orderId},
+        ),
+        returnValue: _i22.Future<_i16.RawTransactionStatusResponse>.value(
+            _FakeRawTransactionStatusResponse_14(
+          this,
+          Invocation.method(
+            #rawTransactionStatus,
+            [],
+            {#orderId: orderId},
+          ),
+        )),
+      ) as _i22.Future<_i16.RawTransactionStatusResponse>);
+
+  @override
+  _i22.Future<bool> logout() => (super.noSuchMethod(
+        Invocation.method(
+          #logout,
+          [],
+        ),
+        returnValue: _i22.Future<bool>.value(false),
+      ) as _i22.Future<bool>);
+
+  @override
+  _i22.Future<dynamic> openBottomSheet({
+    required _i23.BuildContext? context,
+    double? height = 0.6,
+    String? textPrimaryColor = r'0xFFFFFFFF',
+    String? textSecondaryColor = r'0xFFFFFFFF',
+    String? textTertiaryColor = r'0xFFFFFFFF',
+    String? accentColor = r'0x80433454',
+    String? accent2Color = r'0x80905BF5',
+    String? strokBorderColor = r'0xFFACACAB',
+    String? strokDividerColor = r'0x4DA8A8A8',
+    String? surfaceColor = r'0xFF1F0A2F',
+    String? backgroundColor = r'0xFF000000',
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #openBottomSheet,
+          [],
+          {
+            #context: context,
+            #height: height,
+            #textPrimaryColor: textPrimaryColor,
+            #textSecondaryColor: textSecondaryColor,
+            #textTertiaryColor: textTertiaryColor,
+            #accentColor: accentColor,
+            #accent2Color: accent2Color,
+            #strokBorderColor: strokBorderColor,
+            #strokDividerColor: strokDividerColor,
+            #surfaceColor: surfaceColor,
+            #backgroundColor: backgroundColor,
+          },
+        ),
+        returnValue: _i22.Future<dynamic>.value(),
+      ) as _i22.Future<dynamic>);
 }
 
 /// A class which mocks [HttpClient].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHttpClient extends _i1.Mock implements _i4.HttpClient {
+class MockHttpClient extends _i1.Mock implements _i2.HttpClient {
   MockHttpClient() {
     _i1.throwOnMissingStub(this);
   }
@@ -68,29 +739,29 @@ class MockHttpClient extends _i1.Mock implements _i4.HttpClient {
   @override
   String get apiKey => (super.noSuchMethod(
         Invocation.getter(#apiKey),
-        returnValue: _i5.dummyValue<String>(
+        returnValue: _i20.dummyValue<String>(
           this,
           Invocation.getter(#apiKey),
         ),
       ) as String);
 
   @override
-  _i6.BuildType get buildType => (super.noSuchMethod(
+  _i21.BuildType get buildType => (super.noSuchMethod(
         Invocation.getter(#buildType),
-        returnValue: _i6.BuildType.staging,
-      ) as _i6.BuildType);
+        returnValue: _i21.BuildType.staging,
+      ) as _i21.BuildType);
 
   @override
-  _i2.Client get httpClient => (super.noSuchMethod(
+  _i17.Client get httpClient => (super.noSuchMethod(
         Invocation.getter(#httpClient),
-        returnValue: _FakeClient_0(
+        returnValue: _FakeClient_15(
           this,
           Invocation.getter(#httpClient),
         ),
-      ) as _i2.Client);
+      ) as _i17.Client);
 
   @override
-  _i7.Future<dynamic> post({
+  _i22.Future<dynamic> post({
     required String? endpoint,
     required Map<String, dynamic>? body,
     String? authToken,
@@ -107,32 +778,11 @@ class MockHttpClient extends _i1.Mock implements _i4.HttpClient {
             #additionalHeaders: additionalHeaders,
           },
         ),
-        returnValue: _i7.Future<dynamic>.value(),
-      ) as _i7.Future<dynamic>);
+        returnValue: _i22.Future<dynamic>.value(),
+      ) as _i22.Future<dynamic>);
 
   @override
-  _i7.Future<dynamic> defaultPost({
-    required String? endpoint,
-    required Map<String, dynamic>? body,
-    String? authToken,
-    Map<String, String>? additionalHeaders,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #defaultPost,
-          [],
-          {
-            #endpoint: endpoint,
-            #body: body,
-            #authToken: authToken,
-            #additionalHeaders: additionalHeaders,
-          },
-        ),
-        returnValue: _i7.Future<dynamic>.value(),
-      ) as _i7.Future<dynamic>);
-
-  @override
-  _i7.Future<dynamic> get({
+  _i22.Future<dynamic> get({
     required String? endpoint,
     String? authToken,
     Map<String, String>? additionalHeaders,
@@ -147,47 +797,47 @@ class MockHttpClient extends _i1.Mock implements _i4.HttpClient {
             #additionalHeaders: additionalHeaders,
           },
         ),
-        returnValue: _i7.Future<dynamic>.value(),
-      ) as _i7.Future<dynamic>);
+        returnValue: _i22.Future<dynamic>.value(),
+      ) as _i22.Future<dynamic>);
 }
 
 /// A class which mocks [TokenManager].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTokenManager extends _i1.Mock implements _i8.TokenManager {
+class MockTokenManager extends _i1.Mock implements _i3.TokenManager {
   MockTokenManager() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.FlutterSecureStorage get secureStorage => (super.noSuchMethod(
+  _i18.FlutterSecureStorage get secureStorage => (super.noSuchMethod(
         Invocation.getter(#secureStorage),
-        returnValue: _FakeFlutterSecureStorage_1(
+        returnValue: _FakeFlutterSecureStorage_16(
           this,
           Invocation.getter(#secureStorage),
         ),
-      ) as _i3.FlutterSecureStorage);
+      ) as _i18.FlutterSecureStorage);
 
   @override
-  _i4.HttpClient get httpClient => (super.noSuchMethod(
+  _i2.HttpClient get httpClient => (super.noSuchMethod(
         Invocation.getter(#httpClient),
-        returnValue: _FakeHttpClient_2(
+        returnValue: _FakeHttpClient_0(
           this,
           Invocation.getter(#httpClient),
         ),
-      ) as _i4.HttpClient);
+      ) as _i2.HttpClient);
 
   @override
-  _i7.Future<String?> getAuthToken() => (super.noSuchMethod(
+  _i22.Future<String?> getAuthToken() => (super.noSuchMethod(
         Invocation.method(
           #getAuthToken,
           [],
         ),
-        returnValue: _i7.Future<String?>.value(),
-      ) as _i7.Future<String?>);
+        returnValue: _i22.Future<String?>.value(),
+      ) as _i22.Future<String?>);
 
   @override
-  _i7.Future<void> storeTokens(
+  _i22.Future<void> storeTokens(
     String? authToken,
     String? refreshToken,
     String? deviceToken,
@@ -201,26 +851,32 @@ class MockTokenManager extends _i1.Mock implements _i8.TokenManager {
             deviceToken,
           ],
         ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
+        returnValue: _i22.Future<void>.value(),
+        returnValueForMissingStub: _i22.Future<void>.value(),
+      ) as _i22.Future<void>);
 
   @override
-  _i7.Future<void> refreshToken() => (super.noSuchMethod(
+  _i22.Future<_i4.AuthTokenResponse> refreshToken() => (super.noSuchMethod(
         Invocation.method(
           #refreshToken,
           [],
         ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
+        returnValue:
+            _i22.Future<_i4.AuthTokenResponse>.value(_FakeAuthTokenResponse_2(
+          this,
+          Invocation.method(
+            #refreshToken,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i4.AuthTokenResponse>);
 
   @override
-  _i7.Future<bool> deleteToken() => (super.noSuchMethod(
+  _i22.Future<bool> deleteToken() => (super.noSuchMethod(
         Invocation.method(
           #deleteToken,
           [],
         ),
-        returnValue: _i7.Future<bool>.value(false),
-      ) as _i7.Future<bool>);
+        returnValue: _i22.Future<bool>.value(false),
+      ) as _i22.Future<bool>);
 }
