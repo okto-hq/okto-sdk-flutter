@@ -74,11 +74,11 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
                                           color: Colors.blue,
                                           margin: const EdgeInsets.all(5),
                                           child: ListTile(
-                                            title: Text(
+                                            title: SelectableText(
                                               'Wallet adress: ${wallets.data.wallets[index].address}',
                                               style: const TextStyle(color: Colors.white, fontSize: 20),
                                             ),
-                                            subtitle: Text(
+                                            subtitle: SelectableText(
                                               'Network name: ${wallets.data.wallets[index].networkName}',
                                               style: const TextStyle(color: Colors.white, fontSize: 20),
                                             ),
