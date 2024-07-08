@@ -8,6 +8,7 @@ import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_status_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/token_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/transfer_nft_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
@@ -202,9 +203,9 @@ class Okto {
   }
 
   /// Method to transfer nft
-  /// Returns a [TransferTokenResponse] object
+  /// Returns a [TransferNftResponse] object
   /// Operation Types: "NFT_TRANSFER"
-  Future<TransferTokenResponse> transferNft({
+  Future<TransferNftResponse> transferNft({
     required String operationType,
     required String networkName,
     required String collectionAddress,
@@ -227,7 +228,7 @@ class Okto {
         },
         authToken: authToken);
     print(response);
-    return TransferTokenResponse.fromMap(response);
+    return TransferNftResponse.fromMap(response);
   }
 
   /// Method to get the order details for nft

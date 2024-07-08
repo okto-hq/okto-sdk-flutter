@@ -10,6 +10,7 @@ export 'src/models/client/raw_transaction_execute_model.dart';
 export 'src/models/client/raw_transaction_status_model.dart';
 export 'src/models/client/token_model.dart';
 export 'src/models/client/transfer_token_model.dart';
+export 'src/models/client/transfer_nft_model.dart';
 export 'src/models/client/user_model.dart';
 export 'src/models/client/user_portfilio_activity_model.dart';
 export 'src/models/client/user_portfolio_model.dart';
