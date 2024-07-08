@@ -61,7 +61,6 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                               
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
@@ -70,15 +69,18 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
                                         return Container(
                                           color: Colors.blue,
                                           margin: const EdgeInsets.all(5),
-                                          child: ListTile(
-                                            title: Text(
-                                              'Network name: ${supportedNetworks.data.network[index].networkName}',
-                                              style: const TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
-                                            subtitle: Text(
-                                              'Chain ID : ${supportedNetworks.data.network[index].chainId}',
-                                              style: const TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              SelectableText(
+                                                'Network name: ${supportedNetworks.data.network[index].networkName}',
+                                                style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              ),
+                                              SelectableText(
+                                                'Chain ID : ${supportedNetworks.data.network[index].chainId}',
+                                                style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              ),
+                                            ],
                                           ),
                                         );
                                       }),

@@ -226,6 +226,7 @@ class Okto {
           'nft_address': nftAddress
         },
         authToken: authToken);
+    print(response);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -238,6 +239,7 @@ class Okto {
     final queryParams = {'page': page.toString(), 'size': size.toString(), if (orderId != null) 'order_id': orderId, if (orderState != null) 'order_state': orderState};
     final queryString = Uri(queryParameters: queryParams).query;
     final response = await httpClient.get(endpoint: '/api/v1/nft/order_details?$queryString', authToken: authToken);
+    print(response);
     return OrderDetailsNftResponse.fromMap(response);
   }
 
@@ -250,6 +252,7 @@ class Okto {
       body: {'network_name': networkName, 'transaction': transaction},
       authToken: authToken,
     );
+    print(response);
     return RawTransactionExecuteResponse.fromMap(response);
   }
 

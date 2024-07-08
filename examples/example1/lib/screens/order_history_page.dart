@@ -61,6 +61,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text('Status: ${orderHistory.status}'),
+                                Text('Total: ${orderHistory.data.total}'),
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
