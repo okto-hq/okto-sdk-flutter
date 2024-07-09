@@ -31,3 +31,6 @@
 
 ## 0.0.9
 - Fix: Network Name not accessible in `createWallet` or `getWallets`.
+
+## 0.0.10
+- Fix: Raw Transaction Execute in example app

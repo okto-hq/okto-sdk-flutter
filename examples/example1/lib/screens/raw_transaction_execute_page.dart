@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,9 +18,7 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
   Future<RawTransactionExecuteResponse>? _rawTransactionExecuted;
 
   Future<RawTransactionExecuteResponse> rawTransactionExecute() async {
-    final transactionObject = {
-      'transaction': transactionObjectController.text
-    };
+    final transactionObject = jsonDecode(transactionObjectController.text);
     try {
       final orderHistory = await okto!.rawTransactionExecute(networkName: networkNameController.text, transaction: transactionObject);
       return orderHistory;
