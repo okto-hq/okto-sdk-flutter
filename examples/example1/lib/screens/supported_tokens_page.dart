@@ -72,15 +72,15 @@ class _SupportedTokensPageState extends State<SupportedTokensPage> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
+                                              SelectableText(
                                                 'Network name: ${supportedTokens.data.tokens[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
-                                              Text(
+                                              SelectableText(
                                                 'Token address : ${supportedTokens.data.tokens[index].tokenAddress}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
-                                               Text(
+                                               SelectableText(
                                                 'Token name : ${supportedTokens.data.tokens[index].tokenName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
