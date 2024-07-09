@@ -34,3 +34,6 @@
 
 ## 0.0.10
 - Fix: Raw Transaction Execute in example app
+
+## 0.0.11
+- Added okto widget support in sandbox and staging buildtype. 
