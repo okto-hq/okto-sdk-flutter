@@ -73,15 +73,18 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
                                         return Container(
                                           color: Colors.blue,
                                           margin: const EdgeInsets.all(5),
-                                          child: ListTile(
-                                            title: Text(
-                                              'Wallet adress: ${createdWallet.data.wallets[index].address}',
-                                              style: const TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
-                                            subtitle: Text(
-                                              'Network name: ${createdWallet.data.wallets[index].networkName}',
-                                              style: const TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              SelectableText(
+                                                'Wallet adress: ${createdWallet.data.wallets[index].address}',
+                                                style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              ),
+                                              SelectableText(
+                                                'Network name: ${createdWallet.data.wallets[index].networkName}',
+                                                style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              ),
+                                            ],
                                           ),
                                         );
                                       }),

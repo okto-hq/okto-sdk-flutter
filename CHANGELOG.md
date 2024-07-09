@@ -28,3 +28,6 @@
 ## 0.0.8
 - Exposed the `refreshToken` method, which returns `AuthTokenResponse`.
 - Fix: Google Authentication
+
+## 0.0.9
+- Fix: Network Name not accessible in `createWallet` or `getWallets`.

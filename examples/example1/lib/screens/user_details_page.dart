@@ -61,7 +61,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                SelectableText(
                                   'User ID: ${userDetails.data.userId}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
@@ -70,7 +70,18 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                   'Email: ${userDetails.data.email}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
-                                // Add more fields here as needed
+                                SelectableText(
+                                  'Created At: ${userDetails.data.createdAt}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                ),
+                                SelectableText(
+                                  'Freezed: ${userDetails.data.freezed.toString()}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                ),
+                                SelectableText(
+                                  'Freezed Reason: ${userDetails.data.freezeReason}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                ),
                               ],
                             ),
                           );

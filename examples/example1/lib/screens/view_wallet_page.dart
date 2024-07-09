@@ -10,7 +10,7 @@ class ViewWalletPage extends StatefulWidget {
 }
 
 class _ViewWalletPageState extends State<ViewWalletPage> {
-    Future<WalletResponse>? _wallets;
+  Future<WalletResponse>? _wallets;
 
   Future<WalletResponse> fetchWallets() async {
     try {
@@ -73,15 +73,18 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
                                         return Container(
                                           color: Colors.blue,
                                           margin: const EdgeInsets.all(5),
-                                          child: ListTile(
-                                            title: Text(
-                                              'Wallet adress: ${wallets.data.wallets[index].address}',
-                                              style: const TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
-                                            subtitle: Text(
-                                              'Network name: ${wallets.data.wallets[index].networkName}',
-                                              style: const TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              SelectableText(
+                                                'Wallet adress: ${wallets.data.wallets[index].address}',
+                                                style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              ),
+                                              SelectableText(
+                                                'Network name: ${wallets.data.wallets[index].networkName}',
+                                                style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              ),
+                                            ],
                                           ),
                                         );
                                       }),

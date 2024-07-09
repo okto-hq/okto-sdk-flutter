@@ -28,24 +28,24 @@ class OrderDetailsNftResponse {
 }
 
 class OrderDetailsNftData {
-  final int count;
-  final List<Nfts> nfts;
+  final int total;
+  final List<Details> details;
   OrderDetailsNftData({
-    required this.count,
-    required this.nfts,
+    required this.total,
+    required this.details,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'count': count,
-      'nfts': nfts.map((x) => x.toMap()).toList(),
+      'total': total,
+      'details': details.map((x) => x.toMap()).toList(),
     };
   }
 
   factory OrderDetailsNftData.fromMap(Map<String, dynamic> map) {
     return OrderDetailsNftData(
-      count: map['count']?.toInt() ?? 0,
-      nfts: List<Nfts>.from(map['nfts']?.map((x) => Nfts.fromMap(x))),
+      total: map['total']?.toInt() ?? 0,
+      details: List<Details>.from(map['details']?.map((x) => Details.fromMap(x))),
     );
   }
 
@@ -54,7 +54,7 @@ class OrderDetailsNftData {
   factory OrderDetailsNftData.fromJson(String source) => OrderDetailsNftData.fromMap(json.decode(source));
 }
 
-class Nfts {
+class Details {
   final String explorerSmartContractUrl;
   final String desctiption;
   final String type;
@@ -69,7 +69,7 @@ class Nfts {
   final String networkName;
   final String networkId;
   final String nftName;
-  Nfts({
+  Details({
     required this.explorerSmartContractUrl,
     required this.desctiption,
     required this.type,
@@ -105,8 +105,8 @@ class Nfts {
     };
   }
 
-  factory Nfts.fromMap(Map<String, dynamic> map) {
-    return Nfts(
+  factory Details.fromMap(Map<String, dynamic> map) {
+    return Details(
       explorerSmartContractUrl: map['explorer_smart_contract_url'] ?? '',
       desctiption: map['desctiption'] ?? '',
       type: map['type'] ?? '',
@@ -126,5 +126,5 @@ class Nfts {
 
   String toJson() => json.encode(toMap());
 
-  factory Nfts.fromJson(String source) => Nfts.fromMap(json.decode(source));
+  factory Details.fromJson(String source) => Details.fromMap(json.decode(source));
 }
