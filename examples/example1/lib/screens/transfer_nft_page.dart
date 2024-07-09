@@ -11,15 +11,15 @@ class TransferNftPage extends StatefulWidget {
 
 class _TransferNftPageState extends State<TransferNftPage> {
   final operationTypeController = TextEditingController(text: 'NFT_TRANSFER');
-  final networkNameController = TextEditingController(text: 'APTOS TESTNET');
-  final collectionAddressController = TextEditingController(text: '0x171e643e8e8dabc66b838b9055dbdf88647cf6601b164f5987f50a497bedfbe1');
-  final collectionNameController = TextEditingController(text: 'super avengers');
-  final quantityController = TextEditingController(text: "1");
-  final recipientAddressController = TextEditingController(text: '0x7c0c2c20facfd3a321d82da7b3c2fcd5e75a3e5d8226ce26c5533f2342e57e0b');
-  final nftAddressController = TextEditingController(text: '0x719dad0b2800205ab7bff539bd617b04e21fe311bc30fce6d6d2d3beecd8a14e');
+  final networkNameController = TextEditingController();
+  final collectionAddressController = TextEditingController();
+  final collectionNameController = TextEditingController();
+  final quantityController = TextEditingController();
+  final recipientAddressController = TextEditingController();
+  final nftAddressController = TextEditingController();
 
-  Future<TransferTokenResponse>? _transferNft;
-  Future<TransferTokenResponse> transferNft() async {
+  Future<TransferNftResponse>? _transferNft;
+  Future<TransferNftResponse> transferNft() async {
     try {
       final transferNft = await okto!.transferNft(
           networkName: networkNameController.text,
@@ -51,13 +51,34 @@ class _TransferNftPageState extends State<TransferNftPage> {
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
               ),
             ),
-            TextField(controller: operationTypeController),
-            TextField(controller: networkNameController),
-            TextField(controller: collectionAddressController),
-            TextField(controller: collectionNameController),
-            TextField(controller: quantityController),
-            TextField(controller: recipientAddressController),
-            TextField(controller: nftAddressController),
+            TextField(
+              controller: operationTypeController,
+              decoration: const InputDecoration(label: Text('Operation Type')),
+            ),
+            TextField(
+              controller: networkNameController,
+              decoration: const InputDecoration(label: Text('Network Name')),
+            ),
+            TextField(
+              controller: collectionAddressController,
+              decoration: const InputDecoration(label: Text('Collection Address')),
+            ),
+            TextField(
+              controller: collectionNameController,
+              decoration: const InputDecoration(label: Text('Collection Name')),
+            ),
+            TextField(
+              controller: quantityController,
+              decoration: const InputDecoration(label: Text('Quantity')),
+            ),
+            TextField(
+              controller: recipientAddressController,
+              decoration: const InputDecoration(label: Text('Recipient Address')),
+            ),
+            TextField(
+              controller: nftAddressController,
+              decoration: const InputDecoration(label: Text('Nft address')),
+            ),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -69,7 +90,7 @@ class _TransferNftPageState extends State<TransferNftPage> {
             Expanded(
               child: _transferNft == null
                   ? Container()
-                  : FutureBuilder<TransferTokenResponse>(
+                  : FutureBuilder<TransferNftResponse>(
                       future: _transferNft,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

@@ -11,53 +11,16 @@ class RawTransactioneExecutePage extends StatefulWidget {
 }
 
 class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage> {
-  final networkName = 'SOLANA_DEVNET';
-  final TextEditingController instructionsController = TextEditingController(text: '''
-    [
-      {
-        "keys": [
-          {
-            "pubkey": "GQkXkHF8LTwyZiZUcBWwYJeJBFEqR4vRCV4J5Xe7zGiQ",
-            "isSigner": true,
-            "isWritable": true
-          },
-          {
-            "pubkey": "GEjBy2puN8a53darpz7CTbRvSb6wepzhK7s8C3Dww4yg",
-            "isSigner": false,
-            "isWritable": true
-          }
-        ],
-        "programId": "11111111111111111111111111111111",
-        "data": [
-          2,
-          0,
-          0,
-          0,
-          128,
-          150,
-          152,
-          0,
-          0,
-          0,
-          0,
-          0
-        ]
-      }
-    ]
-    ''');
-  final TextEditingController signersController = TextEditingController(text: '["GQkXkHF8LTwyZiZUcBWwYJeJBFEqR4vRCV4J5Xe7zGiQ"]');
-
+  final networkNameController = TextEditingController();
+  final transactionObjectController = TextEditingController();
   Future<RawTransactionExecuteResponse>? _rawTransactionExecuted;
 
   Future<RawTransactionExecuteResponse> rawTransactionExecute() async {
     final transactionObject = {
-      'transaction': {
-        'instructions': instructionsController.text,
-        'signers': signersController.text,
-      },
+      'transaction': transactionObjectController.text
     };
     try {
-      final orderHistory = await okto!.rawTransactionExecute(networkName: networkName, transaction: transactionObject);
+      final orderHistory = await okto!.rawTransactionExecute(networkName: networkNameController.text, transaction: transactionObject);
       return orderHistory;
     } catch (e) {
       throw Exception(e);
@@ -77,6 +40,25 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
               child: const Text(
                 'Raw Transaction Execute',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+              ),
+            ),
+            TextField(
+              controller: networkNameController,
+              decoration: const InputDecoration(
+                fillColor: Colors.white,
+                hintText: 'Network Name',
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: TextField(
+                maxLines: null,
+                controller: transactionObjectController,
+                decoration: const InputDecoration(
+                  fillColor: Colors.white,
+                  hintText: 'Enter the transaction JSON for the network',
+                ),
               ),
             ),
             ElevatedButton(

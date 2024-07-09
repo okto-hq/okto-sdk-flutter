@@ -10,10 +10,10 @@ class TransferTokensPage extends StatefulWidget {
 }
 
 class _TransferTokensPageState extends State<TransferTokensPage> {
-  final networkNameController = TextEditingController(text: 'APTOS TESTNET');
-  final tokenAddressController = TextEditingController(text: '0x2f7b97837f2d14ba2ed3a4b2282e259126a9b848');
-  final quantityController = TextEditingController(text: '0.0001');
-  final recipientAddressController = TextEditingController(text: '0x8ff71ae16c88d86f5ec4100951f37a50683e8cd23ca515894854fcfc4ab7399b');
+  final networkNameController = TextEditingController();
+  final tokenAddressController = TextEditingController();
+  final quantityController = TextEditingController();
+  final recipientAddressController = TextEditingController();
 
   Future<TransferTokenResponse>? _transferToken;
 
@@ -46,10 +46,22 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
               ),
             ),
-            TextField(controller: networkNameController),
-            TextField(controller: tokenAddressController),
-            TextField(controller: quantityController),
-            TextField(controller: recipientAddressController),
+            TextField(
+              controller: networkNameController,
+              decoration: const InputDecoration(label: Text('Network Name')),
+            ),
+            TextField(
+              controller: tokenAddressController,
+              decoration: const InputDecoration(label: Text('Token Address (Not mandatory)')),
+            ),
+            TextField(
+              controller: quantityController,
+              decoration: const InputDecoration(label: Text('Quantity')),
+            ),
+            TextField(
+              controller: recipientAddressController,
+              decoration: const InputDecoration(label: Text('Recipient Address')),
+            ),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -75,7 +87,7 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                SelectableText(
                                   'Order ID: ${transferTokenResponse.data.orderId}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),

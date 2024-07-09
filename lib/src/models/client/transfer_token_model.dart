@@ -35,13 +35,13 @@
 
     Map<String, dynamic> toMap() {
       return {
-        'order_id': orderId,
+        'orderId': orderId,
       };
     }
 
     factory TransferTokenData.fromMap(Map<String, dynamic> map) {
       return TransferTokenData(
-        orderId: map['order_id'] ?? '',
+        orderId: map['orderId'] ?? '',
       );
     }
 

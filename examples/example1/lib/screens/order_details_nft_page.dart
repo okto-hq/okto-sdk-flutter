@@ -61,10 +61,18 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  'Status: ${orderDetails.status}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                ),
+                                Text(
+                                  'Total: ${orderDetails.data.total}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                ),
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: orderDetails.data.nfts.length,
+                                      itemCount: orderDetails.data.details.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -73,51 +81,51 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Collection Address: ${orderDetails.data.nfts[index].collectionAddress}',
+                                                'Collection Address: ${orderDetails.data.details[index].collectionAddress}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Collection Id : ${orderDetails.data.nfts[index].collectionId}',
+                                                'Collection Id : ${orderDetails.data.details[index].collectionId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Collection Image : ${orderDetails.data.nfts[index].collectionImage}',
+                                                'Collection Image : ${orderDetails.data.details[index].collectionImage}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Collection Name : ${orderDetails.data.nfts[index].collectionName}',
+                                                'Collection Name : ${orderDetails.data.details[index].collectionName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Description : ${orderDetails.data.nfts[index].desctiption}',
+                                                'Description : ${orderDetails.data.details[index].desctiption}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Explorer Smart Contract Url: ${orderDetails.data.nfts[index].explorerSmartContractUrl}',
+                                                'Explorer Smart Contract Url: ${orderDetails.data.details[index].explorerSmartContractUrl}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Id : ${orderDetails.data.nfts[index].id}',
+                                                'Id : ${orderDetails.data.details[index].id}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Network Id: ${orderDetails.data.nfts[index].networkId}',
+                                                'Network Id: ${orderDetails.data.details[index].networkId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Network Name: ${orderDetails.data.nfts[index].networkName}',
+                                                'Network Name: ${orderDetails.data.details[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Nft Name: ${orderDetails.data.nfts[index].nftName}',
+                                                'Nft Name: ${orderDetails.data.details[index].nftName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Nft Token Id: ${orderDetails.data.nfts[index].nftTokenId}',
+                                                'Nft Token Id: ${orderDetails.data.details[index].nftTokenId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Type: ${orderDetails.data.nfts[index].type}',
+                                                'Type: ${orderDetails.data.details[index].type}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],

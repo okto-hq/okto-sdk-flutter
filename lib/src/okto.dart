@@ -8,6 +8,7 @@ import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_status_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/token_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/transfer_nft_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
@@ -163,10 +164,10 @@ class Okto {
   /// Method to transfer tokens from one wallet to another
   /// Returns a [TransferTokenResponse] object
   /// Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
-  Future<TransferTokenResponse> transferTokens({required String networkName, required String tokenAddress, required String quantity, required String recipientAddress}) async {
+  Future<TransferTokenResponse> transferTokens({required String networkName, String? tokenAddress, required String quantity, required String recipientAddress}) async {
     final authToken = await tokenManager.getAuthToken();
     final body = {"network_name": networkName, "token_address": tokenAddress, "quantity": quantity, "recipient_address": recipientAddress};
-    final response = await httpClient.post(endpoint: '/api/v1/transfers/tokens/execute', body: body, authToken: authToken);
+    final response = await httpClient.post(endpoint: '/api/v1/transfer/tokens/execute', body: body, authToken: authToken);
     return TransferTokenResponse.fromMap(response);
   }
 
@@ -194,9 +195,9 @@ class Okto {
   }
 
   /// Method to transfer nft
-  /// Returns a [TransferTokenResponse] object
+  /// Returns a [TransferNftResponse] object
   /// Operation Types: "NFT_TRANSFER"
-  Future<TransferTokenResponse> transferNft({
+  Future<TransferNftResponse> transferNft({
     required String operationType,
     required String networkName,
     required String collectionAddress,
@@ -218,7 +219,7 @@ class Okto {
           'nft_address': nftAddress
         },
         authToken: authToken);
-    return TransferTokenResponse.fromMap(response);
+    return TransferNftResponse.fromMap(response);
   }
 
   /// Method to get the order details for nft

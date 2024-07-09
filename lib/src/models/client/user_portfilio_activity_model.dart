@@ -64,6 +64,7 @@ class Activity {
   final String description;
   final String quantity;
   final String orderType;
+  final String orderState;
   final String transferType;
   final String status;
   final int timestamp;
@@ -82,6 +83,7 @@ class Activity {
     required this.description,
     required this.quantity,
     required this.orderType,
+    required this.orderState,
     required this.transferType,
     required this.status,
     required this.timestamp,
@@ -103,10 +105,11 @@ class Activity {
       'description': description,
       'quantity': quantity,
       'order_type': orderType,
+      'order_state': orderState,
       'transfer_type': transferType,
       'status': status,
       'timestamp': timestamp,
-      'tx_hash': txHash,
+      'transaction_hash': txHash,
       'network_id': networkId,
       'network_name': networkName,
       'network_explorer_url': networkExplorerUrl,
@@ -125,10 +128,11 @@ class Activity {
       description: map['description'] ?? '',
       quantity: map['quantity'] ?? '',
       orderType: map['order_type'] ?? '',
+      orderState: map['order_state'] ?? '',
       transferType: map['transfer_type'] ?? '',
       status: map['status'] ?? '',
       timestamp: map['timestamp']?.toInt() ?? 0,
-      txHash: map['tx_hash'] ?? '',
+      txHash: map['transaction_hash'] ?? '',
       networkId: map['network_id'] ?? '',
       networkName: map['network_name'] ?? '',
       networkExplorerUrl: map['network_explorer_url'] ?? '',

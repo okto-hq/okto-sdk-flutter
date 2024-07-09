@@ -61,7 +61,7 @@ class Wallet {
 
   Map<String, dynamic> toMap() {
     return {
-      'network_Name': networkName,
+      'network_name': networkName,
       'address': address,
       'success': success,
     };
@@ -69,7 +69,7 @@ class Wallet {
 
   factory Wallet.fromMap(Map<String, dynamic> map) {
     return Wallet(
-      networkName: map['network_Name'] ?? '',
+      networkName: map['network_name'] ?? '',
       address: map['address'] ?? '',
       success: map['success'] ?? false,
     );

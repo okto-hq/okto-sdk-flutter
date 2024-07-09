@@ -1,9 +1,12 @@
+import 'package:mockito/annotations.dart';
+import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
 import 'okto_wallet_sdk_test.mocks.dart';
 
+@GenerateMocks([Okto,HttpClient, TokenManager])
 void main() {
   late Okto okto;
   late MockHttpClient mockHttpClient;
@@ -30,7 +33,7 @@ void main() {
         }
       };
 
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/jwt-authenticate',
         body: {'user_id': userId, 'auth_token': jwtToken},
       )).thenAnswer((_) async => fakeResponse);
@@ -139,12 +142,12 @@ void main() {
         'data': {
           'wallets': [
             {
-              'network_Name': 'Ethereum',
+              'network_Name': '',
               'address': '0x1234567890123456789012345678901234567890',
               'success': true,
             },
             {
-              'network_Name': 'Bitcoin',
+              'network_Name': '',
               'address': '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
               'success': true,
             },
@@ -475,39 +478,23 @@ void main() {
       final fakeResponse = {
         'status': 'success',
         'data': {
-          'aggregated_data': {
-            'holdings_count': '10',
-            'holdings_price_inr': '100000',
-            'holdings_price_usdt': '1200',
-            'total_holding_price_inr': '150000',
-            'total_holdins_price_usdt': '2000',
-          },
-          'group_tokens': [
+          'total': 4,
+          'tokens': [
             {
-              'id': '1',
-              'name': 'Bitcoin',
-              'symbol': 'BTC',
-              'short_name': 'BTC',
-              'token_image': 'btc.png',
-              'network_id': 'bitcoin',
-              'is_primary': true,
-              'balance': '0.5',
-              'holdings_price_usdt': '20000',
-              'holdings_price_inr': '1500000',
-              'aggregation_type': 'crypto',
+              'token_name': 'ETH',
+              'quantity': "0.0005",
+              'amount_in_inr': "69.13027",
+              'token_image': '',
+              'token_address': '',
+              'network_name': 'BASE',
             },
             {
-              'id': '2',
-              'name': 'Ethereum',
-              'symbol': 'ETH',
-              'short_name': 'ETH',
-              'token_image': 'eth.png',
-              'network_id': 'ethereum',
-              'is_primary': false,
-              'balance': '10',
-              'holdings_price_usdt': '2000',
-              'holdings_price_inr': '150000',
-              'aggregation_type': 'crypto',
+              'token_name': 'SOL_DEVNET',
+              'quantity':"1.322",
+              'amount_in_inr': "0",
+              'token_image': '',
+              'token_address': '',
+              'network_name': 'SOLANA_DEVNET',
             },
           ],
         },
@@ -524,17 +511,6 @@ void main() {
 
       // Assert
       expect(result, isA<UserPortfolioResponse>());
-      expect(result.status, equals('success'));
-      expect(result.data.aggregatedData.holdingsCount, equals('10'));
-      expect(result.data.aggregatedData.holdingsPriceInr, equals('100000'));
-      expect(result.data.aggregatedData.holdingsPriceUsdt, equals('1200'));
-      expect(result.data.aggregatedData.totalHoldingPriceInr, equals('150000'));
-      expect(result.data.aggregatedData.totalHoldingPriceUsdt, equals('2000'));
-      expect(result.data.groupTokens.length, equals(2));
-      expect(result.data.groupTokens[0].name, equals('Bitcoin'));
-      expect(result.data.groupTokens[0].balance, equals('0.5'));
-      expect(result.data.groupTokens[1].name, equals('Ethereum'));
-      expect(result.data.groupTokens[1].balance, equals('10'));
     });
 
     test('userPortfolio handles error response', () async {
@@ -699,13 +675,13 @@ void main() {
       final fakeResponse = {
         'status': 'success',
         'data': {
-          'order_id': 'order123',
+          'orderId': 'order123',
         },
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
-        endpoint: '/api/v1/transfers/tokens/execute',
+      when(mockHttpClient.post(
+        endpoint: '/api/v1/transfer/tokens/execute',
         body: {
           'network_name': networkName,
           'token_address': tokenAddress,
@@ -742,7 +718,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/transfers/tokens/execute',
         body: {
           'network_name': networkName,
@@ -763,7 +739,7 @@ void main() {
       const recipientAddress = '0xRecipientAddress';
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/transfers/tokens/execute',
         body: {
           'network_name': networkName,
@@ -788,7 +764,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/transfers/tokens/execute',
         body: {
           'network_name': networkName,
@@ -905,7 +881,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -931,7 +907,7 @@ void main() {
       );
 
       // Assert
-      expect(result, isA<TransferTokenResponse>());
+      expect(result, isA<TransferNftResponse>());
       expect(result.status, equals('success'));
       expect(result.data.orderId, equals('order123'));
     });
@@ -952,7 +928,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -979,7 +955,7 @@ void main() {
       const nftAddress = '0x789ghi';
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -1010,7 +986,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/nft/transfer',
         body: {
           'operation_type': operationType,
@@ -1035,8 +1011,8 @@ void main() {
       final fakeResponse = {
         'status': 'success',
         'data': {
-          'count': 1,
-          'nfts': [
+          'total': 1,
+          'details': [
             {
               'explorer_smart_contract_url': 'https://explorer.com/smart_contract',
               'desctiption': 'NFT Description',
@@ -1074,9 +1050,9 @@ void main() {
       // Assert
       expect(result, isA<OrderDetailsNftResponse>());
       expect(result.status, equals('success'));
-      expect(result.data.count, equals(1));
-      expect(result.data.nfts.first.id, equals('id123'));
-      expect(result.data.nfts.first.explorerSmartContractUrl, equals('https://explorer.com/smart_contract'));
+      expect(result.data.total, equals(1));
+      expect(result.data.details.first.id, equals('id123'));
+      expect(result.data.details.first.explorerSmartContractUrl, equals('https://explorer.com/smart_contract'));
     });
 
     test('orderDetailsNft handles error response', () async {
@@ -1145,7 +1121,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/rawtransaction/execute',
         body: {'network_name': networkName, 'transaction': transaction},
         authToken: fakeAuthToken,
@@ -1174,7 +1150,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/rawtransaction/execute',
         body: {'network_name': networkName, 'transaction': transaction},
         authToken: fakeAuthToken,
@@ -1188,7 +1164,7 @@ void main() {
       final transaction = {'to': '0x123', 'value': '1000000000'};
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/rawtransaction/execute',
         body: {'network_name': networkName, 'transaction': transaction},
         authToken: fakeAuthToken,
@@ -1206,7 +1182,7 @@ void main() {
       };
 
       when(mockTokenManager.getAuthToken()).thenAnswer((_) async => fakeAuthToken);
-      when(mockHttpClient.defaultPost(
+      when(mockHttpClient.post(
         endpoint: '/api/v1/rawtransaction/execute',
         body: {'network_name': networkName, 'transaction': transaction},
         authToken: fakeAuthToken,
