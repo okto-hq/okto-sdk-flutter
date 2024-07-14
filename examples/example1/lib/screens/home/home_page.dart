@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                         child: const Text('Raw Transaction Status')),
                     ElevatedButton(
                         onPressed: () async {
-                          await okto!.openBottomSheet(context: context, height: 0.7);
+                          await okto!.openBottomSheet(context: context);
                         },
                         child: const Text('Open BottomSheet')),
                   ],
