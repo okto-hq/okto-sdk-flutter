@@ -263,19 +263,13 @@ class Okto {
     return result;
   }
 
-  /// Show Bottom Sheet
-  Future<void> openBottomSheet({
+  Future openBottomSheet({
     required BuildContext context,
 
     /// Initial height of the bottom sheet
     /// Ranges from 0.1 to 1.0
-    double height = 0.6,
-
-    /// Default value is 0
-    double marginFromBottom = 0,
-
-    /// Color of the dragger
-    Color draggerColor = Colors.grey,
+    /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
+    double height = 0.7,
     String textPrimaryColor = '0xFFFFFFFF',
     String textSecondaryColor = '0xFFFFFFFF',
     String textTertiaryColor = '0xFFFFFFFF',
@@ -286,6 +280,8 @@ class Okto {
     String surfaceColor = '0xFF1F0A2F',
     String backgroundColor = '0xFF000000',
   }) async {
+    final WebViewController controller = WebViewController();
+    final authToken = await tokenManager.getAuthToken();
     String buildtype = '';
     switch (buildType) {
       case BuildType.sandbox:
@@ -298,94 +294,58 @@ class Okto {
         buildtype = 'PRODUCTION';
         break;
     }
-    final WebViewController controller = WebViewController();
-    final authToken = await tokenManager.getAuthToken();
 
     String getInjectedJs() {
       String injectJs = '''
-      window.localStorage.setItem('ENVIRONMENT', '$buildtype');
-      window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
-      window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
-      window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
-      window.localStorage.setItem('accentColor', '$accentColor');
-      window.localStorage.setItem('accent2Color', '$accent2Color');
-      window.localStorage.setItem('strokBorderColor', '$strokBorderColor');
-      window.localStorage.setItem('strokDividerColor', '$strokDividerColor');
-      window.localStorage.setItem('surfaceColor', '$surfaceColor');
-      window.localStorage.setItem('backgroundColor', '$backgroundColor');
-    ''';
+    window.localStorage.setItem('ENVIRONMENT', '$buildtype');
+    window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
+    window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
+    window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
+    window.localStorage.setItem('accentColor', '$accentColor');
+    window.localStorage.setItem('accent2Color', '$accent2Color');
+    window.localStorage.setItem('strokBorderColor', '$strokBorderColor');
+    window.localStorage.setItem('strokDividerColor', '$strokDividerColor');
+    window.localStorage.setItem('surfaceColor', '$surfaceColor');
+    window.localStorage.setItem('backgroundColor', '$backgroundColor');
+  ''';
+
       if (authToken != null) {
         injectJs += "window.localStorage.setItem('authToken', '$authToken');";
       }
       return injectJs;
     }
 
-    controller
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..enableZoom(false)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {},
-          onPageStarted: (String url) {
-            controller.runJavaScript(getInjectedJs());
-          },
-          onPageFinished: (String url) {},
-          onWebResourceError: (WebResourceError error) {},
-        ),
-      )
-      ..enableZoom(false)
-      ..loadRequest(Uri.parse('https://3p.okto.tech/'));
-
     await showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
       context: context,
+      enableDrag: false,
+      useSafeArea: true,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: marginFromBottom),
-          child: DraggableScrollableSheet(
-            initialChildSize: height,
-            minChildSize: height,
-            maxChildSize: 1.0,
-            expand: false,
-            builder: (_, ScrollController scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Color(int.parse(backgroundColor)),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                child: CustomScrollView(
-                  controller: scrollController,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 25,
-                        child: Center(
-                          child: Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: draggerColor,
-                              borderRadius: BorderRadius.circular(2.5),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SliverFillRemaining(
-                      child: WebViewWidget(
-                        controller: controller,
-                        gestureRecognizers: {
-                          Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer()),
-                          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+        controller
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onProgress: (int progress) {},
+              onPageStarted: (String url) {
+                controller.runJavaScript(getInjectedJs());
+              },
+              onPageFinished: (String url) {},
+              onHttpError: (HttpResponseError error) {},
+              onWebResourceError: (WebResourceError error) {},
+            ),
+          )
+          ..loadRequest(Uri.parse('https://3p.okto.tech/'));
+
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * height,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            child: WebViewWidget(
+              controller: controller,
+            ),
           ),
         );
       },
