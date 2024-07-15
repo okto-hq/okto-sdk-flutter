@@ -37,3 +37,7 @@
 
 ## 0.0.11
 - Added okto widget support in sandbox and staging buildtype. 
+
+## 0.0.12
+- Improved Scrolling on okto bottom sheet.
+- Lowered the requirement of dio version
