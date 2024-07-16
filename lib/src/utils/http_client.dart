@@ -29,7 +29,7 @@ class HttpClient {
         data: body,
       );
       return response.data;
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       if (e.response != null) {
         // The server responded with an error
         throw ApiException(e.response!.statusCode ?? 500, e.response!.data.toString());
