@@ -41,3 +41,6 @@
 ## 0.0.12
 - Improved Scrolling on okto bottom sheet.
 - Lowered the requirement of dio version
+
+## 0.0.13
+- Changed `DioException` to `DioError`
