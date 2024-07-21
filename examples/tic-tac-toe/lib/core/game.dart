@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:tictactoe/constants/colors.dart';
+import 'package:tictactoe/lost_screen.dart';
 import 'package:tictactoe/utils/okto.dart';
 import 'package:tictactoe/utils/structs.dart';
 import 'package:tictactoe/core/widgets.dart';
@@ -15,6 +16,7 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   Future<UserDetails>? _userDetails;
   Future<WalletResponse>? _createdWallet;
+  Future<UserPortfolioResponse>? _userPortfolio;
 
   Future<UserDetails> fetchUserDetails() async {
     try {
@@ -34,6 +36,15 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
+  Future<UserPortfolioResponse> getuserPortfolio() async {
+    try {
+      final userPortfolio = await okto!.userPortfolio();
+      return userPortfolio;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   static const String p1 = "X", p2 = "O";
   late String currPlay;
   late bool gameEnd;
@@ -45,6 +56,7 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       _userDetails = fetchUserDetails();
       _createdWallet = createWallets();
+      _userPortfolio = getuserPortfolio();
     });
     super.initState();
   }
@@ -89,20 +101,7 @@ class _GamePageState extends State<GamePage> {
                                   child: Text(
                                     'Player associated with ${userDetails.data.email} email is playing as Player X\nIf the player X loses the game, they have to transfer 0.01 MATIC to the player 0 on POLYGON_TESTNET_AMOY',
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(color: primaryColor, fontSize: 12),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: const Text(
-                                    'Make sure you have some MATIC airdropped to your account on POLYGON_TESTNET_AMOY',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: primaryColor, fontSize: 12),
+                                    style: const TextStyle(color: primaryColor, fontSize: 10),
                                   ),
                                 ),
                               ],
@@ -118,7 +117,7 @@ class _GamePageState extends State<GamePage> {
                       future: _createdWallet,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                          return Container();
                         } else if (snapshot.hasError) {
                           return Center(child: Text('Error: ${snapshot.error}'));
                         } else if (snapshot.hasData) {
@@ -129,18 +128,57 @@ class _GamePageState extends State<GamePage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                for(var wallet in wallets)if(wallet.networkName == 'POLYGON_TESTNET_AMOY') Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: SelectableText(
-                                    'Wallet address of POLYGON_TESTNET_AMOY: ${wallet.address}',
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(color: primaryColor, fontSize: 12),
-                                  ),
-                                ),
+                                for (var wallet in wallets)
+                                  if (wallet.networkName == 'POLYGON_TESTNET_AMOY')
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: SelectableText(
+                                        'Wallet address of your POLYGON_TESTNET_AMOY: ${wallet.address}\nMake sure you have some MATIC airdropped to your account on POLYGON_TESTNET_AMOY',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(color: primaryColor, fontSize: 10),
+                                      ),
+                                    ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+              _userPortfolio == null
+                  ? Container()
+                  : FutureBuilder<UserPortfolioResponse>(
+                      future: _userPortfolio,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final userPortfolio = snapshot.data!;
+                          return Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (var token in userPortfolio.data.tokens)
+                                  if (token.networkName == 'POLYGON_TESTNET_AMOY' && token.tokenName == 'MATIC')
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: SelectableText(
+                                        'Current Matic : ${token.quantity}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(color: primaryColor, fontSize: 10),
+                                      ),
+                                    ),
                               ],
                             ),
                           );
@@ -184,8 +222,8 @@ class _GamePageState extends State<GamePage> {
   void checkForWinner() {
     for (var winningPos in winningList) {
       if (occupied[winningPos[0]].isNotEmpty && occupied[winningPos[0]] == occupied[winningPos[1]] && occupied[winningPos[0]] == occupied[winningPos[2]]) {
-        if (occupied[winningPos[0]] == 'X') {
-          // CALLED WHENEVER PLAYER X WINS
+        if (occupied[winningPos[0]] != 'X') {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const YouLostScreen()));
         }
         showGameOverMessage("Player ${occupied[winningPos[0]]} Won");
         gameEnd = true;
@@ -211,4 +249,8 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+}
+
+class LostScreen {
+  const LostScreen();
 }

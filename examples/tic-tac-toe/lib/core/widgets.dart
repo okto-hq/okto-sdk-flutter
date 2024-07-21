@@ -11,7 +11,7 @@ class HeaderText extends StatelessWidget {
       children: [
         Text(
           "Player $curr turn",
-          style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );

@@ -21,7 +21,7 @@ class Box extends StatelessWidget {
         margin: const EdgeInsets.all(8),
         child: Center(
           child: Text(used[i],
-              style: const TextStyle(fontSize: 50, color: primaryColor)),
+              style: const TextStyle(fontSize: 40, color: primaryColor)),
         ),
       ),
     );
