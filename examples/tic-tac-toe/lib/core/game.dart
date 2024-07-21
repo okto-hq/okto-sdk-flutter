@@ -14,11 +14,21 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   Future<UserDetails>? _userDetails;
+  Future<WalletResponse>? _createdWallet;
 
   Future<UserDetails> fetchUserDetails() async {
     try {
       final userDetails = await okto!.userDetails();
       return userDetails;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<WalletResponse> createWallets() async {
+    try {
+      final createdWallet = await okto!.createWallet();
+      return createdWallet;
     } catch (e) {
       throw Exception(e);
     }
@@ -32,6 +42,10 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     initializeGame();
+    setState(() {
+      _userDetails = fetchUserDetails();
+      _createdWallet = createWallets();
+    });
     super.initState();
   }
 
@@ -46,42 +60,99 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            HeaderText(curr: currPlay),
-            _userDetails == null
-                ? Container()
-                : FutureBuilder<UserDetails>(
-                    future: _userDetails,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(color: Colors.white));
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (snapshot.hasData) {
-                        final userDetails = snapshot.data!;
-                        return Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Email: ${userDetails.data.email}',
-                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                              ),
-                              // Add more fields here as needed
-                            ],
-                          ),
-                        );
-                      }
-                      return Container();
-                    },
-                  ),
-            GameContainer(state: context, used: occupied, onTap: _handleBoxTap),
-            const Text('You are player X'),
-            RestartButton(press: _handleRestartButtonPressed),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _userDetails == null
+                  ? Container()
+                  : FutureBuilder<UserDetails>(
+                      future: _userDetails,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final userDetails = snapshot.data!;
+                          return Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    'Player associated with ${userDetails.data.email} email is playing as Player X\nIf the player X loses the game, they have to transfer 0.01 MATIC to the player 0 on POLYGON_TESTNET_AMOY',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: primaryColor, fontSize: 12),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: const Text(
+                                    'Make sure you have some MATIC airdropped to your account on POLYGON_TESTNET_AMOY',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: primaryColor, fontSize: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+              _createdWallet == null
+                  ? Container()
+                  : FutureBuilder<WalletResponse>(
+                      future: _createdWallet,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final createdWallet = snapshot.data!;
+                          List wallets = createdWallet.data.wallets;
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for(var wallet in wallets)if(wallet.networkName == 'POLYGON_TESTNET_AMOY') Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: SelectableText(
+                                    'Wallet address of POLYGON_TESTNET_AMOY: ${wallet.address}',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: primaryColor, fontSize: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+              HeaderText(curr: currPlay),
+              GameContainer(state: context, used: occupied, onTap: _handleBoxTap),
+              RestartButton(press: _handleRestartButtonPressed),
+            ],
+          ),
         ),
       ),
     );

@@ -31,10 +31,15 @@ class _LoginWithGoogleState extends State<LoginWithGoogle> {
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(40),
                 child: const Text(
-                  'Login with google',
+                  'Welcome to\nTic Tac Toe\nPowered by Okto',
+                  textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
                 ),
               ),
+            ),
+            const Text(
+              'To continue, please login with your google account',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12),
             ),
             ElevatedButton(
                 onPressed: () async {
