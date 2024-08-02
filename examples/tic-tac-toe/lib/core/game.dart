@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:tictactoe/constants/colors.dart';
+import 'package:tictactoe/lost_screen.dart';
 import 'package:tictactoe/utils/okto.dart';
 import 'package:tictactoe/utils/structs.dart';
 import 'package:tictactoe/core/widgets.dart';
@@ -14,11 +15,31 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   Future<UserDetails>? _userDetails;
+  Future<WalletResponse>? _createdWallet;
+  Future<UserPortfolioResponse>? _userPortfolio;
 
   Future<UserDetails> fetchUserDetails() async {
     try {
       final userDetails = await okto!.userDetails();
       return userDetails;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<WalletResponse> createWallets() async {
+    try {
+      final createdWallet = await okto!.createWallet();
+      return createdWallet;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<UserPortfolioResponse> getuserPortfolio() async {
+    try {
+      final userPortfolio = await okto!.userPortfolio();
+      return userPortfolio;
     } catch (e) {
       throw Exception(e);
     }
@@ -32,6 +53,11 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     initializeGame();
+    setState(() {
+      _userDetails = fetchUserDetails();
+      _createdWallet = createWallets();
+      _userPortfolio = getuserPortfolio();
+    });
     super.initState();
   }
 
@@ -46,42 +72,125 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            HeaderText(curr: currPlay),
-            _userDetails == null
-                ? Container()
-                : FutureBuilder<UserDetails>(
-                    future: _userDetails,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(color: Colors.white));
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (snapshot.hasData) {
-                        final userDetails = snapshot.data!;
-                        return Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Email: ${userDetails.data.email}',
-                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                              ),
-                              // Add more fields here as needed
-                            ],
-                          ),
-                        );
-                      }
-                      return Container();
-                    },
-                  ),
-            GameContainer(state: context, used: occupied, onTap: _handleBoxTap),
-            const Text('You are player X'),
-            RestartButton(press: _handleRestartButtonPressed),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _userDetails == null
+                  ? Container()
+                  : FutureBuilder<UserDetails>(
+                      future: _userDetails,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final userDetails = snapshot.data!;
+                          return Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    'Player associated with ${userDetails.data.email} email is playing as Player X\nIf the player X loses the game, they have to transfer 0.01 MATIC to the player 0 on POLYGON_TESTNET_AMOY',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: primaryColor, fontSize: 10),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+              _createdWallet == null
+                  ? Container()
+                  : FutureBuilder<WalletResponse>(
+                      future: _createdWallet,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container();
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final createdWallet = snapshot.data!;
+                          List wallets = createdWallet.data.wallets;
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (var wallet in wallets)
+                                  if (wallet.networkName == 'POLYGON_TESTNET_AMOY')
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: SelectableText(
+                                        'Wallet address of your POLYGON_TESTNET_AMOY: ${wallet.address}\nMake sure you have some MATIC airdropped to your account on POLYGON_TESTNET_AMOY',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(color: primaryColor, fontSize: 10),
+                                      ),
+                                    ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+              _userPortfolio == null
+                  ? Container()
+                  : FutureBuilder<UserPortfolioResponse>(
+                      future: _userPortfolio,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final userPortfolio = snapshot.data!;
+                          return Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (var token in userPortfolio.data.tokens)
+                                  if (token.networkName == 'POLYGON_TESTNET_AMOY' && token.tokenName == 'MATIC')
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: SelectableText(
+                                        'Current Matic : ${token.quantity}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(color: primaryColor, fontSize: 10),
+                                      ),
+                                    ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+              HeaderText(curr: currPlay),
+              GameContainer(state: context, used: occupied, onTap: _handleBoxTap),
+              RestartButton(press: _handleRestartButtonPressed),
+            ],
+          ),
         ),
       ),
     );
@@ -113,8 +222,8 @@ class _GamePageState extends State<GamePage> {
   void checkForWinner() {
     for (var winningPos in winningList) {
       if (occupied[winningPos[0]].isNotEmpty && occupied[winningPos[0]] == occupied[winningPos[1]] && occupied[winningPos[0]] == occupied[winningPos[2]]) {
-        if (occupied[winningPos[0]] == 'X') {
-          // CALLED WHENEVER PLAYER X WINS
+        if (occupied[winningPos[0]] != 'X') {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const YouLostScreen()));
         }
         showGameOverMessage("Player ${occupied[winningPos[0]]} Won");
         gameEnd = true;
@@ -140,4 +249,8 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+}
+
+class LostScreen {
+  const LostScreen();
 }

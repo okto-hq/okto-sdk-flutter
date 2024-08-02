@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:tictactoe/constants/globals.dart';
 import 'package:tictactoe/login_screen.dart';
@@ -22,56 +23,68 @@ class _InitPageState extends State<InitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: apiController,
-            decoration: const InputDecoration(hintText: 'Enter your client api key'),
-          ),
-          Wrap(
-            spacing: 8.0,
-            children: List<Widget>.generate(
-              _options.length,
-              (int index) {
-                return ChoiceChip(
-                  label: Text(_options[index]),
-                  selected: _selectedChipIndex == index,
-                  onSelected: (bool selected) {
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text('Tic Tac Toe\nPowered by Okto',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                )),
+            const SizedBox(height: 200),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: apiController,
+                decoration: const InputDecoration(hintText: 'Enter your client api key'),
+              ),
+            ),
+            Wrap(
+              spacing: 8.0,
+              children: List<Widget>.generate(
+                _options.length,
+                (int index) {
+                  return ChoiceChip(
+                    label: Text(_options[index]),
+                    selected: _selectedChipIndex == index,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedChipIndex = selected ? index : -1;
+                      });
+                    },
+                  );
+                },
+              ).toList(),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_selectedChipIndex != -1) {
+                  if (_selectedChipIndex == 0) {
                     setState(() {
-                      _selectedChipIndex = selected ? index : -1;
+                      globals.setBuildType(BuildType.sandbox);
                     });
-                  },
-                );
-              },
-            ).toList(),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_selectedChipIndex != -1) {
-                     if (_selectedChipIndex == 0) {
+                  } else if (_selectedChipIndex == 1) {
+                    setState(() {
+                      globals.setBuildType(BuildType.staging);
+                    });
+                  } else if (_selectedChipIndex == 2) {
+                    setState(() {
+                      globals.setBuildType(BuildType.production);
+                    });
+                  }
                   setState(() {
-                    globals.setBuildType(BuildType.sandbox);
+                    globals.setApiKey(apiController.text);
+                    okto = Okto(globals.getApiKey(), globals.getBuildType());
                   });
-                } else if (_selectedChipIndex == 1) {
-                  setState(() {
-                    globals.setBuildType(BuildType.staging);
-                  });
-                } else if (_selectedChipIndex == 2) {
-                  setState(() {
-                    globals.setBuildType(BuildType.production);
-                  });
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
                 }
-                setState(() {
-                  globals.setApiKey(apiController.text);
-                  okto = Okto(globals.getApiKey(),globals.getBuildType());
-                });
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
-              }
-            },
-            child: const Text('Next'),
-          ),
-        ],
+              },
+              child: const Text('Next'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -9,19 +9,9 @@ class HeaderText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
-          "Tic Tac Toe",
-          style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
-        ),
-        const Text(
-          "powered by okto",
-          style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-
-        const SizedBox(height: 40),
         Text(
           "Player $curr turn",
-          style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
