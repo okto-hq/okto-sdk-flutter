@@ -1,6 +1,6 @@
 name: okto_flutter_sdk
 description: "Official OKTO SDK for Flutter"
-version: 0.0.14
+version: 0.0.15
 homepage:
 
 environment:
