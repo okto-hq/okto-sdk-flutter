@@ -47,3 +47,6 @@
 
 ## 0.0.14
 - Updated tic-tac-toe example app.
+
+## 0.0.14
+- Removed Setpin flow

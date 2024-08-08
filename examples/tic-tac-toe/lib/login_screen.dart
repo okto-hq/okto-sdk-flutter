@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:tictactoe/core/game.dart';
 import 'package:tictactoe/utils/okto.dart';
 
@@ -48,11 +47,7 @@ class _LoginWithGoogleState extends State<LoginWithGoogle> {
                     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
                     if (googleAuth != null) {
                       final String? idToken = googleAuth.idToken;
-
-                      final res = await okto!.authenticate(idToken: idToken!);
-                      if (res is AuthenticationResponse) {
-                        final res1 = await okto!.setPin(pin: '123456');
-                      }
+                      await okto!.authenticate(idToken: idToken!);
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const GamePage()));
                     }
                     // ignore: use_build_context_synchronously
