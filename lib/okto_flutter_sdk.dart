@@ -1,7 +1,6 @@
 library okto_flutter_sdk;
 
 export 'src/okto.dart';
-export 'src/models/client/authentication_model.dart';
 export 'src/models/client/network_model.dart';
 export 'src/models/client/auth_token_model.dart';
 export 'src/models/client/order_details_nft_model.dart';

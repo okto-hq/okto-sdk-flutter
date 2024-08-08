@@ -44,3 +44,9 @@
 
 ## 0.0.13
 - Changed `DioException` to `DioError`
+
+## 0.0.14
+- Updated tic-tac-toe example app.
+
+## 0.0.14
+- Removed Setpin flow
