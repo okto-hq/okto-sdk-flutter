@@ -12,6 +12,19 @@ Install the package in your Flutter project:
 
 `flutter pub add okto_flutter_sdk`
 
+## Android Setup
+- Create a web client ID on Google Cloud and put it inside `android/app/src/main/res/values/strings.xml`
+- Create an android client ID on Google Cloud.
+
+## IOS Setup
+- Create an iOS client ID.
+- Download the plist file from google cloud and rename it to `GoogleService-Info.plist`
+- Paste `GoogleService-Info.plist` inside `ios/Runner`
+- Copy IOS Client Id and IOS Url Scheme from Google Cloud
+- Open `ios/Runner/info.plist` and paste iOS Client ID and iOS Url Scheme.
+- run `flutter build ios`
+
+
 ## Usage
 
 To utilize the SDK within your application, follow these steps:
