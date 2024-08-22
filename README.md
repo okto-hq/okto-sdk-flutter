@@ -1,179 +1,58 @@
-# Okto Wallet SDK Documentation
+# okto_flutter_sdk
 
-## Table of Contents
+![Okto Image](https://docs.okto.tech/assets/brand_kit/partnership_logo/logo.png)
 
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Initialization](#initialization)
-  - [Authentication](#authentication)
-    - [Authenticate with Google Sign-In](#authenticate-with-google-sign-in)
-    - [Authenticate with User ID and JWT Token](#authenticate-with-user-id-and-jwt-token)
-  - [Set Pin](#set-pin)
-  - [Refresh Token](#refresh-token)
-  - [User Details](#user-details)
-  - [Wallet Management](#wallet-management)
-    - [Create Wallet](#create-wallet)
-    - [Get Wallets](#get-wallets)
-  - [Supported Networks and Tokens](#supported-networks-and-tokens)
-    - [Supported Networks](#supported-networks)
-    - [Supported Tokens](#supported-tokens)
-  - [User Portfolio](#user-portfolio)
-    - [User Portfolio Activity](#user-portfolio-activity)
-  - [Token Transfer](#token-transfer)
-    - [Transfer Tokens](#transfer-tokens)
-    - [Transfer NFT](#transfer-nft)
-  - [Order Management](#order-management)
-    - [Order History](#order-history)
-    - [Order Details NFT](#order-details-nft)
-  - [Raw Transactions](#raw-transactions)
-    - [Execute Raw Transaction](#execute-raw-transaction)
-    - [Raw Transaction Status](#raw-transaction-status)
-  - [UI Components](#ui-components)
-    - [Open Bottom Sheet](#open-bottom-sheet)
-- [Contributing](#contributing)
-- [License](#license)
+## Description
 
-## Introduction
-
-Welcome to the Okto Wallet SDK documentation. This SDK provides a comprehensive set of functionalities to integrate Okto Wallet services into your Flutter applications.
-
-## Getting Started
-
-Follow the steps below to set up and use the SDK in your Flutter project.
+The `okto_flutter_sdk` is a Flutter SDK for integrating Okto services into mobile applications. This SDK provides functionalities to interact with Okto's features and services within your Flutter projects.
 
 ## Installation
 
-Add the following dependency to your `pubspec.yaml` file:
+Install the package in your Flutter project:
+
+`flutter pub add okto_flutter_sdk`
+
+## Android Setup
+- Create a web client ID on Google Cloud and put it inside `android/app/src/main/res/values/strings.xml`
+- Create an android client ID on Google Cloud.
+
+## IOS Setup
+- Create an iOS client ID.
+- Download the plist file from google cloud and rename it to `GoogleService-Info.plist`
+- Paste `GoogleService-Info.plist` inside `ios/Runner`
+- Copy IOS Client Id and IOS Url Scheme from Google Cloud
+- Open `ios/Runner/info.plist` and paste iOS Client ID and iOS Url Scheme.
+- run `flutter build ios`
+
 
 ## Usage
 
-### Initialization
+To utilize the SDK within your application, follow these steps:
 
-`final okto = Okto('your_client_api_key');`
+- Initialize the SDK, anywhere in your codebase.
 
-### Authentication
+  `final okto = Okto('YOUR_CLIENT_API_KEY', BuildType.sandbox);`
 
-- Authenticate with Google Sign-In
-  Authenticate a new user using the ID token received from Google Sign-In.
-  `final auth = await okto.authenticate(idToken: idToken);`
+- Access SDK functionalities within your widgets:
 
-      after authenticating we have to call the set pin method.
-      `final setPin = await okto.setPin(pin: '123453');`
 
-       and that's it...
-
-- Authenticate with User ID and JWT Token
-  `await okto.authenticateWithUserId(userId: userId, jwtToken: jwtToken);`
-
-## User Detials
-
-- Get the user details
-  `final user =  await okto.userDetails();`
-
-## Wallet Management
-
-- Create a new wallet for the user:
-  `final userWallet = await okto.createWallet();`
-
-- Get the user wallets:
-  `final userWallets = await okto.getWallets();`
-
-## Supported Networks and Tokens
-
-- Get Supported Networks
-  `final supportedNetworks = await okto.supportedNetworks();`
-
-  - Get Supported Tokens
-    `final supportedTokens = await okto.supportedTokens();`
-    You can provide optional parameters like page and size.
-
-## User Portfolio
-
-- Get the user portfolio
-  `final userPortfolio = await okto.userPortfolio();`
-
-- Get the user portfolio activity.
-  `final userPortfolioActivity = await okto.getUserPortfolioActivity();`
-  You can providen optional parameters like limit and offset.
-
-## Token Transfer
-
-- Transfer Tokens
-  Transfer tokens from one wallet to another.
-
-  ```
-  final transferToken = await okto.transferToken(
-  networkName: networkName,
-  tokenAddress: tokenAddress,
-  quantity: quantity,
-  recipientAddress: recipientAddress,
-  );
+  ```dart
+            ElevatedButton(
+                onPressed: () async {
+                  try {
+                    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+                    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+                    if (googleAuth != null) {
+                      final String? idToken = googleAuth.idToken;
+                      await okto!.authenticate(idToken: idToken!);
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                    }
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                },
+                child: const Text('Login with Google, powered by Okto.')),
 
   ```
 
-- Transfer NFT
-  Transfer an NFT.
-  ```
-  final transferNft = await okto.transferNft(
-  operationType: operationType,
-  networkName: networkName,
-  collectionAddress: collectionAddress,
-  collectionName: collectionName,
-  quantity: quantity,
-  recipientAddress: recipientAddress,
-  nftAddress: nftAddress,
-  );
-  ```
-
-Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
-
-## Order Management
-
-- Get order history:
-  `final orderHistory = await okto.orderHistory()`
-  You can provide optional parameters like: - Offset - limit - orderId - orderState
-
-- Get order details for an NFT.
-  `final orderDetailsNft = await okto.orderDetailsNft();`
-  You can provide optional parameters like: - page - size - orderId - orderState
-
-## Raw Transactions
-
-- Execute Raw Transaction
-  ```
-  final rawTransaction =  await okto.rawTransactionExecute(
-  networkName: networkName,
-  transaction: transaction
-  );
-  ```
-
-Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
-transaction = The revelant transaction object of the network
-
-- Raw Transaction Status:
-  `final rawTransactionStatus = await okto.rawTransactionStatus(orderId: orderId);`
-
-orderId that we get from the `rawTransaction` object.
-
-## UI Components
-
-- Open Bottom Sheet
-  `await okto.openBottomSheet(context: context);`
-
-  This opens up a okto widget inside a bottom sheet of your flutter app.
-
-  You can customize all of these, according to your needs.
-
-  ```
-  textPrimaryColor: textPrimaryColor,
-  textSecondaryColor: textSecondaryColor,
-  textTertiaryColor: textTertiaryColor,
-  accentColor: accentColor,
-  accent2Color: accent2Color,
-  strokBorderColor: strokBorderColor,
-  strokDividerColor: strokDividerColor,
-  surfaceColor: surfaceColor,
-  backgroundColor: backgroundColor,
-  ```
+- For a much detailed documentation visit [Okto Wallet SDK Docs](https://sdk-docs.okto.tech/)
