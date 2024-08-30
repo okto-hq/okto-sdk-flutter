@@ -14,9 +14,12 @@ class HttpClient {
   Future<dynamic> post({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
     final dio = Dio();
     final baseUrl = _getBaseUrl(buildType);
+    dio.options = BaseOptions(
+      baseUrl: baseUrl
+    );
     try {
       final response = await dio.post(
-        '$baseUrl$endpoint',
+        endpoint,
         options: Options(
           headers: {
             'accept': '*/*',
