@@ -1,4 +1,5 @@
 import 'package:example/screens/auth/login_with_google_page.dart';
+import 'package:example/screens/auth/login_with_id_token.dart';
 import 'package:example/screens/auth/login_with_userid.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithIdToken()));
                 },
                 child: const Text('Login with Id Token')),
             ElevatedButton(
