@@ -36,6 +36,11 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
                 },
+                child: const Text('Login with Auth Id')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
+                },
                 child: const Text('Login with Google')),
             ElevatedButton(
                 onPressed: () {
