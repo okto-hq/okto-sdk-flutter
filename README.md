@@ -40,18 +40,17 @@ To utilize the SDK within your application, follow these steps:
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-                    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-                    if (googleAuth != null) {
-                      final String? idToken = googleAuth.idToken;
-                      await okto!.authenticate(idToken: idToken!);
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
-                    }
-                  } catch (e) {
-                    print(e.toString());
+                    await okto!.authenticate(idToken: authIdController.text);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                    // ignore: use_build_context_synchronously
+                    } catch (e) {
+                      print(e.toString());
+                      setState(() {
+                      error = e.toString();
+                    });
                   }
                 },
-                child: const Text('Login with Google, powered by Okto.')),
+                child: const Text('Login with Google, powered by Okto.'))
 
   ```
 
