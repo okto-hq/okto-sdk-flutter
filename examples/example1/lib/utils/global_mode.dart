@@ -1,7 +1,7 @@
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
 class Globals {
-  BuildType currentBuildType = BuildType.sandbox;
+  BuildType currentBuildType = BuildType.staging;
   String globalClientApiKey = '';
 
   static final Globals _singleton = Globals._internal();

@@ -47,7 +47,7 @@ class Okto {
   Future<dynamic> authenticate({required String idToken}) async {
     _idToken = idToken;
     final response = await httpClient
-        .post(endpoint: '/api/v2/authenticate', body: {'id_token': idToken});
+        .post(endpoint: '/api/v1/authenticate', body: {'id_token': idToken});
     print(response.toString());
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(
@@ -316,6 +316,7 @@ class Okto {
   }) async {
     final WebViewController controller = WebViewController();
     final authToken = await tokenManager.getAuthToken();
+    final deviceToken = await tokenManager.getDeviceToken();
     String buildtype = '';
     switch (buildType) {
       case BuildType.sandbox:
@@ -345,6 +346,7 @@ class Okto {
 
       if (authToken != null) {
         injectJs += "window.localStorage.setItem('authToken', '$authToken');";
+        injectJs += "window.localStorage.setItem('deviceToken', '$deviceToken');";
       }
       return injectJs;
     }
@@ -372,7 +374,10 @@ class Okto {
               onWebResourceError: (WebResourceError error) {},
             ),
           )
-          ..loadRequest(Uri.parse('https://3p.okto.tech/'));
+          ..loadRequest(Uri.parse(switch (buildType) {
+            BuildType.sandbox || BuildType.production => 'https://3p.okto.tech/',
+            BuildType.staging => 'https://3p.oktostage.com/',
+          }));
 
         return SizedBox(
           height: MediaQuery.of(context).size.height * height,
@@ -380,7 +385,7 @@ class Okto {
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             child: WebViewWidget(
-              controller: controller,
+              controller: controller..clearCache()..clearLocalStorage(),
             ),
           ),
         );
