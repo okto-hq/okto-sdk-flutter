@@ -307,11 +307,11 @@ class Okto {
     String textPrimaryColor = '0xFFFFFFFF',
     String textSecondaryColor = '0xFFFFFFFF',
     String textTertiaryColor = '0xFFFFFFFF',
-    String accentColor = '0x80433454',
+    String accent1Color = '0xFF905BF5',
     String accent2Color = '0x80905BF5',
-    String strokBorderColor = '0xFFACACAB',
-    String strokDividerColor = '0x4DA8A8A8',
-    String surfaceColor = '0xFF1F0A2F',
+    String strokeBorderColor = '0xFFACACAB',
+    String strokeDividerColor = '0x4DA8A8A8',
+    String surfaceColor = '0xFF1F1F1F',
     String backgroundColor = '0xFF000000',
   }) async {
     final WebViewController controller = WebViewController();
@@ -336,10 +336,10 @@ class Okto {
     window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
     window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
     window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
-    window.localStorage.setItem('accentColor', '$accentColor');
+    window.localStorage.setItem('accent1Color', '$accent1Color');
     window.localStorage.setItem('accent2Color', '$accent2Color');
-    window.localStorage.setItem('strokBorderColor', '$strokBorderColor');
-    window.localStorage.setItem('strokDividerColor', '$strokDividerColor');
+    window.localStorage.setItem('strokeBorderColor', '$strokeBorderColor');
+    window.localStorage.setItem('strokeDividerColor', '$strokeDividerColor');
     window.localStorage.setItem('surfaceColor', '$surfaceColor');
     window.localStorage.setItem('backgroundColor', '$backgroundColor');
   ''';
