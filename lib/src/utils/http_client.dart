@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:okto_flutter_sdk/src/exceptions/api_exception.dart';
+import 'package:okto_flutter_sdk/src/utils/curl_logging_dio_interceptor.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 
 class HttpClient {
@@ -13,6 +15,9 @@ class HttpClient {
 
   Future<dynamic> post({required String endpoint, required Map<String, dynamic> body, String? authToken, Map<String, String>? additionalHeaders}) async {
     final dio = Dio();
+    if(!kReleaseMode) {
+      dio.interceptors.add(CurlLoggerDioInterceptor(printOnSuccess: true));
+    }
     final baseUrl = _getBaseUrl(buildType);
     dio.options = BaseOptions(
       baseUrl: baseUrl
