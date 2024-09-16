@@ -375,7 +375,8 @@ class Okto {
             ),
           )
           ..loadRequest(Uri.parse(switch (buildType) {
-            BuildType.sandbox || BuildType.production => 'https://3p.okto.tech/',
+            BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+            BuildType.production => 'https://3p.okto.tech/',
             BuildType.staging => 'https://3p.oktostage.com/',
           }));
 
