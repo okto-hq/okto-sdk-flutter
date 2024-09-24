@@ -16,6 +16,7 @@ import 'package:example/screens/user_portfolio_activity_page.dart';
 import 'package:example/screens/user_portfolio_page.dart';
 import 'package:example/screens/view_wallet_page.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff5166EE),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: [
