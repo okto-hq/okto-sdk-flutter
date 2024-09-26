@@ -380,16 +380,22 @@ class Okto {
             BuildType.staging => 'https://3p.oktostage.com/',
           }));
 
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * height,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            child: WebViewWidget(
-              controller: controller..clearCache()..clearLocalStorage(),
-            ),
-          ),
-        );
+        return LayoutBuilder(
+            builder: (context, constraints) {
+              return SizedBox(
+                height: constraints.maxHeight * height,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                  child: WebViewWidget(
+                    controller: controller
+                      ..clearCache()
+                      ..clearLocalStorage(),
+                  ),
+                ),
+              );
+            });
       },
     );
   }
