@@ -413,12 +413,10 @@ class Okto {
     final data = jsonDecode(message);
     if (data["url"] != null) {
       final uri = Uri.parse(data["url"]);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(
-          uri,
-          mode: LaunchMode.inAppBrowserView
-        );
-      }
+      await launchUrl(
+        uri,
+        mode: LaunchMode.inAppBrowserView
+      );
     }
   }
 }
