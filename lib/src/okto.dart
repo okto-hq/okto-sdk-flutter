@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
@@ -15,6 +17,7 @@ import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'models/client/user_model.dart';
 
@@ -362,6 +365,12 @@ class Okto {
       isScrollControlled: true,
       builder: (BuildContext context) {
         controller
+          ..addJavaScriptChannel(
+            "Print",
+            onMessageReceived: (message) {
+              _onJSMessageReceived(message.message);
+            }
+          )
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setNavigationDelegate(
             NavigationDelegate(
@@ -398,5 +407,18 @@ class Okto {
             });
       },
     );
+  }
+
+  void _onJSMessageReceived(String message) async {
+    final data = jsonDecode(message);
+    if (data["url"] != null) {
+      final uri = Uri.parse(data["url"]);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.inAppBrowserView
+        );
+      }
+    }
   }
 }
