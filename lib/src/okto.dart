@@ -438,11 +438,7 @@ class Okto {
         } else if (permission == "camera") {
           PermissionHelper.requestCamera().then(
             (grant) {
-              return send(
-                model.copyWith(response: {
-                  id: grant.toString(),
-                }).ackJson()
-              );
+
             }
           );
         }
