@@ -417,6 +417,8 @@ class Okto {
         uri,
         mode: LaunchMode.inAppBrowserView
       );
+    } else if (data["requestPermissions"] != null) {
+      print("HANDLIN PERMISSION :: ${data["requestPermissions"]}");
     }
   }
 }
