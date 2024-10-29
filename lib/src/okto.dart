@@ -16,6 +16,7 @@ import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
+import 'package:okto_flutter_sdk/src/utils/permission_helper.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -368,7 +369,7 @@ class Okto {
           ..addJavaScriptChannel(
             "Print",
             onMessageReceived: (message) {
-              _onJSMessageReceived(message.message);
+              _onJSMessageReceived(controller, message.message);
             }
           )
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -409,7 +410,7 @@ class Okto {
     );
   }
 
-  void _onJSMessageReceived(String message) async {
+  void _onJSMessageReceived(WebViewController controller, String message) async {
     final data = jsonDecode(message);
     if (data["url"] != null) {
       final uri = Uri.parse(data["url"]);
@@ -418,7 +419,34 @@ class Okto {
         mode: LaunchMode.inAppBrowserView
       );
     } else if (data["requestPermissions"] != null) {
+      final requestedPermissions = data["requestPermissions"] as List? ?? [];
       print("HANDLIN PERMISSION :: ${data["requestPermissions"]}");
+      for (var permission in requestedPermissions) {
+        if (permission == "microphone") {
+          PermissionHelper.requestMicrophone().then(
+            (grant) {
+              // final data = {
+              //   "event" : ""
+              // };
+              // controller.runJavaScript(
+              //   '''
+              //   window.postMessage($grant,'*');
+              //   '''
+              // );
+            },
+          );
+        } else if (permission == "camera") {
+          PermissionHelper.requestCamera().then(
+            (grant) {
+              return send(
+                model.copyWith(response: {
+                  id: grant.toString(),
+                }).ackJson()
+              );
+            }
+          );
+        }
+      }
     }
   }
 }
