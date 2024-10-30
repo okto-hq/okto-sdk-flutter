@@ -425,20 +425,32 @@ class Okto {
         if (permission == "microphone") {
           PermissionHelper.requestMicrophone().then(
             (grant) {
-              // final data = {
-              //   "event" : ""
-              // };
-              // controller.runJavaScript(
-              //   '''
-              //   window.postMessage($grant,'*');
-              //   '''
-              // );
+              controller.runJavaScript(
+                '''
+                window.postMessage(${jsonEncode({
+                  "type" : "requestPermission_ack",
+                  "response" : { "id" : grant.toString() },
+                  "params" : {"data" : data["requestPermissions"]},
+                  "source" : "okto-web"
+                })},'*');
+                '''
+              );
             },
           );
         } else if (permission == "camera") {
           PermissionHelper.requestCamera().then(
             (grant) {
-
+              print("SENDING PERMISSION ACK :: ${data["requestPermissions"]}");
+              controller.runJavaScript(
+                  '''
+                window.postMessage(${jsonEncode({
+                    "type" : "requestPermission_ack",
+                    "response" : { "id" : grant.toString() },
+                    "params" : data["requestPermissions"],
+                    "source" : "okto-web"
+                  })},'*');
+                '''
+              );
             }
           );
         }
