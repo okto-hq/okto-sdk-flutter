@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
@@ -20,8 +22,11 @@ import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/permission_helper.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+
 import 'models/client/user_model.dart';
-import 'package:flutter_webview_pro/webview_flutter.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
@@ -302,6 +307,17 @@ class Okto {
     return result;
   }
 
+  Future<List<String>> _androidFilePicker(
+      final FileSelectorParams params) async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null && result.files.single.path != null) {
+      final file = File(result.files.single.path!);
+      return [file.uri.toString()];
+    }
+    return [];
+  }
+
   Future openBottomSheet({
     required BuildContext context,
 
@@ -319,7 +335,6 @@ class Okto {
     String surfaceColor = '0xFF1F1F1F',
     String backgroundColor = '0xFF000000',
   }) async {
-    final Completer<WebViewController> _completer = Completer();
     final authToken = await tokenManager.getAuthToken();
     final deviceToken = await tokenManager.getDeviceToken();
     String buildtype = '';
@@ -351,10 +366,67 @@ class Okto {
 
       if (authToken != null) {
         injectJs += "window.localStorage.setItem('authToken', '$authToken');";
-        injectJs += "window.localStorage.setItem('deviceToken', '$deviceToken');";
+        injectJs +=
+            "window.localStorage.setItem('deviceToken', '$deviceToken');";
       }
       return injectJs;
     }
+
+    // Helper method for configuring the controller
+    Future<void> configureController(WebViewController controller) async {
+      await controller.clearCache();
+      await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+
+      if (Platform.isAndroid) {
+        final androidController =
+            controller.platform as AndroidWebViewController;
+        await androidController.setOnShowFileSelector(_androidFilePicker);
+      }
+    }
+
+    late final PlatformWebViewControllerCreationParams params;
+    // Configure creation params based on the platform
+    params = WebViewPlatform.instance is WebKitWebViewPlatform
+        ? WebKitWebViewControllerCreationParams(
+            allowsInlineMediaPlayback: true,
+            mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{})
+        : const PlatformWebViewControllerCreationParams();
+
+    // Create and configure the WebViewController
+    final controller = WebViewController.fromPlatformCreationParams(
+      params,
+      onPermissionRequest: (request) => request.grant(),
+    );
+    await configureController(controller);
+
+    // Set up JavaScript channel for communication
+    await controller.addJavaScriptChannel(
+      "Print",
+      onMessageReceived: (message) =>
+          _onJSMessageReceived(controller, message.message),
+    );
+
+    // Set up navigation delegate
+    await controller.setNavigationDelegate(
+      NavigationDelegate(
+        onProgress: (int progress) {},
+        onPageStarted: (String url) =>
+            controller.runJavaScript(getInjectedJs()),
+        onPageFinished: (String url) {},
+        onHttpError: (HttpResponseError error) {},
+        onWebResourceError: (WebResourceError error) {},
+      ),
+    );
+
+    // Load request
+    await controller.loadRequest(Uri.parse('https://p-wallet-788e5.web.app'));
+    //   loadRequest(WebViewRequest(
+    //       uri: Uri.parse(switch (buildType) {
+    //         BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+    //         BuildType.production => 'https://3p.okto.tech/',
+    //         BuildType.staging => 'https://p-wallet-788e5.web.app',
+    //       }),
+    //   ));
 
     await showModalBottomSheet(
       shape: const RoundedRectangleBorder(
@@ -366,90 +438,30 @@ class Okto {
       useSafeArea: true,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        // controller
-        //   ..addJavaScriptChannel(
-        //     "Print",
-        //     onMessageReceived: (message) {
-        //       _onJSMessageReceived(controller, message.message);
-        //     }
-        //   )
-        //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        //   ..setNavigationDelegate(
-        //     NavigationDelegate(
-        //       onProgress: (int progress) {},
-        //       onPageStarted: (String url) {
-        //         controller.runJavaScript(getInjectedJs());
-        //       },
-        //       onPageFinished: (String url) {},
-        //       onHttpError: (HttpResponseError error) {},
-        //       onWebResourceError: (WebResourceError error) {},
-        //     ),
-        //   )
-        //   ..loadRequest(WebViewRequest(
-        //       uri: Uri.parse(switch (buildType) {
-        //         BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
-        //         BuildType.production => 'https://3p.okto.tech/',
-        //         BuildType.staging => 'https://p-wallet-788e5.web.app',
-        //       }),
-        //       method: WebViewRequestMethod.get
-        //   ));
-
-        return LayoutBuilder(
-            builder: (context, constraints) {
-              return SizedBox(
-                height: constraints.maxHeight * height,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
-                  child: WebView(
-                    initialUrl: "https://p-wallet-788e5.web.app",
-                    debuggingEnabled: true,
-                    javascriptChannels: {
-                      JavascriptChannel(
-                        name: "Print",
-                        onMessageReceived: (message) {
-                          _completer.future.then((controller) {
-                            _onJSMessageReceived(controller, message.message);
-                          });
-                        }
-                      )
-                    },
-                    javascriptMode: JavascriptMode.unrestricted,
-                    onWebViewCreated: (controller) {
-                      if (!_completer.isCompleted) {
-                        _completer.complete(controller);
-                      }
-                      controller
-                        .clearCache();
-                    },
-                    onProgress: (int progress) {},
-                    onPageStarted: (String url) {
-                      _completer.future.then((controller) {
-                        controller.runJavascript(getInjectedJs());
-                      });
-                    },
-                    onPageFinished: (String url) {},
-                    onWebResourceError: (WebResourceError error) {},
-                  ),
-                ),
-              );
-            });
+        return LayoutBuilder(builder: (context, constraints) {
+          return SizedBox(
+            height: constraints.maxHeight * height,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              child: WebViewWidget(
+                controller: controller,
+              ),
+            ),
+          );
+        });
       },
     );
   }
 
-  void _onJSMessageReceived(WebViewController controller, String message) async {
+  void _onJSMessageReceived(
+      WebViewController controller, String message) async {
     final data = jsonDecode(message);
     if (data["url"] != null) {
       final uri = Uri.parse(data["url"]);
-      await launchUrl(
-        uri,
-        mode: LaunchMode.inAppBrowserView
-      );
+      await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
     } else if (data["requestPermissions"] != null) {
       final requestedPermissions = data["requestPermissions"] as List? ?? [];
-      print("HANDLIN PERMISSION :: ${data["requestPermissions"]}");
       for (var permission in requestedPermissions) {
         if (permission == "microphone") {
           PermissionHelper.requestMicrophone().then(
@@ -462,12 +474,12 @@ class Okto {
                 "id": "partner_permission"
               });
 
-              controller.runJavascript('''window.postMessage($messageData, '*');''');
+              controller
+                  .runJavaScript('''window.postMessage($messageData, '*');''');
             },
           );
         } else if (permission == "camera") {
           PermissionHelper.requestCamera().then((grant) {
-            print("SENDING PERMISSION ACK :: ${data["requestPermissions"]}");
             final messageData = jsonEncode({
               "type": "requestPermission_ack",
               "response": {"partner_permission": grant.toString()},
@@ -476,8 +488,8 @@ class Okto {
               "id": "partner_permission"
             });
 
-
-            controller.runJavascript('''window.postMessage($messageData, '*');''');
+            controller
+                .runJavaScript('''window.postMessage($messageData, '*');''');
           });
         }
       }

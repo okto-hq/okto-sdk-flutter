@@ -14,9 +14,12 @@ dependencies:
     sdk: flutter
   flutter_secure_storage: ^9.2.2
   http: '>=0.13.0'
-  flutter_webview_pro: ^3.0.1+4
   url_launcher: 6.2.3
   permission_handler: 11.3.1
+  webview_flutter: ^4.10.0
+  webview_flutter_android: ^4.2.0
+  webview_flutter_wkwebview: ^3.16.3
+  file_picker: ^8.1.7
 
 dev_dependencies:
   flutter_test:
