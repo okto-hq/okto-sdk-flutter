@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_webview_pro/webview_flutter.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart';
@@ -21,7 +23,7 @@ import 'package:okto_flutter_sdk/src/utils/permission_helper.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'models/client/user_model.dart';
-import 'package:flutter_webview_pro/webview_flutter.dart';
+// import 'package:flutter_webview_pro/webview_flutter.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
@@ -319,7 +321,7 @@ class Okto {
     String surfaceColor = '0xFF1F1F1F',
     String backgroundColor = '0xFF000000',
   }) async {
-    final Completer<WebViewController> _completer = Completer();
+    final Completer<InAppWebViewController> _completer = Completer();
     final authToken = await tokenManager.getAuthToken();
     final deviceToken = await tokenManager.getDeviceToken();
     String buildtype = '';
@@ -402,35 +404,64 @@ class Okto {
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
-                  child: WebView(
-                    debuggingEnabled: true,
-                    javascriptChannels: {
-                      JavascriptChannel(
-                        name: "Print",
-                        onMessageReceived: (message) {
-                          _completer.future.then((controller) {
-                            _onJSMessageReceived(controller, message.message);
-                          });
-                        }
-                      )
-                    },
-                    javascriptMode: JavascriptMode.unrestricted,
+                  child: InAppWebView(
+                    initialUrlRequest: URLRequest(
+                      url: Uri.parse(switch (buildType) {
+                        BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+                        BuildType.production => 'https://3p.okto.tech/',
+                        BuildType.staging => 'https://p-wallet-788e5.web.app',
+                      })
+                    ),
                     onWebViewCreated: (controller) {
                       if (!_completer.isCompleted) {
                         _completer.complete(controller);
                       }
-                      controller
-                        .clearCache();
+                      controller.addJavaScriptHandler(
+                        handlerName: 'Print',
+                        callback: (args) {
+                          _completer.future.then((controller) {
+                          _onJSMessageReceived(controller, args[0]);
+                        });
+                        },
+                      );
                     },
-                    onProgress: (int progress) {},
-                    onPageStarted: (String url) {
-                      _completer.future.then((controller) {
-                        controller.runJavascript(getInjectedJs());
-                      });
-                    },
-                    onPageFinished: (String url) {},
-                    onWebResourceError: (WebResourceError error) {},
-                  ),
+                    initialOptions: InAppWebViewGroupOptions(
+                      crossPlatform: InAppWebViewOptions(
+                        javaScriptEnabled: true,
+                        useOnLoadResource: true,
+                      ),
+                    ),
+                  )
+
+                  // WebView(
+                  //   debuggingEnabled: true,
+                  //   javascriptChannels: {
+                  //     JavascriptChannel(
+                  //       name: "Print",
+                  //       onMessageReceived: (message) {
+                  //         _completer.future.then((controller) {
+                  //           _onJSMessageReceived(controller, message.message);
+                  //         });
+                  //       }
+                  //     )
+                  //   },
+                  //   javascriptMode: JavascriptMode.unrestricted,
+                  // //   onWebViewCreated: (controller) {
+                  //     if (!_completer.isCompleted) {
+                  //       _completer.complete(controller);
+                  //     }
+                  //     controller
+                  //       .clearCache();
+                  //   },
+                  //   onProgress: (int progress) {},
+                  //   onPageStarted: (String url) {
+                  //     _completer.future.then((controller) {
+                  //       controller.runJavascript(getInjectedJs());
+                  //     });
+                  //   },
+                  //   onPageFinished: (String url) {},
+                  //   onWebResourceError: (WebResourceError error) {},
+                  // ),
                 ),
               );
             });
@@ -438,7 +469,7 @@ class Okto {
     );
   }
 
-  void _onJSMessageReceived(WebViewController controller, String message) async {
+  void _onJSMessageReceived(InAppWebViewController controller, String message) async {
     final data = jsonDecode(message);
     if (data["url"] != null) {
       final uri = Uri.parse(data["url"]);
@@ -461,7 +492,7 @@ class Okto {
                 "id": "partner_permission"
               });
 
-              controller.runJavascript('''window.postMessage($messageData, '*');''');
+              controller.evaluateJavascript(source: '''window.postMessage($messageData, '*');''');
             },
           );
         } else if (permission == "camera") {
@@ -476,7 +507,7 @@ class Okto {
             });
 
 
-            controller.runJavascript('''window.postMessage($messageData, '*');''');
+            controller.evaluateJavascript(source:'''window.postMessage($messageData, '*');''');
           });
         }
       }
