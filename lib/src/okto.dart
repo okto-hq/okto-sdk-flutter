@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -19,8 +20,8 @@ import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/permission_helper.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'models/client/user_model.dart';
+import 'package:flutter_webview_pro/webview_flutter.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
@@ -318,7 +319,7 @@ class Okto {
     String surfaceColor = '0xFF1F1F1F',
     String backgroundColor = '0xFF000000',
   }) async {
-    final WebViewController controller = WebViewController();
+    final Completer<WebViewController> _completer = Completer();
     final authToken = await tokenManager.getAuthToken();
     final deviceToken = await tokenManager.getDeviceToken();
     String buildtype = '';
@@ -365,30 +366,33 @@ class Okto {
       useSafeArea: true,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        controller
-          ..addJavaScriptChannel(
-            "Print",
-            onMessageReceived: (message) {
-              _onJSMessageReceived(controller, message.message);
-            }
-          )
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (int progress) {},
-              onPageStarted: (String url) {
-                controller.runJavaScript(getInjectedJs());
-              },
-              onPageFinished: (String url) {},
-              onHttpError: (HttpResponseError error) {},
-              onWebResourceError: (WebResourceError error) {},
-            ),
-          )
-          ..loadRequest(Uri.parse(switch (buildType) {
-            BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
-            BuildType.production => 'https://3p.okto.tech/',
-            BuildType.staging => 'https://p-wallet-788e5.web.app',
-          }));
+        // controller
+        //   ..addJavaScriptChannel(
+        //     "Print",
+        //     onMessageReceived: (message) {
+        //       _onJSMessageReceived(controller, message.message);
+        //     }
+        //   )
+        //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        //   ..setNavigationDelegate(
+        //     NavigationDelegate(
+        //       onProgress: (int progress) {},
+        //       onPageStarted: (String url) {
+        //         controller.runJavaScript(getInjectedJs());
+        //       },
+        //       onPageFinished: (String url) {},
+        //       onHttpError: (HttpResponseError error) {},
+        //       onWebResourceError: (WebResourceError error) {},
+        //     ),
+        //   )
+        //   ..loadRequest(WebViewRequest(
+        //       uri: Uri.parse(switch (buildType) {
+        //         BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+        //         BuildType.production => 'https://3p.okto.tech/',
+        //         BuildType.staging => 'https://p-wallet-788e5.web.app',
+        //       }),
+        //       method: WebViewRequestMethod.get
+        //   ));
 
         return LayoutBuilder(
             builder: (context, constraints) {
@@ -398,10 +402,34 @@ class Okto {
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
-                  child: WebViewWidget(
-                    controller: controller
-                      ..clearCache()
-                      ..clearLocalStorage(),
+                  child: WebView(
+                    debuggingEnabled: true,
+                    javascriptChannels: {
+                      JavascriptChannel(
+                        name: "Print",
+                        onMessageReceived: (message) {
+                          _completer.future.then((controller) {
+                            _onJSMessageReceived(controller, message.message);
+                          });
+                        }
+                      )
+                    },
+                    javascriptMode: JavascriptMode.unrestricted,
+                    onWebViewCreated: (controller) {
+                      if (!_completer.isCompleted) {
+                        _completer.complete(controller);
+                      }
+                      controller
+                        .clearCache();
+                    },
+                    onProgress: (int progress) {},
+                    onPageStarted: (String url) {
+                      _completer.future.then((controller) {
+                        controller.runJavascript(getInjectedJs());
+                      });
+                    },
+                    onPageFinished: (String url) {},
+                    onWebResourceError: (WebResourceError error) {},
                   ),
                 ),
               );
@@ -433,7 +461,7 @@ class Okto {
                 "id": "partner_permission"
               });
 
-              controller.runJavaScript('''window.postMessage($messageData, '*');''');
+              controller.runJavascript('''window.postMessage($messageData, '*');''');
             },
           );
         } else if (permission == "camera") {
@@ -447,7 +475,8 @@ class Okto {
               "id": "partner_permission"
             });
 
-            controller.runJavaScript('''window.postMessage($messageData, '*');''');
+
+            controller.runJavascript('''window.postMessage($messageData, '*');''');
           });
         }
       }
