@@ -35,8 +35,8 @@ class OnboardingScreen extends StatelessWidget {
           } else if (type == "g_auth") {
             String tokenId = await gAuthCallback();
             controller.runJavaScript('''
-               window.postMessage('$tokenId', '*');
-            ''');
+                window.postMessage('$tokenId', '*');
+              ''');
           }
         }
       })
