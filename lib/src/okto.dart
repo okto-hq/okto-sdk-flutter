@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
@@ -12,11 +13,16 @@ import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
+import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
+import 'network/base_remote_source.dart';
+import 'network/dio_provider.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
@@ -71,6 +77,53 @@ class Okto {
         authTokenResponse.data.refreshAuthToken,
         authTokenResponse.data.deviceToken);
     return authTokenResponse;
+  }
+
+  Future<OtpResponse> sendEmailOtp({required String email}) async {
+    Dio dioClient  = DioProvider.dioWithHeaderToken;
+    var endpoint = "${DioProvider.baseURL}/api/v1/authenticate/email";
+    final response = dioClient.post(endpoint, data: {
+      "email": email,
+    });
+
+    try {
+      return BaseRemoteSource.callApiWithErrorParser(response)
+          .then((response) => OtpResponse.fromJson(response.data['data']));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> verifyEmailOtp({
+    required String email, required String otp, required String token}) async {
+    final response = await httpClient.post(
+        endpoint: "/api/v1/authenticate/email/verify",
+        body: {"email": email, "otp": otp, "token": token}
+    );
+    return response;
+  }
+
+  Future<OtpResponse> sendPhoneOtp({required String phoneNumber, required String countryCode}) async {
+    final response = await httpClient.post(endpoint: '/api/v1/authenticate/phone',
+        body: {'phone_number': phoneNumber, 'country_short_name': countryCode});
+    try {
+      return OtpResponse.fromJson(response.data['data']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> verifyPhoneOtp(
+      {required String phoneNumber, required String countryCode,
+        required String otp, required String token}) async {
+    return await httpClient.post(
+        endpoint: "/api/v1/authenticate/phone/verify",
+        body: {
+          "phone_number": phoneNumber,
+          "country_short_name": countryCode,
+          "otp": otp,
+          "token": token
+        });
   }
 
   /// Use to check if the current session in the app is logged in or not.
@@ -297,13 +350,80 @@ class Okto {
     return result;
   }
 
+  Future<void> openOnboarding({
+    required BuildContext context,
+
+    /// Initial height of the bottom sheet
+    /// Ranges from 0.1 to 1.0
+    /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
+    double height = 0.9,
+    String textPrimaryColor = '0xFFFFFFFF',
+    String textSecondaryColor = '0xFFFFFFFF',
+    String textTertiaryColor = '0xFFFFFFFF',
+    String accent1Color = '0xFF905BF5',
+    String accent2Color = '0x80905BF5',
+    String strokeBorderColor = '0xFFACACAB',
+    String strokeDividerColor = '0x4DA8A8A8',
+    String surfaceColor = '0xFF1F1F1F',
+    String backgroundColor = '0xFF000000',
+    required Future<String> Function() gAuthCallback
+  }) async {
+    String buildtype = '';
+    switch (buildType) {
+      case BuildType.sandbox:
+        buildtype = 'SANDBOX';
+        break;
+      case BuildType.staging:
+        buildtype = 'STAGING';
+        break;
+      case BuildType.production:
+        buildtype = 'PRODUCTION';
+        break;
+    }
+
+    String getInjectedJs() {
+      String injectJs = '''
+        window.localStorage.setItem('ENVIRONMENT', '$buildtype');
+        window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
+        window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
+        window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
+        window.localStorage.setItem('accent1Color', '$accent1Color');
+        window.localStorage.setItem('accent2Color', '$accent2Color');
+        window.localStorage.setItem('strokeBorderColor', '$strokeBorderColor');
+        window.localStorage.setItem('strokeDividerColor', '$strokeDividerColor');
+        window.localStorage.setItem('surfaceColor', '$surfaceColor');
+        window.localStorage.setItem('backgroundColor', '$backgroundColor'); 
+      ''';
+      return injectJs;
+    }
+
+    final url = switch (buildType) {
+      BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com/#/login_screen',
+      BuildType.production => 'https://3p.okto.tech/login_screen/#/login_screen',
+      BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
+    };
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => OnboardingScreen(
+                  javaScript: getInjectedJs(),
+                  url: url,
+                  gAuthCallback: gAuthCallback,
+                  loginCallback: (AuthTokenData data) {
+                    tokenManager.storeTokens(data.authToken,
+                        data.refreshAuthToken, data.deviceToken);
+                  },
+                )));
+  }
+
   Future openBottomSheet({
     required BuildContext context,
 
     /// Initial height of the bottom sheet
     /// Ranges from 0.1 to 1.0
     /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
-    double height = 0.7,
+    double height = 0.9,
     String textPrimaryColor = '0xFFFFFFFF',
     String textSecondaryColor = '0xFFFFFFFF',
     String textTertiaryColor = '0xFFFFFFFF',
@@ -380,22 +500,20 @@ class Okto {
             BuildType.staging => 'https://3p.oktostage.com/',
           }));
 
-        return LayoutBuilder(
-            builder: (context, constraints) {
-              return SizedBox(
-                height: constraints.maxHeight * height,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
-                  child: WebViewWidget(
-                    controller: controller
-                      ..clearCache()
-                      ..clearLocalStorage(),
-                  ),
-                ),
-              );
-            });
+        return LayoutBuilder(builder: (context, constraints) {
+          return SizedBox(
+            height: constraints.maxHeight * height,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              child: WebViewWidget(
+                controller: controller
+                  ..clearCache()
+                  ..clearLocalStorage(),
+              ),
+            ),
+          );
+        });
       },
     );
   }
