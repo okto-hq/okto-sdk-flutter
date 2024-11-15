@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
@@ -21,8 +20,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
-import 'network/base_remote_source.dart';
-import 'network/dio_provider.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
@@ -79,51 +76,63 @@ class Okto {
     return authTokenResponse;
   }
 
+  /// To send OTP to the given [email].
+  /// returns an token along with OTP which will be used to verify the OTP.
   Future<OtpResponse> sendEmailOtp({required String email}) async {
-    Dio dioClient  = DioProvider.dioWithHeaderToken;
-    var endpoint = "${DioProvider.baseURL}/api/v1/authenticate/email";
-    final response = dioClient.post(endpoint, data: {
-      "email": email,
-    });
-
+    final response = await httpClient
+        .post(endpoint: "/api/v1/authenticate/email", body: {"email": email});
     try {
-      return BaseRemoteSource.callApiWithErrorParser(response)
-          .then((response) => OtpResponse.fromJson(response.data['data']));
+      return OtpResponse.fromJson(response['data']);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Response> verifyEmailOtp({
-    required String email, required String otp, required String token}) async {
+  /// Verify the OTP providing [emailId], [otp] and [token] provided with sendEmailOtp().
+  Future<AuthTokenResponse> verifyEmailOtp(
+      {required String emailId, required String otp, required String token}) async {
     final response = await httpClient.post(
         endpoint: "/api/v1/authenticate/email/verify",
-        body: {"email": email, "otp": otp, "token": token}
-    );
-    return response;
+        body: {"email": emailId, "otp": otp, "token": token});
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
+    await tokenManager.storeTokens(
+        authTokenResponse.data.authToken,
+        authTokenResponse.data.refreshAuthToken,
+        authTokenResponse.data.deviceToken);
+    return authTokenResponse;
   }
 
-  Future<OtpResponse> sendPhoneOtp({required String phoneNumber, required String countryCode}) async {
-    final response = await httpClient.post(endpoint: '/api/v1/authenticate/phone',
+  /// To send OTP to the given [phoneNumber].
+  /// returns an token along with OTP which will be used to verify the OTP.
+  Future<OtpResponse> sendPhoneOtp(
+      {required String phoneNumber, String countryCode = "IN"}) async {
+    final response = await httpClient.post(
+        endpoint: '/api/v1/authenticate/phone',
         body: {'phone_number': phoneNumber, 'country_short_name': countryCode});
     try {
-      return OtpResponse.fromJson(response.data['data']);
+      return OtpResponse.fromJson(response['data']);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Response> verifyPhoneOtp(
-      {required String phoneNumber, required String countryCode,
-        required String otp, required String token}) async {
-    return await httpClient.post(
-        endpoint: "/api/v1/authenticate/phone/verify",
-        body: {
-          "phone_number": phoneNumber,
-          "country_short_name": countryCode,
-          "otp": otp,
-          "token": token
-        });
+  /// Verify the OTP providing [phoneNumber], [otp] and [token] provided with sendEmailOtp().
+  Future<AuthTokenResponse> verifyPhoneOtp(
+      {required String phoneNumber, required String otp,
+        required String token, String countryCode = "IN"}) async {
+    final response = await httpClient
+        .post(endpoint: "/api/v1/authenticate/phone/verify", body: {
+      "phone_number": phoneNumber,
+      "country_short_name": countryCode,
+      "otp": otp,
+      "token": token
+    });
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
+    await tokenManager.storeTokens(
+        authTokenResponse.data.authToken,
+        authTokenResponse.data.refreshAuthToken,
+        authTokenResponse.data.deviceToken);
+    return authTokenResponse;
   }
 
   /// Use to check if the current session in the app is logged in or not.
@@ -350,24 +359,23 @@ class Okto {
     return result;
   }
 
-  Future<void> openOnboarding({
-    required BuildContext context,
+  Future<void> openOnboarding(
+      {required BuildContext context,
 
-    /// Initial height of the bottom sheet
-    /// Ranges from 0.1 to 1.0
-    /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
-    double height = 0.9,
-    String textPrimaryColor = '0xFFFFFFFF',
-    String textSecondaryColor = '0xFFFFFFFF',
-    String textTertiaryColor = '0xFFFFFFFF',
-    String accent1Color = '0xFF905BF5',
-    String accent2Color = '0x80905BF5',
-    String strokeBorderColor = '0xFFACACAB',
-    String strokeDividerColor = '0x4DA8A8A8',
-    String surfaceColor = '0xFF1F1F1F',
-    String backgroundColor = '0xFF000000',
-    required Future<String> Function() gAuthCallback
-  }) async {
+      /// Initial height of the bottom sheet
+      /// Ranges from 0.1 to 1.0
+      /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
+      double height = 0.9,
+      String textPrimaryColor = '0xFFFFFFFF',
+      String textSecondaryColor = '0xFFFFFFFF',
+      String textTertiaryColor = '0xFFFFFFFF',
+      String accent1Color = '0xFF905BF5',
+      String accent2Color = '0x80905BF5',
+      String strokeBorderColor = '0xFFACACAB',
+      String strokeDividerColor = '0x4DA8A8A8',
+      String surfaceColor = '0xFF1F1F1F',
+      String backgroundColor = '0xFF000000',
+      required Future<String> Function() gAuthCallback}) async {
     String buildtype = '';
     switch (buildType) {
       case BuildType.sandbox:

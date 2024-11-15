@@ -42,14 +42,16 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
           ElevatedButton(
               onPressed: () async {
                 try {
-                  final response =
-                      await okto!.sendPhoneOtp(phoneNumber: phoneController.text, countryCode: "IN");
+                  final response = await okto!.sendPhoneOtp(
+                      phoneNumber: phoneController.text, countryCode: "IN");
+                  debugPrint("Sending phone otp: ${response.token}");
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => OtpVerificationScreen(
-                                email: phoneController.text,
+                                phoneOrEmail: phoneController.text,
                                 token: response.token ?? "",
+                                authType: "PHONE",
                               )));
                 } catch (e) {
                   print(e);

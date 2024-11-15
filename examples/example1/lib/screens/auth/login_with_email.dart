@@ -47,8 +47,9 @@ class _LoginWithEmailState extends State<LoginWithEmail> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => OtpVerificationScreen(
-                              email: emailIdController.text,
+                              phoneOrEmail: emailIdController.text,
                               token: response.token ?? "",
+                              authType: "EMAIL",
                             )));
                   } catch (e) {
                     print(e);

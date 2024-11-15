@@ -1,34 +1,58 @@
 import 'package:example/okto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-
-  final String email;
+  final String phoneOrEmail;
   final String token;
+  final String authType;
 
   const OtpVerificationScreen(
-      {super.key, required this.email, required this.token});
+      {super.key,
+      required this.phoneOrEmail,
+      required this.token,
+      required this.authType});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-
   final TextEditingController otpController = TextEditingController();
+
+  String _message = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Verify the OTP"),
+        title: const Text(
+          "Verify the OTP",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
       ),
       body: Column(
         children: [
-          Text("Enter the OTP"),
-          SizedBox(height: 52,),
+          const SizedBox(
+            height: 32,
+          ),
+          const Text(
+            "Enter the OTP",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(
+            height: 52,
+          ),
           Pinput(
             controller: otpController,
             length: 6,
@@ -41,43 +65,65 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               height: 46,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: Colors.blueAccent),
+                border: Border.all(color: Colors.blueAccent),
               ),
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
             ),
             defaultPinTheme: PinTheme(
-              margin: EdgeInsets.symmetric(horizontal: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 6),
               width: 46,
               height: 46,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.green.shade400,
+                  color: Colors.blueAccent.shade400,
                 ),
               ),
               textStyle: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.green.shade400,
+                color: Colors.blueAccent.shade400,
               ),
             ),
           ),
+          const SizedBox(
+            height: 52,
+          ),
+          Text(
+            _message,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          )
         ],
       ),
     );
   }
 
-  void verifyOTP(String otp) {
+  Future<void> verifyOTP(String otp) async {
+    if (otp.length != 6) return;
     try {
-      final response = okto!.verifyEmailOtp(email: widget.email, otp: otp, token: widget.token);
-      debugPrint("Response: ${response}");
+      if(widget.authType == "PHONE") {
+        AuthTokenResponse? response = await okto!
+            .verifyPhoneOtp(phoneNumber: widget.phoneOrEmail, otp: otp, token: widget.token);
+      } else if(widget.authType == "EMAIL") {
+        AuthTokenResponse? response = await okto!
+            .verifyEmailOtp(emailId: widget.phoneOrEmail, otp: otp, token: widget.token);
+      }
+      setState(() {
+        _message = "Verified successfully";
+      });
     } catch (e) {
       debugPrint("Error: ${e}");
+      setState(() {
+        _message = "Error: ${e}";
+      });
     }
   }
 }
