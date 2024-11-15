@@ -375,7 +375,8 @@ class Okto {
       String strokeDividerColor = '0x4DA8A8A8',
       String surfaceColor = '0xFF1F1F1F',
       String backgroundColor = '0xFF000000',
-      required Future<String> Function() gAuthCallback}) async {
+      required Future<String> Function() gAuthCallback,
+      required Function onLoginSuccess}) async {
     String buildtype = '';
     switch (buildType) {
       case BuildType.sandbox:
@@ -421,6 +422,7 @@ class Okto {
                   loginCallback: (AuthTokenData data) {
                     tokenManager.storeTokens(data.authToken,
                         data.refreshAuthToken, data.deviceToken);
+                    onLoginSuccess.call();
                   },
                 )));
   }

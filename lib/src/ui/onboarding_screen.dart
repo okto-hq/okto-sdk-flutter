@@ -29,9 +29,6 @@ class OnboardingScreen extends StatelessWidget {
           final String type = response['type'];
           if (type == "auth_success") {
             loginCallback?.call(AuthTokenData.fromMap(response['data']));
-            Future.delayed(const Duration(seconds: 2), () {
-              Navigator.of(context).pop();
-            });
           } else if (type == "g_auth") {
             String tokenId = await gAuthCallback();
             controller.runJavaScript('''

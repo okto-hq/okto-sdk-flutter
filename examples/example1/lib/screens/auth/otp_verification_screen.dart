@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:pinput/pinput.dart';
 
+import '../home/home_page.dart';
+
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneOrEmail;
   final String token;
@@ -119,6 +121,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       setState(() {
         _message = "Verified successfully";
       });
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
     } catch (e) {
       debugPrint("Error: ${e}");
       setState(() {

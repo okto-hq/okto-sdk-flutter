@@ -2,6 +2,7 @@ import 'package:example/screens/auth/login_with_email.dart';
 import 'package:example/screens/auth/login_with_google_page.dart';
 import 'package:example/screens/auth/login_with_id_token.dart';
 import 'package:example/screens/auth/login_with_userid.dart';
+import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -85,14 +86,28 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   await okto!.openOnboarding(
                       context: context,
-                      gAuthCallback: _loginWithGoogle
-                  );
+                      gAuthCallback: _loginWithGoogle,
+                      onLoginSuccess: () {
+                        Future.delayed(const Duration(seconds: 2), () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                        });
+                      });
                 },
                 child: const Text('Onboarding')),
+            SizedBox(
+              height: 52,
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<bool> checkLoginStatus() async {
+    return okto!.isLoggedIn();
   }
 
   Future<String> _loginWithGoogle() async {
@@ -106,7 +121,8 @@ class _LoginPageState extends State<LoginPage> {
     );
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
       if (googleAuth == null) return "";
       return googleAuth.idToken ?? "";
     } catch (e) {
