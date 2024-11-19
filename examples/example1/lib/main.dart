@@ -1,11 +1,25 @@
 import 'package:example/okto.dart';
+import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:example/screens/init/init_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    name: "Okto-3p-example",
+      options: FirebaseOptions(
+        apiKey: 'AIzaSyCdRjCVZlhrq72RuEklEyyxYlBRCYhI2Sw',
+        appId: '1:406099696497:android:21d5142deea38dda3574d0',
+        messagingSenderId: '406099696497',
+        projectId: 'flutterfire-e2e-tests',
+        databaseURL:
+        'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
+        storageBucket: 'flutterfire-e2e-tests.appspot.com',
+      )
+  );
   okto = Okto(globals.getApiKey(), globals.getBuildType());
   runApp(const MyApp());
 }

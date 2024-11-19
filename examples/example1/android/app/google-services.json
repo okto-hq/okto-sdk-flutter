@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "960827625068",
+    "project_id": "okto-3p-example-98162",
+    "storage_bucket": "okto-3p-example-98162.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960827625068:android:0c3b7b69648e0b5cab5249",
+        "android_client_info": {
+          "package_name": "com.okto3p.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "960827625068-tpb9g4dbravprgvjfbdk27h9vh87v1jq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.okto3p.example",
+            "certificate_hash": "3bb9092f68432385f5ffcbf8ce98ec6e68f542f9"
+          }
+        },
+        {
+          "client_id": "960827625068-r2bf376vin8ctv68q2vst6k4je4iffrt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSMSnxFeA3hcdQYDXn1SGmkjO19N7gYfM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "960827625068-r2bf376vin8ctv68q2vst6k4je4iffrt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "960827625068-jagj7guk5sl1mjbmh6v45g367377rl8d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.example"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

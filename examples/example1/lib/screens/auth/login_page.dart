@@ -121,12 +121,11 @@ class _LoginPageState extends State<LoginPage> {
     );
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
       if (googleAuth == null) return "";
       return googleAuth.idToken ?? "";
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("GAuth Error occurred: $e");
       return "";
     }
   }

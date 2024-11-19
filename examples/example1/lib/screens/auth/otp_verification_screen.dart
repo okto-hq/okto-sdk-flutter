@@ -62,7 +62,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               verifyOTP(value);
             },
             focusedPinTheme: PinTheme(
-              margin: EdgeInsets.symmetric(horizontal: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 6),
               width: 46,
               height: 46,
               decoration: BoxDecoration(
