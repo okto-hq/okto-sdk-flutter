@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart';
@@ -359,13 +360,17 @@ class Okto {
     return result;
   }
 
+  /// [gAuthCallback] : Implement this for G-auth, this will return
+  /// idToken which will authenticated using by Okto auth service.
+  /// [onLoginSuccess] : Implement this when user logged in successfully.
+  /// We save auth details to local storage which later can be accessed
+  /// to access other flow.
+  /// [primaryAuth] : Default login method eg: Phone, Email or GAuth.
+  /// User can change later according to his preference.
+  /// [title] : The vendor's brand name, that will be shown on login page.
+  /// [iconUrl] : Vendor's brand image URL, that will be shown on login page
   Future<void> openOnboarding(
       {required BuildContext context,
-
-      /// Initial height of the bottom sheet
-      /// Ranges from 0.1 to 1.0
-      /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
-      double height = 0.9,
       String textPrimaryColor = '0xFFFFFFFF',
       String textSecondaryColor = '0xFFFFFFFF',
       String textTertiaryColor = '0xFFFFFFFF',
@@ -375,6 +380,10 @@ class Okto {
       String strokeDividerColor = '0x4DA8A8A8',
       String surfaceColor = '0xFF1F1F1F',
       String backgroundColor = '0xFF000000',
+      String iconUrl = '',
+      String title = '',
+      String subtitle = '',
+      AuthType primaryAuth = AuthType.Email,
       required Future<String> Function() gAuthCallback,
       required Function onLoginSuccess}) async {
     String buildtype = '';
@@ -401,7 +410,11 @@ class Okto {
         window.localStorage.setItem('strokeBorderColor', '$strokeBorderColor');
         window.localStorage.setItem('strokeDividerColor', '$strokeDividerColor');
         window.localStorage.setItem('surfaceColor', '$surfaceColor');
-        window.localStorage.setItem('backgroundColor', '$backgroundColor'); 
+        window.localStorage.setItem('backgroundColor', '$backgroundColor');
+        window.localStorage.setItem('primaryAuthType', '${primaryAuth.name}');
+        window.localStorage.setItem('brandTitle', '$title');
+        window.localStorage.setItem('brandSubtitle', '$subtitle');
+        window.localStorage.setItem('brandIconUrl', '$iconUrl');
       ''';
       return injectJs;
     }
@@ -476,7 +489,8 @@ class Okto {
 
       if (authToken != null) {
         injectJs += "window.localStorage.setItem('authToken', '$authToken');";
-        injectJs += "window.localStorage.setItem('deviceToken', '$deviceToken');";
+        injectJs +=
+            "window.localStorage.setItem('deviceToken', '$deviceToken');";
       }
       return injectJs;
     }
