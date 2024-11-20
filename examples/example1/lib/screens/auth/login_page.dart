@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                       context: context,
                       gAuthCallback: _loginWithGoogle,
                       onLoginSuccess: () {
-                        Future.delayed(const Duration(seconds: 2), () {
+                        Future.delayed(const Duration(seconds: 5), () {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

@@ -29,6 +29,4 @@ class Globals {
   String getApiKey() {
     return globalClientApiKey;
   }
-
-  
 }
