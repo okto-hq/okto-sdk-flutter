@@ -10,7 +10,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     name: "Okto-3p-example",
-      options: FirebaseOptions(
+      options: const FirebaseOptions(
         apiKey: 'AIzaSyCdRjCVZlhrq72RuEklEyyxYlBRCYhI2Sw',
         appId: '1:406099696497:android:21d5142deea38dda3574d0',
         messagingSenderId: '406099696497',
