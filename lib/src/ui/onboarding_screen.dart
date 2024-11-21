@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/utils/app_constants.dart';
@@ -48,10 +49,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           case WebEvent.G_AUTH:
             {
               String tokenId = await widget.gAuthCallback();
-              final data = jsonEncode({
-                "type": WebEvent.G_AUTH,
-                "data": tokenId
-              });
+              final data =
+                  jsonEncode({"type": WebEvent.G_AUTH, "data": tokenId});
               _controller.runJavaScript('''
                 window.postMessage('$data', '*');
               ''');
@@ -63,10 +62,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           case WebEvent.COPY_TEXT: {
               String pastedOTP = await FlutterClipboard.paste();
               pastedOTP = pastedOTP.trim();
-              final data = jsonEncode({
-                "type": WebEvent.COPY_TEXT,
-                "data": pastedOTP
-              });
+              final data =
+                  jsonEncode({"type": WebEvent.COPY_TEXT, "data": pastedOTP});
               _controller.runJavaScript('''
                 window.postMessage('$data', '*');
               ''');
@@ -94,18 +91,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Stack(
+        body: Column(
           children: [
-            WebViewWidget(
-              controller: _controller
-                ..clearCache()
-                ..clearLocalStorage(),
-            ),
             if (_isLoading) ...[
-              Center(
-                child: CircularProgressIndicator(),
-              )
-            ]
+              const LinearProgressIndicator()
+            ],
+            Expanded(
+              child: WebViewWidget(
+                controller: _controller
+                  ..clearCache()
+                  ..clearLocalStorage(),
+              ),
+            ),
           ],
         ),
       ),
