@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
-
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_flutter_sdk/src/utils/app_constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   final String javaScript;
   final String url;
   final Future<String> Function() gAuthCallback;
@@ -18,44 +20,117 @@ class OnboardingScreen extends StatelessWidget {
       required this.gAuthCallback});
 
   @override
-  Widget build(BuildContext context) {
-    WebViewController controller = WebViewController();
-    controller
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  bool _isLoading = true;
+  final WebViewController _controller = WebViewController();
+
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel("Print",
           onMessageReceived: (JavaScriptMessage data) async {
         Map<String, dynamic>? response = jsonDecode(data.message);
-        if (response != null) {
-          final String type = response['type'];
-          if (type == "auth_success") {
-            final authDetail = AuthTokenData.fromMap(response['data']);
-            loginCallback?.call(authDetail);
-          } else if (type == "g_auth") {
-            String tokenId = await gAuthCallback();
-            controller.runJavaScript('''
-                window.postMessage('$tokenId', '*');
+        if (response == null) return;
+        final String type = response['type'];
+        switch (type) {
+          case WebEvent.AUTH_SUCCESS:
+            {
+              final authDetail = AuthTokenData.fromMap(response['data']);
+              widget.loginCallback?.call(authDetail);
+            }
+          case WebEvent.G_AUTH:
+            {
+              String tokenId = await widget.gAuthCallback();
+              final data = jsonEncode({
+                "type": WebEvent.G_AUTH,
+                "data": tokenId
+              });
+              _controller.runJavaScript('''
+                window.postMessage('$data', '*');
               ''');
-          }
+            }
+          case WebEvent.GO_BACK:
+            {
+              Navigator.of(context).pop();
+            }
+          case WebEvent.COPY_TEXT: {
+              String pastedOTP = await FlutterClipboard.paste();
+              pastedOTP = pastedOTP.trim();
+              final data = jsonEncode({
+                "type": WebEvent.COPY_TEXT,
+                "data": pastedOTP
+              });
+              _controller.runJavaScript('''
+                window.postMessage('$data', '*');
+              ''');
+            }
         }
       })
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {},
           onPageStarted: (String url) {
-            controller.runJavaScript(javaScript);
+            _controller.runJavaScript(widget.javaScript);
+            showLoader();
           },
-          onPageFinished: (String url) {},
+          onPageFinished: (String url) {
+            hideLoader();
+          },
           onHttpError: (HttpResponseError error) {},
           onWebResourceError: (WebResourceError error) {},
         ),
       )
-      ..loadRequest(Uri.parse(url));
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
-      child: WebViewWidget(
-        controller: controller
-          ..clearCache()
-          ..clearLocalStorage(),
+      child: Scaffold(
+        body: Stack(
+          children: [
+            WebViewWidget(
+              controller: _controller
+                ..clearCache()
+                ..clearLocalStorage(),
+            ),
+            if (_isLoading) ...[
+              Center(
+                child: CircularProgressIndicator(),
+              )
+            ]
+          ],
+        ),
       ),
     );
+  }
+
+  void showLoader() {
+    setState(() {
+      _isLoading = true;
+    });
+  }
+
+  void hideLoader() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(seconds: 4), () {
+      fixme: // we get page finished callback multiple times
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 }

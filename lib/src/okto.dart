@@ -372,8 +372,8 @@ class Okto {
   Future<void> openOnboarding(
       {required BuildContext context,
       String textPrimaryColor = '0xFFFFFFFF',
-      String textSecondaryColor = '0xFFFFFFFF',
-      String textTertiaryColor = '0xFFFFFFFF',
+      String textSecondaryColor = '0xB3FFFFFF',
+      String textTertiaryColor = '0xffA8A8A8',
       String accent1Color = '0xFF905BF5',
       String accent2Color = '0x80905BF5',
       String strokeBorderColor = '0xFFACACAB',
@@ -402,6 +402,7 @@ class Okto {
     String getInjectedJs() {
       String injectJs = '''
         window.localStorage.setItem('ENVIRONMENT', '$buildtype');
+        window.localStorage.setItem('API_KEY', '$apiKey');
         window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
         window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
         window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
@@ -437,7 +438,9 @@ class Okto {
                         data.refreshAuthToken, data.deviceToken);
                     onLoginSuccess.call();
                   },
-                )));
+                )
+        )
+    );
   }
 
   Future openBottomSheet({
