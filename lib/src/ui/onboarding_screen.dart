@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:clipboard/clipboard.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/utils/app_constants.dart';
@@ -41,13 +40,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (response == null) return;
         final String type = response['type'];
         switch (type) {
-          case WebEvent.AUTH_SUCCESS:
-            {
+          case WebEvent.AUTH_SUCCESS: {
               final authDetail = AuthTokenData.fromMap(response['data']);
               widget.loginCallback?.call(authDetail);
             }
-          case WebEvent.G_AUTH:
-            {
+          case WebEvent.G_AUTH: {
               String tokenId = await widget.gAuthCallback();
               final data =
                   jsonEncode({"type": WebEvent.G_AUTH, "data": tokenId});
@@ -55,8 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 window.postMessage('$data', '*');
               ''');
             }
-          case WebEvent.GO_BACK:
-            {
+          case WebEvent.GO_BACK: {
               Navigator.of(context).pop();
             }
           case WebEvent.COPY_TEXT: {
@@ -91,18 +87,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
+        body: Stack(
           children: [
-            if (_isLoading) ...[
-              const LinearProgressIndicator()
-            ],
-            Expanded(
-              child: WebViewWidget(
-                controller: _controller
-                  ..clearCache()
-                  ..clearLocalStorage(),
-              ),
+            WebViewWidget(
+              controller: _controller
+                ..clearCache()
+                ..clearLocalStorage(),
             ),
+            if (_isLoading) ...[
+              const Center(child: CircularProgressIndicator())
+            ],
           ],
         ),
       ),
@@ -117,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void hideLoader() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(seconds: 4), () {
+    _debounce = Timer(const Duration(seconds: 1), () {
       fixme: // we get page finished callback multiple times
       setState(() {
         _isLoading = false;
