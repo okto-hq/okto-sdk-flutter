@@ -1,20 +1,22 @@
 name: okto_flutter_sdk
 description: "Official OKTO SDK for Flutter"
-version: 0.0.15
+version: 0.0.16
 homepage:
 
 environment:
-  sdk: '>=3.3.4 <4.0.0'
+  sdk: ">=3.3.4 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
   dart_jsonwebtoken: ^2.14.0
-  dio: '>=4.0.0'
+  dio: 5.3.3
   flutter:
     sdk: flutter
   flutter_secure_storage: ^9.2.2
-  http: '>=0.13.0'
+  http: ">=0.13.0"
   webview_flutter: ^4.8.0
+  clipboard: ^0.1.3
+#  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:

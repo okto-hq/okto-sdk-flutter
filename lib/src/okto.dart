@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart';
@@ -12,10 +13,13 @@ import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
+import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
 
 class Okto {
@@ -65,6 +69,65 @@ class Okto {
     final response = await httpClient.post(
         endpoint: '/api/v1/jwt-authenticate',
         body: {'user_id': userId, 'auth_token': jwtToken});
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
+    await tokenManager.storeTokens(
+        authTokenResponse.data.authToken,
+        authTokenResponse.data.refreshAuthToken,
+        authTokenResponse.data.deviceToken);
+    return authTokenResponse;
+  }
+
+  /// To send OTP to the given [email].
+  /// returns an token along with OTP which will be used to verify the OTP.
+  Future<OtpResponse> sendEmailOtp({required String email}) async {
+    final response = await httpClient
+        .post(endpoint: "/api/v1/authenticate/email", body: {"email": email});
+    try {
+      return OtpResponse.fromJson(response['data']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Verify the OTP providing [emailId], [otp] and [token] provided with sendEmailOtp().
+  Future<AuthTokenResponse> verifyEmailOtp(
+      {required String emailId, required String otp, required String token}) async {
+    final response = await httpClient.post(
+        endpoint: "/api/v1/authenticate/email/verify",
+        body: {"email": emailId, "otp": otp, "token": token});
+    final authTokenResponse = AuthTokenResponse.fromMap(response);
+    await tokenManager.storeTokens(
+        authTokenResponse.data.authToken,
+        authTokenResponse.data.refreshAuthToken,
+        authTokenResponse.data.deviceToken);
+    return authTokenResponse;
+  }
+
+  /// To send OTP to the given [phoneNumber].
+  /// returns an token along with OTP which will be used to verify the OTP.
+  Future<OtpResponse> sendPhoneOtp(
+      {required String phoneNumber, String countryCode = "IN"}) async {
+    final response = await httpClient.post(
+        endpoint: '/api/v1/authenticate/phone',
+        body: {'phone_number': phoneNumber, 'country_short_name': countryCode});
+    try {
+      return OtpResponse.fromJson(response['data']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Verify the OTP providing [phoneNumber], [otp] and [token] provided with sendEmailOtp().
+  Future<AuthTokenResponse> verifyPhoneOtp(
+      {required String phoneNumber, required String otp,
+        required String token, String countryCode = "IN"}) async {
+    final response = await httpClient
+        .post(endpoint: "/api/v1/authenticate/phone/verify", body: {
+      "phone_number": phoneNumber,
+      "country_short_name": countryCode,
+      "otp": otp,
+      "token": token
+    });
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(
         authTokenResponse.data.authToken,
@@ -297,13 +360,96 @@ class Okto {
     return result;
   }
 
+  /// [gAuthCallback] : Implement this for G-auth, this will return
+  /// idToken which will authenticated using by Okto auth service.
+  /// [onLoginSuccess] : Implement this when user logged in successfully.
+  /// We save auth details to local storage which later can be accessed
+  /// to access other flow.
+  /// [primaryAuth] : Default login method eg: Phone, Email or GAuth.
+  /// User can change later according to his preference.
+  /// [title] : The vendor's brand name, that will be shown on login page.
+  /// [iconUrl] : Vendor's brand image URL, that will be shown on login page
+  Future<void> openOnboarding(
+      {required BuildContext context,
+      String textPrimaryColor = '0xFFFFFFFF',
+      String textSecondaryColor = '0xB3FFFFFF',
+      String textTertiaryColor = '0xffA8A8A8',
+      String accent1Color = '0xFF905BF5',
+      String accent2Color = '0x80905BF5',
+      String strokeBorderColor = '0xFFACACAB',
+      String strokeDividerColor = '0x4DA8A8A8',
+      String surfaceColor = '0xFF1F1F1F',
+      String backgroundColor = '0xFF000000',
+      String iconUrl = '',
+      String title = '',
+      String subtitle = '',
+      AuthType primaryAuth = AuthType.Email,
+      required Future<String> Function() gAuthCallback,
+      required Function onLoginSuccess}) async {
+    String buildtype = '';
+    switch (buildType) {
+      case BuildType.sandbox:
+        buildtype = 'SANDBOX';
+        break;
+      case BuildType.staging:
+        buildtype = 'STAGING';
+        break;
+      case BuildType.production:
+        buildtype = 'PRODUCTION';
+        break;
+    }
+
+    String getInjectedJs() {
+      String injectJs = '''
+        window.localStorage.setItem('ENVIRONMENT', '$buildtype');
+        window.localStorage.setItem('API_KEY', '$apiKey');
+        window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
+        window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
+        window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
+        window.localStorage.setItem('accent1Color', '$accent1Color');
+        window.localStorage.setItem('accent2Color', '$accent2Color');
+        window.localStorage.setItem('strokeBorderColor', '$strokeBorderColor');
+        window.localStorage.setItem('strokeDividerColor', '$strokeDividerColor');
+        window.localStorage.setItem('surfaceColor', '$surfaceColor');
+        window.localStorage.setItem('backgroundColor', '$backgroundColor');
+        window.localStorage.setItem('primaryAuthType', '${primaryAuth.name}');
+        window.localStorage.setItem('brandTitle', '$title');
+        window.localStorage.setItem('brandSubtitle', '$subtitle');
+        window.localStorage.setItem('brandIconUrl', '$iconUrl');
+      ''';
+      return injectJs;
+    }
+
+    final url = switch (buildType) {
+      BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com/#/login_screen',
+      BuildType.production => 'https://3p.okto.tech/login_screen/#/login_screen',
+      BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
+    };
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => OnboardingScreen(
+                  javaScript: getInjectedJs(),
+                  url: url,
+                  gAuthCallback: gAuthCallback,
+                  loginCallback: (AuthTokenData data) {
+                    tokenManager.storeTokens(data.authToken,
+                        data.refreshAuthToken, data.deviceToken);
+                    onLoginSuccess.call();
+                  },
+                )
+        )
+    );
+  }
+
   Future openBottomSheet({
     required BuildContext context,
 
     /// Initial height of the bottom sheet
     /// Ranges from 0.1 to 1.0
     /// Default value is 0.7, which means the bottom sheet will take 70% of the screen height
-    double height = 0.7,
+    double height = 0.9,
     String textPrimaryColor = '0xFFFFFFFF',
     String textSecondaryColor = '0xFFFFFFFF',
     String textTertiaryColor = '0xFFFFFFFF',
@@ -346,7 +492,8 @@ class Okto {
 
       if (authToken != null) {
         injectJs += "window.localStorage.setItem('authToken', '$authToken');";
-        injectJs += "window.localStorage.setItem('deviceToken', '$deviceToken');";
+        injectJs +=
+            "window.localStorage.setItem('deviceToken', '$deviceToken');";
       }
       return injectJs;
     }
@@ -380,22 +527,20 @@ class Okto {
             BuildType.staging => 'https://3p.oktostage.com/',
           }));
 
-        return LayoutBuilder(
-            builder: (context, constraints) {
-              return SizedBox(
-                height: constraints.maxHeight * height,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
-                  child: WebViewWidget(
-                    controller: controller
-                      ..clearCache()
-                      ..clearLocalStorage(),
-                  ),
-                ),
-              );
-            });
+        return LayoutBuilder(builder: (context, constraints) {
+          return SizedBox(
+            height: constraints.maxHeight * height,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              child: WebViewWidget(
+                controller: controller
+                  ..clearCache()
+                  ..clearLocalStorage(),
+              ),
+            ),
+          );
+        });
       },
     );
   }
