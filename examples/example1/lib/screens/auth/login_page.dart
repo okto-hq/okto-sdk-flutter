@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                       });
                 },
                 child: const Text('Onboarding')),
-            SizedBox(
+            const SizedBox(
               height: 52,
             ),
           ],
