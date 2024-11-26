@@ -109,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void hideLoader() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(seconds: 5), () {
+    _debounce = Timer(const Duration(seconds: 1), () {
       fixme: // we get page finished callback multiple times
       _isLoading.value = false;
     });
