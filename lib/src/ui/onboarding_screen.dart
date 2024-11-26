@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/utils/app_constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -24,7 +25,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  bool _isLoading = true;
+  final RxBool _isLoading = true.obs;
   final WebViewController _controller = WebViewController();
 
   Timer? _debounce;
@@ -71,7 +72,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onProgress: (int progress) {},
           onPageStarted: (String url) {
             _controller.runJavaScript(widget.javaScript);
-            showLoader();
           },
           onPageFinished: (String url) {
             hideLoader();
@@ -94,9 +94,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ..clearCache()
                 ..clearLocalStorage(),
             ),
-            if (_isLoading) ...[
-              const Center(child: CircularProgressIndicator())
-            ],
+            Obx(() => _isLoading.value
+                ? const Center(child: CircularProgressIndicator())
+                : const SizedBox.shrink())
           ],
         ),
       ),
@@ -104,24 +104,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void showLoader() {
-    setState(() {
-      _isLoading = true;
-    });
+    _isLoading.value = true;
   }
 
   void hideLoader() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 600), () {
+    _debounce = Timer(const Duration(seconds: 5), () {
       fixme: // we get page finished callback multiple times
-      setState(() {
-        _isLoading = false;
-      });
+      _isLoading.value = false;
     });
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    _isLoading.close();
     super.dispose();
   }
 }
