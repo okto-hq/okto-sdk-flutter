@@ -25,6 +25,11 @@ class TokenManager {
     return authToken;
   }
 
+  Future<String?> getDeviceToken() async {
+    String? deviceToken = await secureStorage.read(key: 'device_token');
+    return deviceToken;
+  }
+
   Future<void> storeTokens(String authToken, String refreshToken, String deviceToken) async {
     await secureStorage.write(key: 'auth_token', value: authToken);
     await secureStorage.write(key: 'refresh_auth_token', value: refreshToken);

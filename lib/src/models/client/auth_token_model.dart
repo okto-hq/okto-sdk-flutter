@@ -43,7 +43,7 @@ class AuthTokenData {
     return {
       'auth_token': authToken,
       'message': message,
-      'refresb_auth_token': refreshAuthToken,
+      'refresh_auth_token': refreshAuthToken,
       'device_token': deviceToken,
     };
   }
@@ -52,7 +52,7 @@ class AuthTokenData {
     return AuthTokenData(
       authToken: map['auth_token'] ?? '',
       message: map['message'] ?? '',
-      refreshAuthToken: map['refresb_auth_token'] ?? '',
+      refreshAuthToken: map['refresh_auth_token'] ?? '',
       deviceToken: map['device_token'] ?? '',
     );
   }
