@@ -18,6 +18,13 @@ dependencies:
   clipboard: ^0.1.3
   get: 4.6.6
 
+  dcx_network_client:
+    path: /Users/shubham.pandey/Documents/professional/dcx_network_client/dcx_network_client_flutter
+#  git:
+#    url: git@github.com:coindcx-okto/dcx_network_client.git
+#    path: dcx_network_client
+#    ref: main
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

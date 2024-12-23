@@ -14,5 +14,6 @@ export 'src/models/client/user_model.dart';
 export 'src/models/client/user_portfilio_activity_model.dart';
 export 'src/models/client/user_portfolio_model.dart';
 export 'src/models/client/wallet_model.dart';
+export 'src/models/client/order_history_model_v2.dart';
 export 'src/utils/http_client.dart';
 export 'src/utils/enums.dart';

@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:okto_flutter_sdk/src/data/repository_provider.dart';
 import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
@@ -13,28 +16,36 @@ import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
+import 'package:okto_flutter_sdk/src/models/whitelisted_token_data_v2.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
+import 'models/activity_data_v2.dart';
+import 'models/client/order_history_model_v2.dart';
 import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
+import 'models/nft_order_details_v2.dart';
+import 'models/portfolio_data_v2.dart';
+import 'models/wallet_data_v2.dart';
+import 'models/whitelisted_network_data_v2.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
   final String apiKey;
-  final HttpClient httpClient;
-  final TokenManager tokenManager;
+  late final HttpClient httpClient;
+  late final TokenManager tokenManager;
   final BuildType buildType;
   String? _oktoToken;
   String? _idToken;
+  late final RepositoryProvider _repositoryProvider;
 
-  Okto(this.apiKey, this.buildType)
-      : httpClient = HttpClient(apiKey: apiKey, buildType: buildType),
-        tokenManager =
-            TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
+  Okto(this.apiKey, this.buildType) {
+    httpClient = HttpClient(apiKey: apiKey, buildType: buildType);
+    tokenManager = TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
+    _repositoryProvider = Get.put(RepositoryProvider());
+  }
 
   // Factory constructor for testing
   @visibleForTesting
@@ -52,7 +63,6 @@ class Okto {
     _idToken = idToken;
     final response = await httpClient
         .post(endpoint: '/api/v1/authenticate', body: {'id_token': idToken});
-    print(response.toString());
     final authTokenResponse = AuthTokenResponse.fromMap(response);
     await tokenManager.storeTokens(
         authTokenResponse.data.authToken,
@@ -173,53 +183,49 @@ class Okto {
   }
 
   /// Method to get the user wallets
-  /// Returns a [WalletResponse] object
-  Future<WalletResponse> getWallets() async {
+  /// Returns a [WalletDataV2] object
+  Future<WalletDataV2> getWallets() async {
     final authToken = await tokenManager.getAuthToken();
     final response =
-        await httpClient.get(endpoint: '/api/v1/wallet', authToken: authToken);
-    return WalletResponse.fromMap(response);
+        await _repositoryProvider.sdkRepository.getWallets();
+    return WalletDataV2.fromJson(response);
   }
 
   /// Method to get supported networks
-  /// Returns a [NetworkDetails] object
-  Future<NetworkDetails> supportedNetworks() async {
+  /// Returns a [WhitelistedNetworkDataV2] object
+  Future<WhitelistedNetworkDataV2> supportedNetworks() async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.get(
-        endpoint: '/api/v1/supported/networks', authToken: authToken);
-    return NetworkDetails.fromMap(response);
+    final response = await _repositoryProvider.sdkRepository.getSupportedNetworks();
+    return WhitelistedNetworkDataV2.fromJson(response);
   }
 
   /// Method to get supported tokens with pagination
-  /// Returns a [TokenResponse] object
+  /// Returns a [WhitelistedTokenDataV2] object
   /// Default value of page is 1 and size is 10
-  Future<TokenResponse> supportedTokens({int page = 1, int size = 10}) async {
+  Future<WhitelistedTokenDataV2> supportedTokens({int page = 1, int size = 10}) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.get(
-        endpoint: '/api/v1/supported/tokens?page=$page&size=$size',
-        authToken: authToken);
-    return TokenResponse.fromMap(response);
+    final response = await  _repositoryProvider.sdkRepository.getAllTokens(
+        limit: page, offset: size);
+    return WhitelistedTokenDataV2.fromJson(response.data);
   }
 
   /// Method to get the user portfolio
-  /// Returns a [UserPortfolioResponse] object
-  Future<UserPortfolioResponse> userPortfolio() async {
+  /// Returns a [PortfolioDataV2] object
+  Future<PortfolioDataV2> userPortfolio() async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.get(
-        endpoint: '/api/v1/portfolio', authToken: authToken);
-    return UserPortfolioResponse.fromMap(response);
+    final response = await _repositoryProvider.sdkRepository.getCryptoPortfolio();
+    return PortfolioDataV2.fromJson(response);
   }
 
   /// Method to get the user portfolio activity
   /// Returns a [UserPortfolioActivityResponse] object
   /// Default value of limit is 10 and offset is 1
-  Future<UserPortfolioActivityResponse> getUserPortfolioActivity(
+  Future<ActivityDataV2> getUserPortfolioActivity(
       {int limit = 10, int offset = 1}) async {
     final authToken = await tokenManager.getAuthToken();
-    final response = await httpClient.get(
-        endpoint: '/api/v1/portfolio/activity?limit=$limit&offset=$offset',
-        authToken: authToken);
-    return UserPortfolioActivityResponse.fromMap(response);
+    final response = await _repositoryProvider.sdkRepository.getUserActivity(
+        size: limit, page: offset);
+    return ActivityDataV2.fromJson(response);
   }
 
   /// Method to transfer tokens from one wallet to another
@@ -247,7 +253,7 @@ class Okto {
   /// Method to get order history with optional filters
   /// Returns a [OrderHistoryResponse] object
   /// Default value of offset is 0 and limit is 1 and orderState is SUCCESS
-  Future<OrderHistoryResponse> orderHistory(
+  Future<OrderHistoryResponseV2> orderHistory(
       {int offset = 0,
       int limit = 1,
       String? orderId,
@@ -266,15 +272,16 @@ class Okto {
     }
     final authToken = await tokenManager.getAuthToken();
     final queryParameters = {
-      'offset': offset.toString(),
-      'limit': limit.toString(),
+      'page': offset.toString(),
+      'size': limit.toString(),
+      'intent_type': 'TOKEN_TRANSFER' ,
       if (orderId != null) 'order_id': orderId,
       if (orderState != null) 'order_state': orderStateToPass
     };
     final queryString = Uri(queryParameters: queryParameters).query;
     final response = await httpClient.get(
-        endpoint: '/api/v1/orders?$queryString', authToken: authToken);
-    return OrderHistoryResponse.fromMap(response);
+        endpoint: '/api/v2/orders?$queryString', authToken: authToken);
+    return OrderHistoryResponseV2.fromMap(response);
   }
 
   /// Method to transfer nft
@@ -306,10 +313,10 @@ class Okto {
   }
 
   /// Method to get the order details for nft
-  /// Returns a [OrderDetailsNftResponse] object
+  /// Returns a [NftOrderDetailsV2] object
   /// Default value of page is 1 and size is 500
   /// Optional parameters: orderId, orderState
-  Future<OrderDetailsNftResponse> orderDetailsNft(
+  Future<NftOrderDetailsV2> orderDetailsNft(
       {int page = 1,
       int size = 500,
       String? orderId,
@@ -321,11 +328,8 @@ class Okto {
       if (orderId != null) 'order_id': orderId,
       if (orderState != null) 'order_state': orderState
     };
-    final queryString = Uri(queryParameters: queryParams).query;
-    final response = await httpClient.get(
-        endpoint: '/api/v1/nft/order_details?$queryString',
-        authToken: authToken);
-    return OrderDetailsNftResponse.fromMap(response);
+    final response = await _repositoryProvider.sdkRepository.getNftDetails(queryParams);
+    return NftOrderDetailsV2.fromJson(response);
   }
 
   /// Method to execute a raw transaction
@@ -420,11 +424,13 @@ class Okto {
       return injectJs;
     }
 
-    final url = switch (buildType) {
-      BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com/#/login_screen',
-      BuildType.production => 'https://3p.okto.tech/login_screen/#/login_screen',
-      BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
-    };
+    // final url = switch (buildType) {
+    //   BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com/#/login_screen',
+    //   BuildType.production => 'https://3p.okto.tech/login_screen/#/login_screen',
+    //   BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
+    // };
+
+    const url = "http://localhost:5011/#/login_screen";
 
     Navigator.push(
         context,

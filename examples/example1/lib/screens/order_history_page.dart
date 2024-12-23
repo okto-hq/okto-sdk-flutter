@@ -10,9 +10,9 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  Future<OrderHistoryResponse>? _orderHistory;
+  Future<OrderHistoryResponseV2>? _orderHistory;
 
-  Future<OrderHistoryResponse> getOrderHistory() async {
+  Future<OrderHistoryResponseV2> getOrderHistory() async {
     try {
       final orderHistory = await okto!.orderHistory();
       return orderHistory;
@@ -47,7 +47,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             Expanded(
               child: _orderHistory == null
                   ? Container()
-                  : FutureBuilder<OrderHistoryResponse>(
+                  : FutureBuilder<OrderHistoryResponseV2>(
                       future: _orderHistory,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,11 +62,12 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Status: ${orderHistory.status}'),
-                                Text('Total: ${orderHistory.data.total}'),
+                                Text('Total: ${orderHistory.data?.details?.amount}'),
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: orderHistory.data.jobs.length,
+                                      // itemCount: orderHistory.data.jobs.length,
+                                    itemCount: 10,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -75,23 +76,23 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Network Name: ${orderHistory.data.jobs[index].networkName}',
+                                                'Network Name: ${orderHistory.data?.networkName ?? ''}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Order Id : ${orderHistory.data.jobs[index].orderId}',
+                                                'Order Id : ${orderHistory.data?.orderId ?? ''}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Order Type : ${orderHistory.data.jobs[index].orderType}',
+                                                'Order Type : ${orderHistory.data?.intentType ?? ''}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Status : ${orderHistory.data.jobs[index].status}',
+                                                'Status : ${orderHistory.data?.status ?? ''}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Transaction Hash: ${orderHistory.data.jobs[index].transactionHash}',
+                                                'Transaction Hash: ${orderHistory.data?.transactionHash ?? ''}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],
