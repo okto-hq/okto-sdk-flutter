@@ -7,6 +7,7 @@ import 'package:example/screens/order_details_nft_page.dart';
 import 'package:example/screens/order_history_page.dart';
 import 'package:example/screens/raw_transaction_execute_page.dart';
 import 'package:example/screens/raw_transaction_status.dart';
+import 'package:example/screens/read_contract_screen.dart';
 import 'package:example/screens/supported_networks_page.dart';
 import 'package:example/screens/supported_tokens_page.dart';
 import 'package:example/screens/transfer_nft_page.dart';
@@ -140,6 +141,16 @@ class _HomePageState extends State<HomePage> {
                                       const TransferNftPage()));
                         },
                         child: const Text('Transfer NFT')),
+
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const ReadContractScreen()));
+                        },
+                        child: const Text('Read contract data')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
