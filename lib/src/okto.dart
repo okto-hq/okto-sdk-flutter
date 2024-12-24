@@ -7,6 +7,7 @@ import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart'
 import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_status_model.dart';
+import 'package:okto_flutter_sdk/src/models/client/readcontract_response.dart';
 import 'package:okto_flutter_sdk/src/models/client/token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_nft_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
@@ -352,6 +353,29 @@ class Okto {
         endpoint: '/api/v1/rawtransaction/status?order_id=$orderId',
         authToken: authToken);
     return RawTransactionStatusResponse.fromMap(response);
+  }
+
+  /// To read contact data.
+  /// example
+  /// request payload = {
+  ///   "network_name": "APTOS_TESTNET" // required
+  ///   "data" : {
+  ///     // any
+  ///   }
+  /// }
+  /// response = {
+  ///     "success": boolean,
+  ///    "data": any
+  /// }
+  ///
+  Future<ReadContractResponse> readContractData(
+      {required Map<String, dynamic> data}) async {
+    final authToken = await tokenManager.getAuthToken();
+    final response = await httpClient.post(
+        endpoint: '/api/v1/readContractData',
+        body: data,
+        authToken: authToken);
+    return ReadContractResponse.fromJson(response);
   }
 
   /// Log-out of the okto wallet
