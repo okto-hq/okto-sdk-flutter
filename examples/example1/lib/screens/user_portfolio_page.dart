@@ -10,9 +10,9 @@ class UserPortfolioPage extends StatefulWidget {
 }
 
 class _UserPortfolioPageState extends State<UserPortfolioPage> {
-  Future<UserPortfolioResponse>? _userPortfolio;
+  Future<PortfolioDataV2>? _userPortfolio;
 
-  Future<UserPortfolioResponse> getuserPortfolio() async {
+  Future<PortfolioDataV2> getuserPortfolio() async {
     try {
       final userPortfolio = await okto!.userPortfolio();
       return userPortfolio;
@@ -47,7 +47,7 @@ class _UserPortfolioPageState extends State<UserPortfolioPage> {
             Expanded(
               child: _userPortfolio == null
                   ? Container()
-                  : FutureBuilder<UserPortfolioResponse>(
+                  : FutureBuilder<PortfolioDataV2>(
                       future: _userPortfolio,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,7 +64,7 @@ class _UserPortfolioPageState extends State<UserPortfolioPage> {
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: userPortfolio.data.tokens.length,
+                                      itemCount: userPortfolio.groupTokens?[0].tokens?.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -73,27 +73,27 @@ class _UserPortfolioPageState extends State<UserPortfolioPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SelectableText(
-                                                'Token Name: ${userPortfolio.data.tokens[index].tokenName}',
+                                                'Token Name: ${userPortfolio.groupTokens?[0].tokens?[index].name}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Quantity : ${userPortfolio.data.tokens[index].quantity}',
+                                                'Quantity : ${userPortfolio.groupTokens?[0].tokens?[index].balance}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Amount In INR : ${userPortfolio.data.tokens[index].amountInInr}',
+                                                'Amount In INR : ${userPortfolio.groupTokens?[0].holdingsPriceInr}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Network Name: ${userPortfolio.data.tokens[index].networkName}',
+                                                'Network Name: ${userPortfolio.groupTokens?[0].tokens?[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Token Address: ${userPortfolio.data.tokens[index].tokenAddress}',
+                                                'Token Address: ${userPortfolio.groupTokens?[0].tokens?[index].tokenAddress}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Token Image url: ${userPortfolio.data.tokens[index].tokenImage}',
+                                                'Token Image url: ${userPortfolio.groupTokens?[0].tokenImage}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],

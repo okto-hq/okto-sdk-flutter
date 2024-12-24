@@ -10,9 +10,9 @@ class SupportedTokensPage extends StatefulWidget {
 }
 
 class _SupportedTokensPageState extends State<SupportedTokensPage> {
-  Future<TokenResponse>? _supportedTokens;
+  Future<WhitelistedTokenDataV2>? _supportedTokens;
 
-  Future<TokenResponse> getSupportedTokens() async {
+  Future<WhitelistedTokenDataV2> getSupportedTokens() async {
     try {
       final supportedTokens = await okto!.supportedTokens();
       return supportedTokens;
@@ -47,7 +47,7 @@ class _SupportedTokensPageState extends State<SupportedTokensPage> {
             Expanded(
               child: _supportedTokens == null
                   ? Container()
-                  : FutureBuilder<TokenResponse>(
+                  : FutureBuilder<WhitelistedTokenDataV2>(
                       future: _supportedTokens,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,7 +64,7 @@ class _SupportedTokensPageState extends State<SupportedTokensPage> {
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: supportedTokens.data.tokens.length,
+                                      itemCount: supportedTokens.tokens?.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -73,15 +73,15 @@ class _SupportedTokensPageState extends State<SupportedTokensPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SelectableText(
-                                                'Network name: ${supportedTokens.data.tokens[index].networkName}',
+                                                'Network name: ${supportedTokens.tokens?[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Token address : ${supportedTokens.data.tokens[index].tokenAddress}',
+                                                'Token address : ${supportedTokens.tokens?[index].tokenAddress}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                                SelectableText(
-                                                'Token name : ${supportedTokens.data.tokens[index].tokenName}',
+                                                'Token name : ${supportedTokens.tokens?[index].name}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],

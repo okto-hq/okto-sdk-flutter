@@ -10,9 +10,9 @@ class SupportedNetworksPage extends StatefulWidget {
 }
 
 class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
-  Future<NetworkDetails>? _supportedNetworks;
+  Future<WhitelistedNetworkDataV2>? _supportedNetworks;
 
-  Future<NetworkDetails> getSupportedNetworks() async {
+  Future<WhitelistedNetworkDataV2> getSupportedNetworks() async {
     try {
       final supportedNetworks = await okto!.supportedNetworks();
       return supportedNetworks;
@@ -47,7 +47,7 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
             Expanded(
               child: _supportedNetworks == null
                   ? Container()
-                  : FutureBuilder<NetworkDetails>(
+                  : FutureBuilder<WhitelistedNetworkDataV2>(
                       future: _supportedNetworks,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,7 +64,7 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: supportedNetworks.data.network.length,
+                                      itemCount: supportedNetworks.network?.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -73,11 +73,11 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SelectableText(
-                                                'Network name: ${supportedNetworks.data.network[index].networkName}',
+                                                'Network name: ${supportedNetworks.network?[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Chain ID : ${supportedNetworks.data.network[index].chainId}',
+                                                'Chain ID : ${supportedNetworks.network?[index].chainId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],

@@ -7,7 +7,11 @@ import 'package:okto_flutter_sdk/src/models/whitelisted_network_data_v2.dart';
 import 'package:okto_flutter_sdk/src/models/whitelisted_token_data_v2.dart';
 
 import '../models/activity_data_v2.dart';
+import '../models/nft_data_v2.dart';
 import '../models/nft_order_details_v2.dart';
+import '../models/oms_data_v2.dart';
+import '../models/oms_request_v2.dart';
+import '../models/order_response_v2.dart';
 import '../models/portfolio_data_v2.dart';
 
 class SdkRepository extends IRepository {
@@ -54,6 +58,12 @@ class SdkRepository extends IRepository {
         converter: (json) => PortfolioDataV2.fromJson(json));
   }
 
+  Future<ApiResponse<NftDataV2>> getNftPortfolio() async {
+    return NetworkManager().fetch(
+        api: _apiService.ntfPortfolio,
+        converter: (json) => NftDataV2.fromJson(json));
+  }
+
   Future<ApiResponse<NftOrderDetailsV2>> getNftDetails(Map<String, dynamic> queryParams) {
     return NetworkManager().fetch(
         api: _apiService.nftDetails,
@@ -67,5 +77,24 @@ class SdkRepository extends IRepository {
         api: _apiService.wallets,
         converter: (json) => WalletDataV2.fromJson(json),
         resultKey: "data");
+  }
+
+  Future<ApiResponse<OmsDataV2>?> estimateTransaction(EstimateRequestV2 requestPayload) {
+    return NetworkManager().fetch(
+        api: _apiService.estimate,
+        converter: (json) => OmsDataV2.fromJson(json),
+        body: requestPayload.toJson(),
+        resultKey: "data"
+    );
+  }
+
+  Future<ApiResponse<OrderResponseV2>?> executeTransaction(Map<String, dynamic> payload) async {
+    final response = await NetworkManager().fetch(
+        api: _apiService.executeTransaction,
+        converter: (json) => OrderResponseV2.fromJson(json),
+        body: payload,
+        resultKey: "data"
+    );
+    return response;
   }
 }

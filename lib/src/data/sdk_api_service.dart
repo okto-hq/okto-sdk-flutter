@@ -45,6 +45,15 @@ class SdkApiService extends IApiService {
     );
   }
 
+  IApi get ntfPortfolio {
+    return Api(
+        client: apiClient,
+        name: "/portfolio/nft",
+        method: ApiMethod.get,
+        suffix: "/api",
+        version: "/v2");
+  }
+
   IApi get supportedNetworks {
     return Api(
       client: apiClient,
@@ -80,6 +89,24 @@ class SdkApiService extends IApiService {
         client: apiClient,
         name: "/wallet",
         method: ApiMethod.get,
+        suffix: "/api",
+        version: "/v2");
+  }
+
+  IApi get executeTransaction {
+    return Api(
+        client: apiClient,
+        name: "/transfer/tokens/execute",
+        method: ApiMethod.post,
+        suffix: "/api",
+        version: "/v1");
+  }
+
+  IApi get estimate {
+    return Api(
+        client: apiClient,
+        name: "/estimate",
+        method: ApiMethod.post,
         suffix: "/api",
         version: "/v2");
   }

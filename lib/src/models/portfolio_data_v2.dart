@@ -1,3 +1,4 @@
+import 'package:okto_flutter_sdk/src/models/token_v2.dart';
 import 'package:okto_flutter_sdk/src/models/whitelisted_token_data_v2.dart';
 
 /// aggregated_data : {"holdings_count":"2","holdings_price_inr":"0","holdings_price_usdt":"0","total_holding_price_inr":"0","total_holding_price_usdt":"0"}

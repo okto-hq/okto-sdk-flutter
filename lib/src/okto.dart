@@ -1,31 +1,29 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:okto_flutter_sdk/src/data/repository_provider.dart';
 import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
-import 'package:okto_flutter_sdk/src/models/client/network_model.dart';
-import 'package:okto_flutter_sdk/src/models/client/order_details_nft_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/order_history_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_execute_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/raw_transaction_status_model.dart';
-import 'package:okto_flutter_sdk/src/models/client/token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_nft_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/transfer_token_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/user_portfilio_activity_model.dart';
-import 'package:okto_flutter_sdk/src/models/client/user_portfolio_model.dart';
 import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
+import 'package:okto_flutter_sdk/src/models/oms_data_v2.dart';
 import 'package:okto_flutter_sdk/src/models/whitelisted_token_data_v2.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'models/activity_data_v2.dart';
 import 'models/client/order_history_model_v2.dart';
 import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
+import 'models/nft_data_v2.dart';
 import 'models/nft_order_details_v2.dart';
 import 'models/portfolio_data_v2.dart';
 import 'models/wallet_data_v2.dart';
@@ -44,7 +42,7 @@ class Okto {
   Okto(this.apiKey, this.buildType) {
     httpClient = HttpClient(apiKey: apiKey, buildType: buildType);
     tokenManager = TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
-    _repositoryProvider = Get.put(RepositoryProvider());
+    _repositoryProvider = Get.put(RepositoryProvider(apiKey: apiKey, tokenManager: tokenManager));
   }
 
   // Factory constructor for testing
@@ -229,9 +227,9 @@ class Okto {
   }
 
   /// Method to transfer tokens from one wallet to another
-  /// Returns a [TransferTokenResponse] object
+  /// Returns a [OmsDataV2] object
   /// Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
-  Future<TransferTokenResponse> transferTokens(
+  Future<OmsDataV2> transferTokens(
       {required String networkName,
       String? tokenAddress,
       required String quantity,
@@ -243,11 +241,8 @@ class Okto {
       "quantity": quantity,
       "recipient_address": recipientAddress
     };
-    final response = await httpClient.post(
-        endpoint: '/api/v1/transfer/tokens/execute',
-        body: body,
-        authToken: authToken);
-    return TransferTokenResponse.fromMap(response);
+    final response = await _repositoryProvider.sdkRepository.executeTransaction(body,);
+    return OmsDataV2.fromJson(response);
   }
 
   /// Method to get order history with optional filters
@@ -316,7 +311,7 @@ class Okto {
   /// Returns a [NftOrderDetailsV2] object
   /// Default value of page is 1 and size is 500
   /// Optional parameters: orderId, orderState
-  Future<NftOrderDetailsV2> orderDetailsNft(
+  Future<NftDataV2> orderDetailsNft(
       {int page = 1,
       int size = 500,
       String? orderId,
@@ -328,8 +323,8 @@ class Okto {
       if (orderId != null) 'order_id': orderId,
       if (orderState != null) 'order_state': orderState
     };
-    final response = await _repositoryProvider.sdkRepository.getNftDetails(queryParams);
-    return NftOrderDetailsV2.fromJson(response);
+    final response = await _repositoryProvider.sdkRepository.getNftPortfolio();
+    return NftDataV2.fromJson(response);
   }
 
   /// Method to execute a raw transaction

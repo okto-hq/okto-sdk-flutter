@@ -49,6 +49,8 @@ class DetailsV2 {
   String? updatedAt;
   String? orderType;
   String? networkId;
+  String? collectionAddress;
+  String? collectionId;
 
   DetailsV2({
     this.jobId,
@@ -57,6 +59,8 @@ class DetailsV2 {
     this.updatedAt,
     this.orderType,
     this.networkId,
+    this.collectionAddress,
+    this.collectionId
   });
 
   DetailsV2.fromJson(dynamic json) {
@@ -66,6 +70,8 @@ class DetailsV2 {
     updatedAt = json['updated_at'];
     orderType = json['order_type'];
     networkId = json['network_id'];
+    collectionAddress = json['collection_address'];
+    collectionId = json['collection_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -76,6 +82,8 @@ class DetailsV2 {
     map['updated_at'] = updatedAt;
     map['order_type'] = orderType;
     map['network_id'] = networkId;
+    map['collection_address'] = collectionAddress;
+    map['collection_id'] = collectionId;
     return map;
   }
 }

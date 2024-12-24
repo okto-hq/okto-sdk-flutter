@@ -15,9 +15,9 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
   final quantityController = TextEditingController();
   final recipientAddressController = TextEditingController();
 
-  Future<TransferTokenResponse>? _transferToken;
+  Future<OmsDataV2>? _transferToken;
 
-  Future<TransferTokenResponse> transferToken() async {
+  Future<OmsDataV2> transferToken() async {
     try {
       final transferToken = await okto!.transferTokens(
         networkName: networkNameController.text,
@@ -73,7 +73,7 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
             Expanded(
               child: _transferToken == null
                   ? Container()
-                  : FutureBuilder<TransferTokenResponse>(
+                  : FutureBuilder<OmsDataV2>(
                       future: _transferToken,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -87,10 +87,10 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SelectableText(
-                                  'Order ID: ${transferTokenResponse.data.orderId}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 20),
-                                ),
+                                // SelectableText(
+                                //   'Order ID: ${transferTokenResponse.data.orderId}',
+                                //   style: const TextStyle(color: Colors.white, fontSize: 20),
+                                // ),
                               ],
                             ),
                           );
