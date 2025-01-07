@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/utils/app_constants.dart';
+import 'package:okto_sdk/network/models/client/auth_token_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class OnboardingScreen extends StatefulWidget {

@@ -36,7 +36,7 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
               controller: phoneController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(label: Text('Phone number'))),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           ElevatedButton(
@@ -44,13 +44,13 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
                 try {
                   final response = await okto!.sendPhoneOtp(
                       phoneNumber: phoneController.text, countryCode: "IN");
-                  debugPrint("Sending phone otp: ${response.token}");
+                  debugPrint("Sending phone otp: ${response?.token}");
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => OtpVerificationScreen(
                                 phoneOrEmail: phoneController.text,
-                                token: response.token ?? "",
+                                token: response?.token ?? "",
                                 authType: "PHONE",
                               )));
                 } catch (e) {

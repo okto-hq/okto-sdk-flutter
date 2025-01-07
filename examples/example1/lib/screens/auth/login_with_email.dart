@@ -41,14 +41,14 @@ class _LoginWithEmailState extends State<LoginWithEmail> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    final response =
+                    final otpResponse =
                         await okto!.sendEmailOtp(email: emailIdController.text);
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => OtpVerificationScreen(
                               phoneOrEmail: emailIdController.text,
-                              token: response.token ?? "",
+                              token: otpResponse?.token ?? "",
                               authType: "EMAIL",
                             )));
                   } catch (e) {

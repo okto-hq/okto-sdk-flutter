@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/activity_data_v2.dart';
 
 class UserPortfolioActivityPage extends StatefulWidget {
   const UserPortfolioActivityPage({super.key});
@@ -10,9 +11,9 @@ class UserPortfolioActivityPage extends StatefulWidget {
 }
 
 class _UserPortfolioActivityPageState extends State<UserPortfolioActivityPage> {
-  Future<ActivityDataV2>? _userPortfolioActivity;
+  Future<ActivityDataV2?>? _userPortfolioActivity;
 
-  Future<ActivityDataV2> getuserPortfolioActivity() async {
+  Future<ActivityDataV2?> getuserPortfolioActivity() async {
     try {
       final userPortfolioActivity = await okto!.getUserPortfolioActivity();
       return userPortfolioActivity;
@@ -47,7 +48,7 @@ class _UserPortfolioActivityPageState extends State<UserPortfolioActivityPage> {
             Expanded(
               child: _userPortfolioActivity == null
                   ? Container()
-                  : FutureBuilder<ActivityDataV2>(
+                  : FutureBuilder<ActivityDataV2?>(
                       future: _userPortfolioActivity,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

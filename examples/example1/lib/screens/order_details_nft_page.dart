@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/nft_data_v2.dart';
 
 class OrderDetailsNftPage extends StatefulWidget {
   const OrderDetailsNftPage({super.key});
@@ -10,9 +11,9 @@ class OrderDetailsNftPage extends StatefulWidget {
 }
 
 class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
-  Future<NftDataV2>? _orderDetailsNft;
+  Future<NftDataV2?>? _orderDetailsNft;
 
-  Future<NftDataV2> getOrderDetailsNft() async {
+  Future<NftDataV2?> getOrderDetailsNft() async {
     try {
       final orderDetails = await okto!.orderDetailsNft();
       return orderDetails;
@@ -47,7 +48,7 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
             Expanded(
               child: _orderDetailsNft == null
                   ? Container()
-                  : FutureBuilder<NftDataV2>(
+                  : FutureBuilder<NftDataV2?>(
                       future: _orderDetailsNft,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

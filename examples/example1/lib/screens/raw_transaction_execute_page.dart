@@ -4,6 +4,7 @@ import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/raw_transaction_execute_model.dart';
 
 class RawTransactioneExecutePage extends StatefulWidget {
   const RawTransactioneExecutePage({super.key});
@@ -15,9 +16,9 @@ class RawTransactioneExecutePage extends StatefulWidget {
 class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage> {
   final networkNameController = TextEditingController();
   final transactionObjectController = TextEditingController();
-  Future<RawTransactionExecuteResponse>? _rawTransactionExecuted;
+  Future<RawTransactionExecuteResponse?>? _rawTransactionExecuted;
 
-  Future<RawTransactionExecuteResponse> rawTransactionExecute() async {
+  Future<RawTransactionExecuteResponse?> rawTransactionExecute() async {
     final transactionObject = jsonDecode(transactionObjectController.text);
     try {
       final orderHistory = await okto!.rawTransactionExecute(networkName: networkNameController.text, transaction: transactionObject);
@@ -72,7 +73,7 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
             Expanded(
               child: _rawTransactionExecuted == null
                   ? Container()
-                  : FutureBuilder<RawTransactionExecuteResponse>(
+                  : FutureBuilder<RawTransactionExecuteResponse?>(
                       future: _rawTransactionExecuted,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

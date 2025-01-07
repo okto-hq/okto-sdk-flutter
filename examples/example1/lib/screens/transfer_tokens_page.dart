@@ -1,6 +1,6 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/order_response_v2.dart';
 
 class TransferTokensPage extends StatefulWidget {
   const TransferTokensPage({super.key});
@@ -15,9 +15,9 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
   final quantityController = TextEditingController();
   final recipientAddressController = TextEditingController();
 
-  Future<OmsDataV2>? _transferToken;
+  Future<OrderResponseV2?>? _transferToken;
 
-  Future<OmsDataV2> transferToken() async {
+  Future<OrderResponseV2?> transferToken() async {
     try {
       final transferToken = await okto!.transferTokens(
         networkName: networkNameController.text,
@@ -73,7 +73,7 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
             Expanded(
               child: _transferToken == null
                   ? Container()
-                  : FutureBuilder<OmsDataV2>(
+                  : FutureBuilder<OrderResponseV2?>(
                       future: _transferToken,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -82,8 +82,8 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
                           return Center(child: Text('Error: ${snapshot.error}'));
                         } else if (snapshot.hasData) {
                           final transferTokenResponse = snapshot.data!;
-                          return Padding(
-                            padding: const EdgeInsets.all(20.0),
+                          return const Padding(
+                            padding: EdgeInsets.all(20.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

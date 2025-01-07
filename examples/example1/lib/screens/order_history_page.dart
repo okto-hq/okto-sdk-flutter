@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/order_history_model_v2.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({super.key});
@@ -10,9 +11,9 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  Future<OrderHistoryResponseV2>? _orderHistory;
+  Future<OrderHistoryResponseV2?>? _orderHistory;
 
-  Future<OrderHistoryResponseV2> getOrderHistory() async {
+  Future<OrderHistoryResponseV2?> getOrderHistory() async {
     try {
       final orderHistory = await okto!.orderHistory();
       return orderHistory;
@@ -47,7 +48,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             Expanded(
               child: _orderHistory == null
                   ? Container()
-                  : FutureBuilder<OrderHistoryResponseV2>(
+                  : FutureBuilder<OrderHistoryResponseV2?>(
                       future: _orderHistory,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

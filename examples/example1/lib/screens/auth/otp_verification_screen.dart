@@ -1,7 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/auth_token_model.dart';
 import 'package:pinput/pinput.dart';
 
 import '../home/home_page.dart';

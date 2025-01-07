@@ -1,6 +1,6 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/transfer_nft_model.dart';
 
 class TransferNftPage extends StatefulWidget {
   const TransferNftPage({super.key});
@@ -18,8 +18,8 @@ class _TransferNftPageState extends State<TransferNftPage> {
   final recipientAddressController = TextEditingController();
   final nftAddressController = TextEditingController();
 
-  Future<TransferNftResponse>? _transferNft;
-  Future<TransferNftResponse> transferNft() async {
+  Future<TransferNftResponse?>? _transferNft;
+  Future<TransferNftResponse?> transferNft() async {
     try {
       final transferNft = await okto!.transferNft(
           networkName: networkNameController.text,
@@ -90,7 +90,7 @@ class _TransferNftPageState extends State<TransferNftPage> {
             Expanded(
               child: _transferNft == null
                   ? Container()
-                  : FutureBuilder<TransferNftResponse>(
+                  : FutureBuilder<TransferNftResponse?>(
                       future: _transferNft,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

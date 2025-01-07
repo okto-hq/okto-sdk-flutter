@@ -1,4 +1,5 @@
-import 'package:dcx_network_client/env_config.dart';
+import 'package:okto_network_manager/env_config.dart';
+
 import 'environment.dart';
 
 class BuildConfig {

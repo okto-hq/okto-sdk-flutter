@@ -1,6 +1,6 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/whitelisted_network_data_v2.dart';
 
 class SupportedNetworksPage extends StatefulWidget {
   const SupportedNetworksPage({super.key});
@@ -10,9 +10,9 @@ class SupportedNetworksPage extends StatefulWidget {
 }
 
 class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
-  Future<WhitelistedNetworkDataV2>? _supportedNetworks;
+  Future<WhitelistedNetworkDataV2?>? _supportedNetworks;
 
-  Future<WhitelistedNetworkDataV2> getSupportedNetworks() async {
+  Future<WhitelistedNetworkDataV2?> getSupportedNetworks() async {
     try {
       final supportedNetworks = await okto!.supportedNetworks();
       return supportedNetworks;
@@ -47,7 +47,7 @@ class _SupportedNetworksPageState extends State<SupportedNetworksPage> {
             Expanded(
               child: _supportedNetworks == null
                   ? Container()
-                  : FutureBuilder<WhitelistedNetworkDataV2>(
+                  : FutureBuilder<WhitelistedNetworkDataV2?>(
                       future: _supportedNetworks,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

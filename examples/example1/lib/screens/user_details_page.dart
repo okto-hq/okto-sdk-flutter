@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/user_model.dart';
 
 class UserDetailsPage extends StatefulWidget {
   const UserDetailsPage({super.key});
@@ -10,9 +11,9 @@ class UserDetailsPage extends StatefulWidget {
 }
 
 class _UserDetailsPageState extends State<UserDetailsPage> {
-  Future<UserDetails>? _userDetails;
+  Future<UserDetails?>? _userDetails;
 
-  Future<UserDetails> fetchUserDetails() async {
+  Future<UserDetails?> fetchUserDetails() async {
     try {
       final userDetails = await okto!.userDetails();
       return userDetails;
@@ -47,7 +48,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             Expanded(
               child: _userDetails == null
                   ? Container()
-                  : FutureBuilder<UserDetails>(
+                  : FutureBuilder<UserDetails?>(
                       future: _userDetails,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

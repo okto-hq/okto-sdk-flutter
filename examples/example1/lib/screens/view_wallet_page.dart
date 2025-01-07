@@ -1,6 +1,6 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/wallet_data_v2.dart';
 
 class ViewWalletPage extends StatefulWidget {
   const ViewWalletPage({super.key});
@@ -10,9 +10,9 @@ class ViewWalletPage extends StatefulWidget {
 }
 
 class _ViewWalletPageState extends State<ViewWalletPage> {
-  Future<WalletDataV2>? _wallets;
+  Future<WalletDataV2?>? _wallets;
 
-  Future<WalletDataV2> fetchWallets() async {
+  Future<WalletDataV2?> fetchWallets() async {
     try {
       final wallets = await okto!.getWallets();
       return wallets;
@@ -47,7 +47,7 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
             Expanded(
               child: _wallets == null
                   ? Container()
-                  : FutureBuilder<WalletDataV2>(
+                  : FutureBuilder<WalletDataV2?>(
                       future: _wallets,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
