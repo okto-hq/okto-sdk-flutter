@@ -37,7 +37,10 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.all(40),
               child: const Text(
                 'Home Page',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 30),
               ),
             ),
             Expanded(
@@ -49,67 +52,119 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const UserDetailsPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const UserDetailsPage()));
                         },
                         child: const Text('User Details')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateWalletPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CreateWalletPage()));
                         },
                         child: const Text('Create Wallet')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewWalletPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ViewWalletPage()));
                         },
                         child: const Text('Get Wallet')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SupportedNetworksPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SupportedNetworksPage()));
                         },
                         child: const Text('Supported Networks')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SupportedTokensPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SupportedTokensPage()));
                         },
                         child: const Text('Supported Tokens')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const UserPortfolioPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const UserPortfolioPage()));
                         },
                         child: const Text('User Portfolio')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const UserPortfolioActivityPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const UserPortfolioActivityPage()));
                         },
                         child: const Text('User Portfolio Activity')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const TransferTokensPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const TransferTokensPage()));
                         },
                         child: const Text('Transfer Tokens')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OrderHistoryPage()));
                         },
                         child: const Text('Order History')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const TransferNftPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const TransferNftPage()));
                         },
                         child: const Text('Transfer NFT')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderDetailsNftPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OrderDetailsNftPage()));
                         },
                         child: const Text('Order Details NFT')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const RawTransactioneExecutePage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RawTransactioneExecutePage()));
                         },
                         child: const Text('Raw Transaction Execute')),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const RawTransactionStatusPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RawTransactionStatusPage()));
                         },
                         child: const Text('Raw Transaction Status')),
                     ElevatedButton(
@@ -125,7 +180,10 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () async {
                   try {
                     await okto!.logout();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()));
                   } catch (e) {
                     print(e);
                   }

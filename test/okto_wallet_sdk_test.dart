@@ -101,7 +101,11 @@ void main() {
         authToken: fakeAuthToken,
       )).thenAnswer((_) async => fakeErrorResponse);
 
-      // Act
+      // Act & Assert
+      expect(
+            () async => await okto.userDetails(),
+        throwsA(predicate((e) => e.toString().contains('User not found'))),
+      );
     });
 
     test('userDetails handles network error', () async {
