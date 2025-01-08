@@ -1,5 +1,4 @@
 import 'package:example/screens/auth/login_with_email.dart';
-import 'package:example/screens/auth/login_with_google_page.dart';
 import 'package:example/screens/auth/login_with_id_token.dart';
 import 'package:example/screens/auth/login_with_userid.dart';
 import 'package:example/screens/home/home_page.dart';
@@ -47,14 +46,6 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => const LoginWithIdToken()));
                 },
                 child: const Text('Login with Id Token')),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginWithGoogle()));
-                },
-                child: const Text('Login with Google')),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(

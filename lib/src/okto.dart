@@ -1,4 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/models/client/auth_token_model.dart';
@@ -16,8 +21,12 @@ import 'package:okto_flutter_sdk/src/models/client/wallet_model.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
+import 'package:okto_flutter_sdk/src/utils/permission_helper.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
@@ -91,7 +100,9 @@ class Okto {
 
   /// Verify the OTP providing [emailId], [otp] and [token] provided with sendEmailOtp().
   Future<AuthTokenResponse> verifyEmailOtp(
-      {required String emailId, required String otp, required String token}) async {
+      {required String emailId,
+      required String otp,
+      required String token}) async {
     final response = await httpClient.post(
         endpoint: "/api/v1/authenticate/email/verify",
         body: {"email": emailId, "otp": otp, "token": token});
@@ -119,8 +130,10 @@ class Okto {
 
   /// Verify the OTP providing [phoneNumber], [otp] and [token] provided with sendEmailOtp().
   Future<AuthTokenResponse> verifyPhoneOtp(
-      {required String phoneNumber, required String otp,
-        required String token, String countryCode = "IN"}) async {
+      {required String phoneNumber,
+      required String otp,
+      required String token,
+      String countryCode = "IN"}) async {
     final response = await httpClient
         .post(endpoint: "/api/v1/authenticate/phone/verify", body: {
       "phone_number": phoneNumber,
@@ -421,8 +434,10 @@ class Okto {
     }
 
     final url = switch (buildType) {
-      BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com/#/login_screen',
-      BuildType.production => 'https://3p.okto.tech/login_screen/#/login_screen',
+      BuildType.sandbox =>
+        'https://okto-sandbox.firebaseapp.com/#/login_screen',
+      BuildType.production =>
+        'https://3p.okto.tech/login_screen/#/login_screen',
       BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
     };
 
@@ -438,9 +453,18 @@ class Okto {
                         data.refreshAuthToken, data.deviceToken);
                     onLoginSuccess.call();
                   },
-                )
-        )
-    );
+                )));
+  }
+
+  Future<List<String>> _androidFilePicker(
+      final FileSelectorParams params) async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null && result.files.single.path != null) {
+      final file = File(result.files.single.path!);
+      return [file.uri.toString()];
+    }
+    return [];
   }
 
   Future openBottomSheet({
@@ -460,7 +484,6 @@ class Okto {
     String surfaceColor = '0xFF1F1F1F',
     String backgroundColor = '0xFF000000',
   }) async {
-    final WebViewController controller = WebViewController();
     final authToken = await tokenManager.getAuthToken();
     final deviceToken = await tokenManager.getDeviceToken();
     String buildtype = '';
@@ -498,6 +521,62 @@ class Okto {
       return injectJs;
     }
 
+    // Helper method for configuring the controller
+    Future<void> configureController(WebViewController controller) async {
+      await controller.clearCache();
+      await controller.clearLocalStorage();
+      await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+
+      if (Platform.isAndroid) {
+        final androidController =
+            controller.platform as AndroidWebViewController;
+        await androidController.setOnShowFileSelector(_androidFilePicker);
+      }
+    }
+
+    late final PlatformWebViewControllerCreationParams params;
+    // Configure creation params based on the platform
+    params = WebViewPlatform.instance is WebKitWebViewPlatform
+        ? WebKitWebViewControllerCreationParams(
+            allowsInlineMediaPlayback: true,
+            mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{})
+        : const PlatformWebViewControllerCreationParams();
+
+    // Create and configure the WebViewController
+    final controller = WebViewController.fromPlatformCreationParams(
+      params,
+      onPermissionRequest: (request) => request.grant(),
+    );
+    await configureController(controller);
+
+    // Set up JavaScript channel for communication
+    await controller.addJavaScriptChannel(
+      "Print",
+      onMessageReceived: (message) =>
+          _onJSMessageReceived(controller, message.message),
+    );
+
+    // Set up navigation delegate
+    await controller.setNavigationDelegate(
+      NavigationDelegate(
+        onProgress: (int progress) {},
+        onPageStarted: (String url) =>
+            controller.runJavaScript(getInjectedJs()),
+        onPageFinished: (String url) {},
+        onHttpError: (HttpResponseError error) {},
+        onWebResourceError: (WebResourceError error) {},
+      ),
+    );
+
+    // Load request
+    await controller.loadRequest(
+      Uri.parse(switch (buildType) {
+        BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+        BuildType.production => 'https://3p.okto.tech/',
+        BuildType.staging => 'https://3p.oktostage.com/',
+      }),
+    );
+
     await showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -508,25 +587,6 @@ class Okto {
       useSafeArea: true,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        controller
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (int progress) {},
-              onPageStarted: (String url) {
-                controller.runJavaScript(getInjectedJs());
-              },
-              onPageFinished: (String url) {},
-              onHttpError: (HttpResponseError error) {},
-              onWebResourceError: (WebResourceError error) {},
-            ),
-          )
-          ..loadRequest(Uri.parse(switch (buildType) {
-            BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
-            BuildType.production => 'https://3p.okto.tech/',
-            BuildType.staging => 'https://3p.oktostage.com/',
-          }));
-
         return LayoutBuilder(builder: (context, constraints) {
           return SizedBox(
             height: constraints.maxHeight * height,
@@ -534,14 +594,54 @@ class Okto {
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               child: WebViewWidget(
-                controller: controller
-                  ..clearCache()
-                  ..clearLocalStorage(),
+                controller: controller,
               ),
             ),
           );
         });
       },
     );
+  }
+
+  void _onJSMessageReceived(
+      WebViewController controller, String message) async {
+    final data = jsonDecode(message);
+    if (data["url"] != null) {
+      final uri = Uri.parse(data["url"]);
+      await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+    } else if (data["requestPermissions"] != null) {
+      final requestedPermissions = data["requestPermissions"] as List? ?? [];
+      for (var permission in requestedPermissions) {
+        if (permission == "microphone") {
+          PermissionHelper.requestMicrophone().then(
+            (grant) {
+              final messageData = jsonEncode({
+                "type": "requestPermission_ack",
+                "response": {"partner_permission": grant.toString()},
+                "params": {"data": data["requestPermissions"]},
+                "source": "okto_web",
+                "id": "partner_permission"
+              });
+
+              controller
+                  .runJavaScript('''window.postMessage($messageData, '*');''');
+            },
+          );
+        } else if (permission == "camera") {
+          PermissionHelper.requestCamera().then((grant) {
+            final messageData = jsonEncode({
+              "type": "requestPermission_ack",
+              "response": {"partner_permission": grant.toString()},
+              "params": {"data": data["requestPermissions"]},
+              "source": "okto_web",
+              "id": "partner_permission"
+            });
+
+            controller
+                .runJavaScript('''window.postMessage($messageData, '*');''');
+          });
+        }
+      }
+    }
   }
 }
