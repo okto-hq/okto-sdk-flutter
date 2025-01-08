@@ -25,11 +25,10 @@ import 'package:okto_flutter_sdk/src/utils/permission_helper.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-import 'models/client/otp_response.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
+import 'models/client/otp_response.dart';
 import 'models/client/user_model.dart';
 
 class Okto {
@@ -101,7 +100,9 @@ class Okto {
 
   /// Verify the OTP providing [emailId], [otp] and [token] provided with sendEmailOtp().
   Future<AuthTokenResponse> verifyEmailOtp(
-      {required String emailId, required String otp, required String token}) async {
+      {required String emailId,
+      required String otp,
+      required String token}) async {
     final response = await httpClient.post(
         endpoint: "/api/v1/authenticate/email/verify",
         body: {"email": emailId, "otp": otp, "token": token});
@@ -129,8 +130,10 @@ class Okto {
 
   /// Verify the OTP providing [phoneNumber], [otp] and [token] provided with sendEmailOtp().
   Future<AuthTokenResponse> verifyPhoneOtp(
-      {required String phoneNumber, required String otp,
-        required String token, String countryCode = "IN"}) async {
+      {required String phoneNumber,
+      required String otp,
+      required String token,
+      String countryCode = "IN"}) async {
     final response = await httpClient
         .post(endpoint: "/api/v1/authenticate/phone/verify", body: {
       "phone_number": phoneNumber,
@@ -431,8 +434,10 @@ class Okto {
     }
 
     final url = switch (buildType) {
-      BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com/#/login_screen',
-      BuildType.production => 'https://3p.okto.tech/login_screen/#/login_screen',
+      BuildType.sandbox =>
+        'https://okto-sandbox.firebaseapp.com/#/login_screen',
+      BuildType.production =>
+        'https://3p.okto.tech/login_screen/#/login_screen',
       BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
     };
 
@@ -448,9 +453,7 @@ class Okto {
                         data.refreshAuthToken, data.deviceToken);
                     onLoginSuccess.call();
                   },
-                )
-        )
-    );
+                )));
   }
 
   Future<List<String>> _androidFilePicker(
@@ -521,6 +524,7 @@ class Okto {
     // Helper method for configuring the controller
     Future<void> configureController(WebViewController controller) async {
       await controller.clearCache();
+      await controller.clearLocalStorage();
       await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
 
       if (Platform.isAndroid) {
@@ -565,14 +569,13 @@ class Okto {
     );
 
     // Load request
-    await controller.loadRequest(Uri.parse('https://p-wallet-788e5.web.app'));
-    //   loadRequest(WebViewRequest(
-    //       uri: Uri.parse(switch (buildType) {
-    //         BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
-    //         BuildType.production => 'https://3p.okto.tech/',
-    //         BuildType.staging => 'https://p-wallet-788e5.web.app',
-    //       }),
-    //   ));
+    await controller.loadRequest(
+      Uri.parse(switch (buildType) {
+        BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+        BuildType.production => 'https://3p.okto.tech/',
+        BuildType.staging => 'https://3p.oktostage.com/',
+      }),
+    );
 
     await showModalBottomSheet(
       shape: const RoundedRectangleBorder(
