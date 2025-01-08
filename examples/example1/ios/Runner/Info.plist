@@ -28,8 +28,6 @@
 	<string>LaunchScreen</string>
 	<key>NSCameraUsageDescription</key>
     <string>Allow access to camera to capture photos</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Allow access to microphone</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
