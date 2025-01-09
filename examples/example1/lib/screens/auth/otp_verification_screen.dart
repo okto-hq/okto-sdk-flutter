@@ -112,10 +112,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (otp.length != 6) return;
     try {
       if(widget.authType == "PHONE") {
-        AuthTokenResponse? response = await okto!
+        AuthTokenData? response = await okto!
             .verifyPhoneOtp(phoneNumber: widget.phoneOrEmail, otp: otp, token: widget.token);
       } else if(widget.authType == "EMAIL") {
-        AuthTokenResponse? response = await okto!
+        AuthTokenData? response = await okto!
             .verifyEmailOtp(emailId: widget.phoneOrEmail, otp: otp, token: widget.token);
       }
       setState(() {

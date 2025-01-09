@@ -1,6 +1,5 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_sdk/network/models/client/user_model.dart';
 
 class UserDetailsPage extends StatefulWidget {
@@ -11,14 +10,14 @@ class UserDetailsPage extends StatefulWidget {
 }
 
 class _UserDetailsPageState extends State<UserDetailsPage> {
-  Future<UserDetails?>? _userDetails;
+  Future<UserData>? _userDetails;
 
-  Future<UserDetails?> fetchUserDetails() async {
+  Future<UserData> fetchUserDetails() async {
     try {
       final userDetails = await okto!.userDetails();
       return userDetails;
     } catch (e) {
-      throw Exception(e);
+      rethrow;
     }
   }
 
@@ -48,7 +47,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             Expanded(
               child: _userDetails == null
                   ? Container()
-                  : FutureBuilder<UserDetails?>(
+                  : FutureBuilder<UserData>(
                       future: _userDetails,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -63,24 +62,24 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SelectableText(
-                                  'User ID: ${userDetails.data.userId}',
+                                  'User ID: ${userDetails.userId}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  'Email: ${userDetails.data.email}',
+                                  'Email: ${userDetails.email}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 SelectableText(
-                                  'Created At: ${userDetails.data.createdAt}',
+                                  'Created At: ${userDetails.createdAt}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 SelectableText(
-                                  'Freezed: ${userDetails.data.freezed.toString()}',
+                                  'Freezed: ${userDetails.freezed.toString()}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 SelectableText(
-                                  'Freezed Reason: ${userDetails.data.freezeReason}',
+                                  'Freezed Reason: ${userDetails.freezeReason}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                               ],

@@ -5,21 +5,28 @@ import 'package:example/screens/init/init_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
+import 'package:okto_sdk/okto_flutter_sdk.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: "Okto-3p-example",
+      name: "Okto-3p-example",
       options: const FirebaseOptions(
         apiKey: 'AIzaSyCdRjCVZlhrq72RuEklEyyxYlBRCYhI2Sw',
         appId: '1:406099696497:android:21d5142deea38dda3574d0',
         messagingSenderId: '406099696497',
         projectId: 'flutterfire-e2e-tests',
         databaseURL:
-        'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
+            'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
-      )
-  );
+      ));
+  await OktoSdk().init(OktoCore(
+      id: "",
+      privateKey: "",
+      apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
+      maxPriorityFeePerGas: "",
+      maxFeePerGas: ""));
   okto = Okto(globals.getApiKey(), globals.getBuildType());
   runApp(const MyApp());
 }

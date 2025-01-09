@@ -50,7 +50,6 @@ class TokenManager {
       throw Exception('Missing tokens required for refreshing. Please authenticate again.');
     }
 
-
     final response = await httpClient.post(
         endpoint: '/api/v1/refresh_token',
         body: {},

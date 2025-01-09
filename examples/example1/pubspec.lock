@@ -173,34 +173,34 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_auth
-      sha256: "03483af6e67b7c4b696ca9386989a6cd5593569e1ac5af6907ea5f7fd9c16d8b"
+      sha256: "1c2e81c4d4b56f63cb6cefea0560aa5a504457c7a5a601018e6c6d7c07795640"
       url: "https://pub.dev"
     source: hosted
-    version: "5.3.4"
+    version: "5.4.0"
   firebase_auth_platform_interface:
     dependency: transitive
     description:
       name: firebase_auth_platform_interface
-      sha256: "3e1409f48c48930635705b1237ebbdee8c54c19106a0a4fb321dbb4b642820c4"
+      sha256: "973899f5be76d37312a07e366033b7f3f262dc51ec70ceae2a3592993289717a"
       url: "https://pub.dev"
     source: hosted
-    version: "7.4.10"
+    version: "7.5.0"
   firebase_auth_web:
     dependency: transitive
     description:
       name: firebase_auth_web
-      sha256: d83fe95c44d73c9c29b006ac7df3aa5e1b8ce92b62edc44e8f86250951fe2cd0
+      sha256: "960f7cc50ecb977a721165166aae90e86302f1370549457f78cbcea5be7f2cb2"
       url: "https://pub.dev"
     source: hosted
-    version: "5.13.5"
+    version: "5.13.6"
   firebase_core:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: "15d761b95dfa2906dfcc31b7fc6fe293188533d1a3ffe78389ba9e69bd7fdbde"
+      sha256: "0307c1fde82e2b8b97e0be2dab93612aff9a72f31ebe9bfac66ed8b37ef7c568"
       url: "https://pub.dev"
     source: hosted
-    version: "3.9.0"
+    version: "3.10.0"
   firebase_core_platform_interface:
     dependency: transitive
     description:
@@ -474,11 +474,9 @@ packages:
   okto_network_manager:
     dependency: transitive
     description:
-      path: okto_network_manager
-      ref: main
-      resolved-ref: b2e84232df5b4d7c5a8595c440ce135f0e559725
-      url: "git@github.com:okto-hq/okto-flutter-sdk-monorepo.git"
-    source: git
+      path: "/Users/shubham.pandey/Documents/professional/okto-flutter-sdk-monorepo/okto_network_manager"
+      relative: false
+    source: path
     version: "0.0.1"
   okto_sdk:
     dependency: "direct main"

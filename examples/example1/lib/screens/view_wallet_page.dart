@@ -17,7 +17,8 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
       final wallets = await okto!.getWallets();
       return wallets;
     } catch (e) {
-      throw Exception(e);
+      debugPrint(e.toString());
+      rethrow;
     }
   }
 
