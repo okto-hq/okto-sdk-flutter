@@ -38,16 +38,6 @@ class Okto {
   Okto(this.apiKey, this.buildType) {
     httpClient = HttpClient(apiKey: apiKey, buildType: buildType);
     tokenManager = TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
-    _setAuthorization();
-  }
-
-  Future<void> _setAuthorization() async {
-    AuthDetails data = AuthDetails(
-        authToken: await OktoSdk().oktoUserClient?.authToken ?? "",
-        deviceToken: await OktoSdk().oktoUserClient?.deviceToken ?? "",
-        refreshAuthToken: await OktoSdk().oktoUserClient?.refreshAuthToken ?? "");
-    _repositoryProvider.setAuthorizationDetail(data);
-    _repositoryProvider.setApiKey("b7a36ee9-80e3-4063-b2a1-f9f482a8db51");
   }
 
   // Factory constructor for testing
@@ -64,7 +54,6 @@ class Okto {
   /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthTokenData> authenticate({required String idToken}) async {
     final AuthTokenData response = await OktoSdk().loginWithIdToken(idToken);
-    _setAuthorization();
     return response;
   }
 
@@ -74,7 +63,6 @@ class Okto {
       {required String userId, required String jwtToken}) async {
     final authTokenResponse = await OktoSdk()
         .authenticateWithUserId(userId: userId, jwtToken: jwtToken);
-    _setAuthorization();
     return authTokenResponse;
   }
 
@@ -97,7 +85,6 @@ class Okto {
         await OktoSdk().verifyEmailOtp(email: emailId, otp: otp, token: token);
     await tokenManager.storeTokens(
         response.authToken, response.refreshAuthToken, response.deviceToken);
-    _setAuthorization();
     return response;
   }
 
@@ -127,26 +114,21 @@ class Okto {
         token: token);
     await tokenManager.storeTokens(
         response.authToken, response.refreshAuthToken, response.deviceToken);
-    _setAuthorization();
     return response;
   }
 
   /// Use to check if the current session in the app is logged in or not.
   /// Use this method to show login page or home page for an user.
   Future<bool> isLoggedIn() async {
-    try {
-      await OktoSdk().getAuthToken();
-      return true;
-    } catch (e) {
-      return false;
-    }
+    final authToken = await OktoSdk().oktoUserClient?.authToken;
+    return authToken?.isNotEmpty == true;
   }
 
   /// POST
   /// Method to refresh the user auth token.
   /// @returns: [AuthTokenData]
-  Future<AuthTokenData> refreshToken() async {
-    final refreshToken = await OktoSdk().refreshAuthToken();
+  Future<String?> refreshToken() async {
+    final refreshToken = await OktoSdk().oktoUserClient?.refreshAuthToken;
     return refreshToken;
   }
 
