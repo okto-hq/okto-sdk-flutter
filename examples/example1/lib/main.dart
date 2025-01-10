@@ -1,12 +1,9 @@
 import 'package:example/okto.dart';
-import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:example/screens/init/init_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
-import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
-import 'package:okto_sdk/okto_flutter_sdk.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,12 +18,6 @@ Future<void> main() async {
             'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
       ));
-  await OktoSdk().init(OktoCore(
-      id: "",
-      privateKey: "",
-      apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
-      maxPriorityFeePerGas: "",
-      maxFeePerGas: ""));
   okto = Okto(globals.getApiKey(), globals.getBuildType());
   runApp(const MyApp());
 }

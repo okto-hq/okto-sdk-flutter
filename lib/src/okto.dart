@@ -5,8 +5,11 @@ import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/enums.dart';
 import 'package:okto_flutter_sdk/src/utils/http_client.dart';
 import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
+import 'package:okto_flutter_sdk/src/utils/utility.dart';
+import 'package:okto_network_manager/service_config.dart';
 import 'package:okto_sdk/core/repository/auth.dart';
 import 'package:okto_sdk/core/repository/sdk_repository_provider.dart';
+import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
 import 'package:okto_sdk/network/models/activity_data_v2.dart';
 import 'package:okto_sdk/network/models/client/auth_token_model.dart';
 import 'package:okto_sdk/network/models/client/order_history_model_v2.dart';
@@ -29,42 +32,46 @@ import 'models/nft_order_details_v2.dart';
 class Okto {
   /// Client Side Api Key received from OKto
   final String apiKey;
-  late final HttpClient httpClient;
-  late final TokenManager tokenManager;
   final BuildType buildType;
-  late final SdkRepositoryProvider _repositoryProvider =
-      SdkRepositoryProvider();
 
   Okto(this.apiKey, this.buildType) {
-    httpClient = HttpClient(apiKey: apiKey, buildType: buildType);
-    tokenManager = TokenManager(HttpClient(apiKey: apiKey, buildType: buildType));
-    _setAuthorization();
+    _initializeSdk();
   }
 
-  Future<void> _setAuthorization() async {
-    AuthDetails data = AuthDetails(
-        authToken: await OktoSdk().oktoUserClient?.authToken ?? "",
-        deviceToken: await OktoSdk().oktoUserClient?.deviceToken ?? "",
-        refreshAuthToken: await OktoSdk().oktoUserClient?.refreshAuthToken ?? "");
-    _repositoryProvider.setAuthorizationDetail(data);
-    _repositoryProvider.setApiKey("b7a36ee9-80e3-4063-b2a1-f9f482a8db51");
+  _initializeSdk() async {
+    final baseUrl = Utility.getBaseUrl(buildType);
+    final serviceConfig = ServiceConfig(
+        appName: "okto_sdk",
+        baseUrls: <String, String>{
+          "bff": baseUrl,
+          "auth": baseUrl,
+          "portfolio": baseUrl,
+          "oms": baseUrl
+        },
+        rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
+    await OktoSdk().init(
+        OktoCore(
+            id: "",
+            privateKey: "",
+            apiKey: apiKey,
+            maxPriorityFeePerGas: "",
+            maxFeePerGas: ""),
+        oktoServiceConfig: serviceConfig);
   }
 
   // Factory constructor for testing
   @visibleForTesting
-  factory Okto.test(String apiKey, BuildType buildType, HttpClient httpClient,
-      TokenManager tokenManager) {
-    return Okto._test(apiKey, buildType, httpClient, tokenManager);
+  factory Okto.test(String apiKey, BuildType buildType) {
+    return Okto._test(apiKey, buildType);
   }
 
   // Private constructor for testing
-  Okto._test(this.apiKey, this.buildType, this.httpClient, this.tokenManager);
+  Okto._test(this.apiKey, this.buildType);
 
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthTokenData> authenticate({required String idToken}) async {
     final AuthTokenData response = await OktoSdk().loginWithIdToken(idToken);
-    _setAuthorization();
     return response;
   }
 
@@ -74,7 +81,6 @@ class Okto {
       {required String userId, required String jwtToken}) async {
     final authTokenResponse = await OktoSdk()
         .authenticateWithUserId(userId: userId, jwtToken: jwtToken);
-    _setAuthorization();
     return authTokenResponse;
   }
 
@@ -95,9 +101,6 @@ class Okto {
       required String token}) async {
     final AuthTokenData response =
         await OktoSdk().verifyEmailOtp(email: emailId, otp: otp, token: token);
-    await tokenManager.storeTokens(
-        response.authToken, response.refreshAuthToken, response.deviceToken);
-    _setAuthorization();
     return response;
   }
 
@@ -125,9 +128,6 @@ class Okto {
         countryCode: countryCode,
         otp: otp,
         token: token);
-    await tokenManager.storeTokens(
-        response.authToken, response.refreshAuthToken, response.deviceToken);
-    _setAuthorization();
     return response;
   }
 
@@ -135,8 +135,8 @@ class Okto {
   /// Use this method to show login page or home page for an user.
   Future<bool> isLoggedIn() async {
     try {
-      await OktoSdk().getAuthToken();
-      return true;
+      final authToken = await OktoSdk().getAuthToken();
+      return authToken?.isNotEmpty == true;
     } catch (e) {
       return false;
     }
@@ -159,9 +159,8 @@ class Okto {
 
   /// Method to create a new wallet for the user
   /// Returns a [WalletResponse] object
-  Future<WalletResponse?> createWallet() async {
-    final WalletResponse? response =
-        await OktoSdk().oktoUserClient?.createWallet();
+  Future<WalletsData?> createWallet() async {
+    final WalletsData? response = await OktoSdk().oktoUserClient?.createWallet();
     return response;
   }
 
@@ -313,8 +312,7 @@ class Okto {
 
   /// Log-out of the okto wallet
   Future<bool> logout() async {
-    OktoSdk().logout();
-    bool result = await tokenManager.deleteToken();
+    bool result = await OktoSdk().logout();
     return result;
   }
 
@@ -394,8 +392,8 @@ class Okto {
                   url: url,
                   gAuthCallback: gAuthCallback,
                   loginCallback: (AuthTokenData data) {
-                    tokenManager.storeTokens(data.authToken,
-                        data.refreshAuthToken, data.deviceToken);
+                    // tokenManager.storeTokens(data.authToken,
+                    //     data.refreshAuthToken, data.deviceToken);
                     onLoginSuccess.call();
                   },
                 )));
@@ -448,7 +446,7 @@ class Okto {
     window.localStorage.setItem('backgroundColor', '$backgroundColor');
   ''';
 
-      if (authToken != null) {
+      if (authToken.isNotEmpty) {
         injectJs += "window.localStorage.setItem('authToken', '$authToken');";
         injectJs +=
             "window.localStorage.setItem('deviceToken', '$deviceToken');";
@@ -479,7 +477,11 @@ class Okto {
               onWebResourceError: (WebResourceError error) {},
             ),
           )
-          ..loadRequest(Uri.parse("https://okto-sandbox.firebaseapp.com"));
+          ..loadRequest(Uri.parse(switch (buildType) {
+            BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
+            BuildType.production => 'https://3p.okto.tech/',
+            BuildType.staging => 'https://3p.oktostage.com/',
+          }));
 
         return LayoutBuilder(builder: (context, constraints) {
           return SizedBox(

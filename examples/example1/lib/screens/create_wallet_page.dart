@@ -1,6 +1,5 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_sdk/network/models/client/wallet_model.dart';
 
 class CreateWalletPage extends StatefulWidget {
@@ -11,9 +10,9 @@ class CreateWalletPage extends StatefulWidget {
 }
 
 class _CreateWalletPageState extends State<CreateWalletPage> {
-  Future<WalletResponse?>? _createdWallet;
+  Future<WalletsData?>? _createdWallet;
 
-  Future<WalletResponse?> createWallets() async {
+  Future<WalletsData?> createWallets() async {
     try {
       final createdWallet = await okto!.createWallet();
       return createdWallet;
@@ -48,7 +47,7 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
             Expanded(
               child: _createdWallet == null
                   ? Container()
-                  : FutureBuilder<WalletResponse?>(
+                  : FutureBuilder<WalletsData?>(
                       future: _createdWallet,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -69,7 +68,7 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: createdWallet.data.wallets.length,
+                                      itemCount: createdWallet.wallets.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -78,11 +77,11 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SelectableText(
-                                                'Wallet adress: ${createdWallet.data.wallets[index].address}',
+                                                'Wallet adress: ${createdWallet.wallets[index].address}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(
-                                                'Network name: ${createdWallet.data.wallets[index].networkName}',
+                                                'Network name: ${createdWallet.wallets[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],
