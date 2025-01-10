@@ -76,7 +76,8 @@ class Okto {
   }
 
   /// Method to authenticate a user using the user id and JWT token
-  /// This method gives an AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
+  /// @params [userId] [jwtToken]
+  /// @returns AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
   Future<AuthTokenData> authenticateWithUserId(
       {required String userId, required String jwtToken}) async {
     final authTokenResponse = await OktoSdk()
