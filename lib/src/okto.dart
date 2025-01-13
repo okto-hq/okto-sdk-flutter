@@ -51,11 +51,13 @@ class Okto {
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
     await OktoSdk().init(
         OktoCore(
-            id: "",
-            privateKey: "",
-            apiKey: apiKey,
-            maxPriorityFeePerGas: "",
-            maxFeePerGas: ""),
+            id: "0x5d7E7666f4657bcB60d1F7F1C579738Bec994851",
+            privateKey:
+            "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+            apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
+            maxPriorityFeePerGas: "0x2E90EDD000",
+            maxFeePerGas: "0x2E90EDD000"
+        ),
         oktoServiceConfig: serviceConfig);
   }
 
@@ -436,6 +438,7 @@ class Okto {
     String getInjectedJs() {
       String injectJs = '''
     window.localStorage.setItem('ENVIRONMENT', '$buildtype');
+    window.localStorage.setItem('API_KEY', '$apiKey');
     window.localStorage.setItem('textPrimaryColor', '$textPrimaryColor');
     window.localStorage.setItem('textSecondaryColor', '$textSecondaryColor');
     window.localStorage.setItem('textTertiaryColor', '$textTertiaryColor');
