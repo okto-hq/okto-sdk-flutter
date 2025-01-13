@@ -4,6 +4,9 @@ import 'package:example/screens/init/init_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
+import 'package:okto_sdk/okto_flutter_sdk.dart';
+import 'package:okto_network_manager/service_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +21,25 @@ Future<void> main() async {
             'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
       ));
+  await OktoSdk().init(
+    OktoCore(
+      id: "0x5d7E7666f4657bcB60d1F7F1C579738Bec994851",
+      privateKey:
+          "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+      apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
+      maxPriorityFeePerGas: "0x2E90EDD000",
+      maxFeePerGas: "0x2E90EDD000"
+    ),
+    oktoServiceConfig: ServiceConfig(
+      appName: "okto_sdk",
+      baseUrls: {
+        "bff" : "https://sandbox-api.okto.tech",
+        "auth" : "https://sandbox-api.okto.tech",
+        "portfolio" : "https://sandbox-api.okto.tech"
+      },
+      rpcBaseUrl: "https://okto-gateway.oktostage.com/rpc"
+    )
+  );
   okto = Okto(globals.getApiKey(), globals.getBuildType());
   runApp(const MyApp());
 }

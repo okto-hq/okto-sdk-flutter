@@ -146,8 +146,8 @@ class Okto {
   /// POST
   /// Method to refresh the user auth token.
   /// @returns: [AuthTokenData]
-  Future<AuthTokenData> refreshToken() async {
-    final refreshToken = await OktoSdk().refreshAuthToken();
+  Future<String?> refreshToken() async {
+    final refreshToken = await OktoSdk().oktoUserClient?.refreshAuthToken;
     return refreshToken;
   }
 
