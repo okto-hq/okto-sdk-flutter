@@ -11,12 +11,11 @@ class Utility {
         return "https://sandbox-api.okto.tech";
       }
       default:
-        return "https://sandbox-api.okto.tech";
-        // return "https://3p-bff.oktostage.com";
+        return "https://3p-bff.oktostage.com";
     }
   }
 
   static String getRpcBaseUrl(BuildType buildType) {
-    return "https://okto-gateway.oktostage.com/rpc";
+    return "https://okto-gateway.oktostage.com";
   }
 }

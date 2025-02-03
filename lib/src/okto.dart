@@ -10,6 +10,7 @@ import 'package:okto_network_manager/service_config.dart';
 import 'package:okto_sdk/core/repository/auth.dart';
 import 'package:okto_sdk/core/repository/sdk_repository_provider.dart';
 import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
+import 'package:okto_sdk/network/model/auth_response_v2.dart';
 import 'package:okto_sdk/network/models/activity_data_v2.dart';
 import 'package:okto_sdk/network/models/client/auth_token_model.dart';
 import 'package:okto_sdk/network/models/client/order_history_model_v2.dart';
@@ -51,12 +52,12 @@ class Okto {
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
     await OktoSdk().init(
         OktoCore(
-            id: "0x5d7E7666f4657bcB60d1F7F1C579738Bec994851",
+            id: "0x6b6Fad2600Bc57075ee560A6fdF362FfefB9dC3C",
             privateKey:
             "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
             apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
-            maxPriorityFeePerGas: "0x2E90EDD000",
-            maxFeePerGas: "0x2E90EDD000"
+            maxPriorityFeePerGas: "0xBA43B7400",
+            maxFeePerGas: "0xBA43B7400"
         ),
         oktoServiceConfig: serviceConfig);
   }
@@ -69,6 +70,12 @@ class Okto {
 
   // Private constructor for testing
   Okto._test(this.apiKey, this.buildType);
+
+
+  Future<AuthResponseV2> authenticateV2({required String idToken, required String authProvider}) async {
+    final AuthResponseV2 response = await OktoSdk().loginWithIdTokenV2(idToken: idToken, authProvider: authProvider);
+    return response;
+  }
 
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
@@ -162,6 +169,7 @@ class Okto {
 
   /// Method to create a new wallet for the user
   /// Returns a [WalletResponse] object
+  @Deprecated("Wallet will be created on authentication only")
   Future<WalletsData?> createWallet() async {
     final WalletsData? response = await OktoSdk().oktoUserClient?.createWallet();
     return response;
@@ -199,7 +207,7 @@ class Okto {
   }
 
   /// Method to get the user portfolio activity
-  /// Returns a [UserPortfolioActivityResponse] object
+  /// Returns a [ActivityDataV2] object
   /// Default value of limit is 10 and offset is 1
   Future<ActivityDataV2?> getUserPortfolioActivity(
       {int limit = 10, int offset = 1}) async {
@@ -225,13 +233,15 @@ class Okto {
   }
 
   /// Method to get order history with optional filters
-  /// Returns a [OrderHistoryResponse] object
+  /// Returns a [OrderHistoryResponseV2] object
   /// Default value of offset is 0 and limit is 1 and orderState is SUCCESS
-  Future<OrderHistoryResponseV2?> orderHistory(
+  Future<OrderHistoryDataV2?> orderHistory(
       {int offset = 0,
       int limit = 1,
       String? orderId,
-      OrderState? orderState}) async {
+      OrderState? orderState,
+      String intentType = 'TOKEN_TRANSFER'
+      }) async {
     String? orderStateToPass;
     switch (orderState) {
       case OrderState.pending:
@@ -247,7 +257,7 @@ class Okto {
     final response = await OktoSdk().oktoUserClient?.getOrdersHistory(
         page: offset,
         size: limit,
-        intentType: 'TOKEN_TRANSFER',
+        intentType: intentType,
         orderId: orderId,
         orderState: orderStateToPass);
     return response;

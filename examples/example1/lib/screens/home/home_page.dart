@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:example/okto.dart';
 import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/create_wallet_page.dart';
@@ -59,15 +57,15 @@ class _HomePageState extends State<HomePage> {
                                       const UserDetailsPage()));
                         },
                         child: const Text('User Details')),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CreateWalletPage()));
-                        },
-                        child: const Text('Create Wallet')),
+                    // ElevatedButton(
+                    //     onPressed: () {
+                    //       Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (context) =>
+                    //                   const CreateWalletPage()));
+                    //     },
+                    //     child: const Text('Create Wallet')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -176,19 +174,22 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await okto!.logout();
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                child: const Text('Logout')),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await okto!.logout();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()));
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                  child: const Text('Logout')),
+            ),
           ],
         ),
       ),

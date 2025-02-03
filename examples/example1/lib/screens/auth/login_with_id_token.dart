@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:example/okto.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:example/utils/global_mode.dart';
@@ -14,6 +16,7 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
   final authIdController = TextEditingController();
   Globals globals1 = Globals.instance;
   String error = '';
+  String responseData = '';
   @override
   void initState() {
     super.initState();
@@ -45,8 +48,11 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    await okto!.authenticate(idToken: authIdController.text);
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                    okto!.authenticateV2(idToken: authIdController.text, authProvider: "google").then((response) {
+                      debugPrint("Authentication response: ${response.toJson()}");
+                      responseData = jsonEncode(response.toJson());
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                    });
                     // ignore: use_build_context_synchronously
                   } catch (e) {
                     print(e.toString());
@@ -56,7 +62,8 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
                   }
                 },
                 child: const Text('Login with Id Token')),
-            Text(error),
+
+            Text(error.isNotEmpty ? error : responseData),
             const SizedBox(height: 20)
           ],
         ),
