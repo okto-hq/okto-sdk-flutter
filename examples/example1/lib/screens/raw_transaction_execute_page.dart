@@ -3,26 +3,33 @@ import 'dart:convert';
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
-import 'package:okto_sdk/network/models/client/raw_transaction_execute_model.dart';
+import 'package:okto_sdk/core/sdk_client/user_operation/raw_transaction_details.dart';
 
 class RawTransactioneExecutePage extends StatefulWidget {
   const RawTransactioneExecutePage({super.key});
 
   @override
-  State<RawTransactioneExecutePage> createState() => _RawTransactioneExecutePageState();
+  State<RawTransactioneExecutePage> createState() =>
+      _RawTransactioneExecutePageState();
 }
 
-class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage> {
+class _RawTransactioneExecutePageState
+    extends State<RawTransactioneExecutePage> {
+
   final networkNameController = TextEditingController();
   final transactionObjectController = TextEditingController();
-  Future<RawTransactionExecuteResponse?>? _rawTransactionExecuted;
+  Future<String?>? _rawTransactionExecuted;
 
-  Future<RawTransactionExecuteResponse?> rawTransactionExecute() async {
+  Future<String?> rawTransactionExecute() async {
     final transactionObject = jsonDecode(transactionObjectController.text);
     try {
-      final orderHistory = await okto!.rawTransactionExecute(networkName: networkNameController.text, transaction: transactionObject);
-      return orderHistory;
+      final rawTransactionDetail = RawTransactionDetails(
+          caip2Id: networkNameController.text,
+          transactions: [transactionObject]);
+      final userOpResponse = await okto!.estimateTransaction(rawTransactionDetail);
+
+      final jobId = await okto!.executeTransaction(userOpResponse!.userOps!);
+      return jobId;
     } catch (e) {
       throw Exception(e);
     }
@@ -40,7 +47,10 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
               margin: const EdgeInsets.all(40),
               child: const Text(
                 'Raw Transaction Execute',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 30),
               ),
             ),
             TextField(
@@ -73,27 +83,33 @@ class _RawTransactioneExecutePageState extends State<RawTransactioneExecutePage>
             Expanded(
               child: _rawTransactionExecuted == null
                   ? Container()
-                  : FutureBuilder<RawTransactionExecuteResponse?>(
+                  : FutureBuilder<String?>(
                       future: _rawTransactionExecuted,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator(
+                                  color: Colors.white));
                         } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
                         } else if (snapshot.hasData) {
-                          final transferNftResponse = snapshot.data!;
+                          final jobId = snapshot.data!;
                           return Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Job id: ${transferNftResponse.data.jobId}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                  'Job id: ${jobId}',
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 20),
                                 ),
                                 TextButton(
                                     onPressed: () async {
-                                      Clipboard.setData(ClipboardData(text: transferNftResponse.data.jobId));
+                                      Clipboard.setData(ClipboardData(
+                                          text: jobId));
                                     },
                                     child: const Text('Copy job id'))
                               ],

@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
-import 'package:okto_flutter_sdk/src/utils/enums.dart';
-import 'package:okto_flutter_sdk/src/utils/http_client.dart';
-import 'package:okto_flutter_sdk/src/utils/token_manager.dart';
 import 'package:okto_flutter_sdk/src/utils/utility.dart';
+import 'package:okto_network_manager/network/http/json_rpc/json_rpc_model.dart';
 import 'package:okto_network_manager/service_config.dart';
-import 'package:okto_sdk/core/repository/auth.dart';
-import 'package:okto_sdk/core/repository/sdk_repository_provider.dart';
 import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
+import 'package:okto_sdk/core/sdk_client/user_operation/user_operation.dart';
 import 'package:okto_sdk/network/model/auth_response_v2.dart';
 import 'package:okto_sdk/network/models/activity_data_v2.dart';
 import 'package:okto_sdk/network/models/client/auth_token_model.dart';
@@ -20,15 +17,16 @@ import 'package:okto_sdk/network/models/client/raw_transaction_status_model.dart
 import 'package:okto_sdk/network/models/client/transfer_nft_model.dart';
 import 'package:okto_sdk/network/models/client/user_model.dart';
 import 'package:okto_sdk/network/models/client/wallet_model.dart';
+import 'package:okto_sdk/network/models/gas_value_data.dart';
 import 'package:okto_sdk/network/models/nft_data_v2.dart';
 import 'package:okto_sdk/network/models/order_response_v2.dart';
 import 'package:okto_sdk/network/models/portfolio_data_v2.dart';
+import 'package:okto_sdk/network/models/user_op_data.dart';
 import 'package:okto_sdk/network/models/wallet_data_v2.dart';
 import 'package:okto_sdk/network/models/whitelisted_network_data_v2.dart';
 import 'package:okto_sdk/network/models/whitelisted_token_data_v2.dart';
 import 'package:okto_sdk/okto_flutter_sdk.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'models/nft_order_details_v2.dart';
 
 class Okto {
   /// Client Side Api Key received from OKto
@@ -57,7 +55,9 @@ class Okto {
             "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
             apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
             maxPriorityFeePerGas: "0xBA43B7400",
-            maxFeePerGas: "0xBA43B7400"
+            maxFeePerGas: "0xBA43B7400",
+            jobManagerAddress: '0xed8Fe2543efFF64FC3567B03b612AA82C409579a',
+            entryPointContractAddress: "0xb0C42f19bBb23E52f75813404eeEc0D189b3A61B"
         ),
         oktoServiceConfig: serviceConfig);
   }
@@ -233,7 +233,8 @@ class Okto {
   }
 
   /// Method to get order history with optional filters
-  /// Returns a [OrderHistoryResponseV2] object
+  /// Returns a [OrderHistoryResponseV2]
+  /// Possible values for [intentType] RAW_TRANSACTION, TOKEN_TRANSFER, NFT_TRANSFER
   /// Default value of offset is 0 and limit is 1 and orderState is SUCCESS
   Future<OrderHistoryDataV2?> orderHistory(
       {int offset = 0,
@@ -320,6 +321,33 @@ class Okto {
       {required String orderId}) async {
     final response =
         await OktoSdk().oktoUserClient?.rawTransactionStatus(orderId: orderId);
+    return response;
+  }
+
+  /// Method to get the gas values.
+  /// Returns a [GasValueData] object
+  /// Use this [GasValueData] for estimate and execute transaction.
+  Future<GasValueData?> getGasValue(
+      {required String orderId}) async {
+    final response =
+    await OktoSdk().oktoUserClient?.getGasValue();
+    return response;
+  }
+
+  /// Method to get the gas values.
+  /// Returns a [UserOpData] object
+  /// Use this [UserOpData] for estimate and execute transaction.
+  Future<UserOpData?> estimateTransaction(IntentDetail intentDetail) async {
+    final response = await OktoSdk().oktoUserClient?.estimate(intentDetail);
+    return response;
+  }
+
+  /// Method to get the gas values.
+  /// Returns a [GasValueData] object
+  /// Use this [GasValueData] for estimate and execute transaction.
+  Future<String?> executeTransaction(UserOp userOp) async {
+    final response =
+    await OktoSdk().oktoUserClient?.execute(userOp);
     return response;
   }
 

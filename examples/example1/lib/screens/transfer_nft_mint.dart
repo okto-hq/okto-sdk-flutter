@@ -1,44 +1,46 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_sdk/core/sdk_client/user_operation/nft_collection_creation_user_operation.dart';
+import 'package:okto_sdk/core/sdk_client/user_operation/nft_mint_user_operation.dart';
 import 'package:okto_sdk/core/sdk_client/user_operation/nft_transfer_user_operation.dart';
 import 'package:okto_sdk/core/sdk_client/user_operation/token_transfer_user_operation.dart';
 import 'package:okto_sdk/network/models/client/transfer_nft_model.dart';
 
-class TransferNftPage extends StatefulWidget {
-  const TransferNftPage({super.key});
+class TransferNftMint extends StatefulWidget {
+  const TransferNftMint({super.key});
 
   @override
-  State<TransferNftPage> createState() => _TransferNftPageState();
+  State<TransferNftMint> createState() => _TransferNftPageState();
 }
 
-class _TransferNftPageState extends State<TransferNftPage> {
+class _TransferNftPageState extends State<TransferNftMint> {
   final networkIdController = TextEditingController();
-  final nftIdEditController = TextEditingController();
-  final collectionAddressController = TextEditingController();
-  final quantityController = TextEditingController();
-  final recipientAddressController = TextEditingController();
+  final nftNameEditController = TextEditingController();
+  final collectionNameController = TextEditingController();
+  final metadataUriController = TextEditingController();
+  final descriptionEditController = TextEditingController();
   final nftAddressController = TextEditingController();
-  final nftTypeController = TextEditingController();
+  final propertyNameController = TextEditingController();
+  final propertyValueTypeController = TextEditingController();
+  final propertyValueController = TextEditingController();
 
   Future<String?>? _transferNft;
 
   Future<String?> transferNft() async {
     try {
-
-      /// collectionAddress : ""
-      /// caip2Id : "...caipNetworkId..."
-      /// nftId : "6"
-      /// recipientWalletAddress : "0x992328afCCADd04cCAd5DaB37Ca17bBc38d751e2"
-      /// amount : "1"
-      /// nftType : "ERC1155"
-      final nftTransfer = NftTransferDetails(
+      final nftTransfer = NftMintDetail(
         caip2Id: networkIdController.text,
-        nftId: nftIdEditController.text,
-        recipientWalletAddress: recipientAddressController.text,
-        amount: quantityController.text,
-        nftType: nftTypeController.text,
-        collectionAddress: collectionAddressController.text,
+        nftName: nftNameEditController.text,
+        collectionName: collectionNameController.text,
+        uri: metadataUriController.text,
+        description: descriptionEditController.text,
+        properties: [
+          NftMintMetadata(
+            name: propertyNameController.text,
+            valueType: propertyValueTypeController.text,
+            value: propertyValueController.text,
+          )
+        ],
       );
       final userOpResponse = await okto!.estimateTransaction(nftTransfer);
       return okto!.executeTransaction(userOpResponse!.userOps!);
@@ -68,24 +70,32 @@ class _TransferNftPageState extends State<TransferNftPage> {
               decoration: const InputDecoration(label: Text('Network Id')),
             ),
             TextField(
-              controller: nftIdEditController,
-              decoration: const InputDecoration(label: Text('Nft id')),
+              controller: nftNameEditController,
+              decoration: const InputDecoration(label: Text('Nft name')),
             ),
             TextField(
-              controller: collectionAddressController,
-              decoration: const InputDecoration(label: Text('Collection Address')),
+              controller: collectionNameController,
+              decoration: const InputDecoration(label: Text('Collection Name')),
             ),
             TextField(
-              controller: quantityController,
-              decoration: const InputDecoration(label: Text('Quantity')),
+              controller: metadataUriController,
+              decoration: const InputDecoration(label: Text('Metadata Uri')),
             ),
             TextField(
-              controller: recipientAddressController,
-              decoration: const InputDecoration(label: Text('Recipient Address')),
+              controller: descriptionEditController,
+              decoration: const InputDecoration(label: Text('Description')),
             ),
             TextField(
-              controller: nftTypeController,
-              decoration: const InputDecoration(label: Text('Nft type')),
+              controller: propertyNameController,
+              decoration: const InputDecoration(label: Text('Property name')),
+            ),
+            TextField(
+              controller: propertyValueTypeController,
+              decoration: const InputDecoration(label: Text('Property value type')),
+            ),
+            TextField(
+              controller: propertyValueController,
+              decoration: const InputDecoration(label: Text('Property value')),
             ),
             ElevatedButton(
               onPressed: () {
@@ -93,7 +103,7 @@ class _TransferNftPageState extends State<TransferNftPage> {
                   _transferNft = transferNft();
                 });
               },
-              child: const Text('Transfer NFT'),
+              child: const Text('Nft min'),
             ),
             Expanded(
               child: _transferNft == null

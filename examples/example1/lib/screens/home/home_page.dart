@@ -15,6 +15,9 @@ import 'package:example/screens/user_portfolio_page.dart';
 import 'package:example/screens/view_wallet_page.dart';
 import 'package:flutter/material.dart';
 
+import '../nft_collection_creation.dart';
+import '../transfer_nft_mint.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -57,15 +60,15 @@ class _HomePageState extends State<HomePage> {
                                       const UserDetailsPage()));
                         },
                         child: const Text('User Details')),
-                    // ElevatedButton(
-                    //     onPressed: () {
-                    //       Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //               builder: (context) =>
-                    //                   const CreateWalletPage()));
-                    //     },
-                    //     child: const Text('Create Wallet')),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CreateWalletPage()));
+                        },
+                        child: const Text('Estimate')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -147,6 +150,26 @@ class _HomePageState extends State<HomePage> {
                                       const OrderDetailsNftPage()));
                         },
                         child: const Text('Order Details NFT')),
+
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const TransferNftMint()));
+                        },
+                        child: const Text('Nft Mint')),
+
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const NftCollectionCreation()));
+                        },
+                        child: const Text('Nft collection creation')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
