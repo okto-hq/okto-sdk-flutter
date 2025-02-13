@@ -27,9 +27,7 @@ class _RawTransactioneExecutePageState
           caip2Id: networkNameController.text,
           transactions: [transactionObject]);
       final userOpResponse = await okto!.estimateTransaction(rawTransactionDetail);
-
-      final jobId = await okto!.executeTransaction(userOpResponse!.userOps!);
-      return jobId;
+      return okto!.executeTransaction(userOpResponse!.userOps!);
     } catch (e) {
       throw Exception(e);
     }
@@ -102,7 +100,7 @@ class _RawTransactioneExecutePageState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Job id: ${jobId}',
+                                  'Job id: $jobId',
                                   style: const TextStyle(
                                       color: Colors.white, fontSize: 20),
                                 ),

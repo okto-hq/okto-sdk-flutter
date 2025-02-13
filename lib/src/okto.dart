@@ -3,9 +3,10 @@ import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/utility.dart';
-import 'package:okto_network_manager/network/http/json_rpc/json_rpc_model.dart';
 import 'package:okto_network_manager/service_config.dart';
 import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
+import 'package:okto_sdk/core/sdk_client/user_operation/nft_transfer_user_operation.dart';
+import 'package:okto_sdk/core/sdk_client/user_operation/token_transfer_user_operation.dart';
 import 'package:okto_sdk/core/sdk_client/user_operation/user_operation.dart';
 import 'package:okto_sdk/network/model/auth_response_v2.dart';
 import 'package:okto_sdk/network/models/activity_data_v2.dart';
@@ -50,14 +51,13 @@ class Okto {
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
     await OktoSdk().init(
         OktoCore(
-            id: "0x6b6Fad2600Bc57075ee560A6fdF362FfefB9dC3C",
+            swa: "0x6b6Fad2600Bc57075ee560A6fdF362FfefB9dC3C",
             privateKey:
-            "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+            // "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+            "adf2181a7b2dec0f1ed22061ab31bd6182691c619d9e874a956e71ab7ecca413",
             apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
             maxPriorityFeePerGas: "0xBA43B7400",
             maxFeePerGas: "0xBA43B7400",
-            jobManagerAddress: '0xed8Fe2543efFF64FC3567B03b612AA82C409579a',
-            entryPointContractAddress: "0xb0C42f19bBb23E52f75813404eeEc0D189b3A61B"
         ),
         oktoServiceConfig: serviceConfig);
   }
@@ -326,7 +326,7 @@ class Okto {
 
   /// Method to get the gas values.
   /// Returns a [GasValueData] object
-  /// Use this [GasValueData] for estimate and execute transaction.
+  /// Use this [GasValueData] for gas values estimate transaction.
   Future<GasValueData?> getGasValue(
       {required String orderId}) async {
     final response =
@@ -348,6 +348,24 @@ class Okto {
   Future<String?> executeTransaction(UserOp userOp) async {
     final response =
     await OktoSdk().oktoUserClient?.execute(userOp);
+    return response;
+  }
+
+  /// Execute transaction without estimate.
+  /// The user op creation and signing will be done on client side only.
+  /// Returns a [String] jobId.
+  Future<String?> executeTokenTransfer({required TokenTransferDetails tokenTransferDetail}) async {
+    final response =
+    await OktoSdk().oktoUserClient?.execute(await TokenTransferUserOperation(details: tokenTransferDetail).userOp);
+    return response;
+  }
+
+  /// Execute transaction without estimate.
+  /// The user op creation and signing will be done on client side only.
+  /// Returns a [String] jobId.
+  Future<String?> executeNftTransfer({required NftTransferDetails nftTransferDetail}) async {
+    final response =
+    await OktoSdk().oktoUserClient?.execute(await NftUserOperation(details: nftTransferDetail).userOp);
     return response;
   }
 

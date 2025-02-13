@@ -25,23 +25,24 @@ class _TransferNftPageState extends State<TransferNftPage> {
 
   Future<String?> transferNft() async {
     try {
-
-      /// collectionAddress : ""
-      /// caip2Id : "...caipNetworkId..."
-      /// nftId : "6"
-      /// recipientWalletAddress : "0x992328afCCADd04cCAd5DaB37Ca17bBc38d751e2"
-      /// amount : "1"
-      /// nftType : "ERC1155"
+      // {
+      //    "caip2Id": "eip155:137",
+      //   "nftId": "b9e16100-446f-4050-84ed-a846d2bae528",
+      //   "recipientWalletAddress": "0x6ABcD0428e3129a6110CC5dCcb4C1BfdA1b4D3C4",
+      //   "collectionAddress": "0x68ee2dddcbb1c03df5fc4b6235d993b8b4d1d0e5",
+      //   "amount": "1",
+      //   "nftType": "ERC721"
+      // }
       final nftTransfer = NftTransferDetails(
-        caip2Id: networkIdController.text,
-        nftId: nftIdEditController.text,
-        recipientWalletAddress: recipientAddressController.text,
-        amount: quantityController.text,
-        nftType: nftTypeController.text,
-        collectionAddress: collectionAddressController.text,
+        caip2Id: 'eip155:137',
+        nftId: 'b9e16100-446f-4050-84ed-a846d2bae528',
+        recipientWalletAddress: '0x6ABcD0428e3129a6110CC5dCcb4C1BfdA1b4D3C4',
+        amount: "1",
+        nftType: 'ERC721',
+        collectionAddress: '0x68ee2dddcbb1c03df5fc4b6235d993b8b4d1d0e5'
       );
-      final userOpResponse = await okto!.estimateTransaction(nftTransfer);
-      return okto!.executeTransaction(userOpResponse!.userOps!);
+      // final userOpResponse = await okto!.estimateTransaction(nftTransfer);
+      return okto!.executeNftTransfer(nftTransferDetail : nftTransfer);
     } catch (e) {
       print(e.toString());
       throw Exception(e);
