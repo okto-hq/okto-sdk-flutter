@@ -3,10 +3,9 @@ import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/utility.dart';
+import 'package:okto_flutter_sdk/src/utils/validator_util.dart';
 import 'package:okto_network_manager/service_config.dart';
 import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
-import 'package:okto_sdk/core/sdk_client/user_operation/nft_transfer_user_operation.dart';
-import 'package:okto_sdk/core/sdk_client/user_operation/token_transfer_user_operation.dart';
 import 'package:okto_sdk/core/sdk_client/user_operation/user_operation.dart';
 import 'package:okto_sdk/network/model/auth_response_v2.dart';
 import 'package:okto_sdk/network/models/activity_data_v2.dart';
@@ -29,16 +28,20 @@ import 'package:okto_sdk/network/models/whitelisted_token_data_v2.dart';
 import 'package:okto_sdk/okto_flutter_sdk.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'error/invalid_arguement.dart';
+
 class Okto {
   /// Client Side Api Key received from OKto
-  final String apiKey;
-  final BuildType buildType;
+  String _apiKey = '';
+  BuildType _buildType = BuildType.staging;
 
-  Okto(this.apiKey, this.buildType) {
-    _initializeSdk();
-  }
+  String get apiKey => _apiKey;
 
-  _initializeSdk() async {
+  BuildType get buildType => _buildType;
+
+ Future<void> initializeSdk({required String apiKey, required BuildType buildType}) async {
+   this._apiKey = apiKey;
+   this._buildType = buildType;
     final baseUrl = Utility.getBaseUrl(buildType);
     final serviceConfig = ServiceConfig(
         appName: "okto_sdk",
@@ -51,10 +54,10 @@ class Okto {
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
     await OktoSdk().init(
         OktoCore(
-            swa: "0x6b6Fad2600Bc57075ee560A6fdF362FfefB9dC3C",
+            swa: "0x0430E673E084367Ba371e0653f28cDA1BFb57DB4",
             privateKey:
-            // "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
-            "adf2181a7b2dec0f1ed22061ab31bd6182691c619d9e874a956e71ab7ecca413",
+            "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+            // apiKey: apiKey,
             apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
             maxPriorityFeePerGas: "0xBA43B7400",
             maxFeePerGas: "0xBA43B7400",
@@ -62,17 +65,8 @@ class Okto {
         oktoServiceConfig: serviceConfig);
   }
 
-  // Factory constructor for testing
-  @visibleForTesting
-  factory Okto.test(String apiKey, BuildType buildType) {
-    return Okto._test(apiKey, buildType);
-  }
-
-  // Private constructor for testing
-  Okto._test(this.apiKey, this.buildType);
-
-
-  Future<AuthResponseV2> authenticateV2({required String idToken, required String authProvider}) async {
+  Future<AuthResponseV2> authenticateV2({required String idToken, String authProvider = 'google'}) async {
+    if(idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
     final AuthResponseV2 response = await OktoSdk().loginWithIdTokenV2(idToken: idToken, authProvider: authProvider);
     return response;
   }
@@ -80,6 +74,7 @@ class Okto {
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthTokenData> authenticate({required String idToken}) async {
+    if(idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
     final AuthTokenData response = await OktoSdk().loginWithIdToken(idToken);
     return response;
   }
@@ -89,6 +84,7 @@ class Okto {
   /// @returns AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
   Future<AuthTokenData> authenticateWithUserId(
       {required String userId, required String jwtToken}) async {
+    if(userId.isEmpty || jwtToken.isEmpty) throw InvalidArgument("userId or jwtToken can't be empty");
     final authTokenResponse = await OktoSdk()
         .authenticateWithUserId(userId: userId, jwtToken: jwtToken);
     return authTokenResponse;
@@ -97,6 +93,7 @@ class Okto {
   /// To send OTP to the given [email].
   /// returns an token along with OTP which will be used to verify the OTP.
   Future<OtpResponse?> sendEmailOtp({required String email}) async {
+    if(email.isEmpty) throw InvalidArgument("userId or idToken can't be empty");
     try {
       return await OktoSdk().sendEmailOtp(email: email);
     } catch (e) {
@@ -109,6 +106,7 @@ class Okto {
       {required String emailId,
       required String otp,
       required String token}) async {
+    ValidatorUtil.validateEmailOtp(emailId, otp, token);
     final AuthTokenData response =
         await OktoSdk().verifyEmailOtp(email: emailId, otp: otp, token: token);
     return response;
@@ -118,6 +116,7 @@ class Okto {
   /// returns an token along with OTP which will be used to verify the OTP.
   Future<OtpResponse?> sendPhoneOtp(
       {required String phoneNumber, String countryCode = "IN"}) async {
+    ValidatorUtil.validatePhoneNumber(phoneNumber);
     try {
       final response = await OktoSdk()
           .sendPhoneOtp(phoneNumber: phoneNumber, countryCode: countryCode);
@@ -348,24 +347,6 @@ class Okto {
   Future<String?> executeTransaction(UserOp userOp) async {
     final response =
     await OktoSdk().oktoUserClient?.execute(userOp);
-    return response;
-  }
-
-  /// Execute transaction without estimate.
-  /// The user op creation and signing will be done on client side only.
-  /// Returns a [String] jobId.
-  Future<String?> executeTokenTransfer({required TokenTransferDetails tokenTransferDetail}) async {
-    final response =
-    await OktoSdk().oktoUserClient?.execute(await TokenTransferUserOperation(details: tokenTransferDetail).userOp);
-    return response;
-  }
-
-  /// Execute transaction without estimate.
-  /// The user op creation and signing will be done on client side only.
-  /// Returns a [String] jobId.
-  Future<String?> executeNftTransfer({required NftTransferDetails nftTransferDetail}) async {
-    final response =
-    await OktoSdk().oktoUserClient?.execute(await NftUserOperation(details: nftTransferDetail).userOp);
     return response;
   }
 

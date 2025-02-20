@@ -41,8 +41,9 @@ class _TransferNftPageState extends State<TransferNftPage> {
         nftType: 'ERC721',
         collectionAddress: '0x68ee2dddcbb1c03df5fc4b6235d993b8b4d1d0e5'
       );
-      // final userOpResponse = await okto!.estimateTransaction(nftTransfer);
-      return okto!.executeNftTransfer(nftTransferDetail : nftTransfer);
+      // final userOpFromApi = (await okto!.estimateTransaction(nftTransfer))!.userOps!;
+      final userOpFromSdk = await NftUserOperation(details: nftTransfer).userOp;
+      return okto!.executeTransaction(userOpFromSdk);
     } catch (e) {
       print(e.toString());
       throw Exception(e);

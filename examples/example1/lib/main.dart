@@ -4,9 +4,6 @@ import 'package:example/screens/init/init_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
-import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
-import 'package:okto_sdk/okto_flutter_sdk.dart';
-import 'package:okto_network_manager/service_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +18,8 @@ Future<void> main() async {
             'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
       ));
-  okto = Okto(globals.getApiKey(), globals.getBuildType());
+  // okto = Okto();
+  // await okto?.initializeSdk(apiKey: globals.getApiKey(), buildType: globals.getBuildType());
   runApp(const MyApp());
 }
 

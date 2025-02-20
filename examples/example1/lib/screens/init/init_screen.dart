@@ -18,6 +18,7 @@ class _InitPageState extends State<InitPage> {
   int _selectedChipIndex = -1;
 
   final List<String> _options = ['Sandbox', 'Staging', 'Production'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +28,8 @@ class _InitPageState extends State<InitPage> {
         children: [
           TextField(
             controller: apiController,
-            decoration: const InputDecoration(hintText: 'Enter your client api key'),
+            decoration:
+                const InputDecoration(hintText: 'Enter your client api key'),
           ),
           Wrap(
             spacing: 8.0,
@@ -47,7 +49,7 @@ class _InitPageState extends State<InitPage> {
             ).toList(),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_selectedChipIndex != -1) {
                 if (_selectedChipIndex == 0) {
                   setState(() {
@@ -64,9 +66,13 @@ class _InitPageState extends State<InitPage> {
                 }
                 setState(() {
                   globals.setApiKey(apiController.text);
-                  okto = Okto(globals.getApiKey(),globals.getBuildType());
                 });
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                okto = Okto();
+                await okto?.initializeSdk(
+                    apiKey: globals.getApiKey(),
+                    buildType: globals.getBuildType());
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()));
               }
             },
             child: const Text('Next'),

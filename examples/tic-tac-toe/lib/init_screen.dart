@@ -19,6 +19,7 @@ class _InitPageState extends State<InitPage> {
   int _selectedChipIndex = -1;
 
   final List<String> _options = ['Sandbox', 'Staging', 'Production'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +39,8 @@ class _InitPageState extends State<InitPage> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
                 controller: apiController,
-                decoration: const InputDecoration(hintText: 'Enter your client api key'),
+                decoration: const InputDecoration(
+                    hintText: 'Enter your client api key'),
               ),
             ),
             Wrap(
@@ -74,11 +76,17 @@ class _InitPageState extends State<InitPage> {
                       globals.setBuildType(BuildType.production);
                     });
                   }
-                  setState(() {
+                  setState(() async {
                     globals.setApiKey(apiController.text);
-                    okto = Okto(globals.getApiKey(), globals.getBuildType());
+                    okto = Okto();
+                    await okto?.initializeSdk(
+                        apiKey: globals.getApiKey(),
+                        buildType: globals.getBuildType());
                   });
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginWithGoogle()));
                 }
               },
               child: const Text('Next'),

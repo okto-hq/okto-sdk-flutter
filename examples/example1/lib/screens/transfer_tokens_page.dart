@@ -25,7 +25,10 @@ class _TransferTokensPageState extends State<TransferTokensPage> {
           tokenAddress: '',
           amount: 10000000000000000);
       // final userOpResponse = await okto!.estimateTransaction(transferDetail);
-      return okto!.executeTokenTransfer(tokenTransferDetail: transferDetail);
+
+      // final userOpFromApi = (await okto!.estimateTransaction(nftTransfer))!.userOps!;
+      final userOpFromSdk = await TokenTransferUserOperation(details: transferDetail).userOp;
+      return okto!.executeTransaction(userOpFromSdk);
     } catch (e) {
       throw Exception(e);
     }

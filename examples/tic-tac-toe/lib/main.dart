@@ -5,10 +5,13 @@ import 'package:tictactoe/core/game.dart';
 import 'package:tictactoe/init_screen.dart';
 import 'package:tictactoe/utils/okto.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Globals globals = Globals.instance;
-  okto = Okto(globals.getApiKey(), globals.getBuildType());
+  // okto = Okto();
+  // await okto?.initializeSdk(
+  // apiKey: globals.getApiKey(),
+  // buildType: globals.getBuildType());
   runApp(const MyApp());
 }
 
