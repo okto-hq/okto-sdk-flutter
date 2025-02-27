@@ -4,6 +4,7 @@ import 'package:okto_flutter_sdk/src/models/auth_type.dart';
 import 'package:okto_flutter_sdk/src/ui/onboarding_screen.dart';
 import 'package:okto_flutter_sdk/src/utils/utility.dart';
 import 'package:okto_flutter_sdk/src/utils/validator_util.dart';
+import 'package:okto_network_manager/enums.dart';
 import 'package:okto_network_manager/service_config.dart';
 import 'package:okto_sdk/core/sdk_client/sdk_core.dart';
 import 'package:okto_sdk/core/sdk_client/user_operation/user_operation.dart';
@@ -22,6 +23,7 @@ import 'package:okto_sdk/network/models/nft_data_v2.dart';
 import 'package:okto_sdk/network/models/order_response_v2.dart';
 import 'package:okto_sdk/network/models/portfolio_data_v2.dart';
 import 'package:okto_sdk/network/models/user_op_data.dart';
+import 'package:okto_sdk/network/models/user_session_info.dart';
 import 'package:okto_sdk/network/models/wallet_data_v2.dart';
 import 'package:okto_sdk/network/models/whitelisted_network_data_v2.dart';
 import 'package:okto_sdk/network/models/whitelisted_token_data_v2.dart';
@@ -33,15 +35,17 @@ import 'error/invalid_arguement.dart';
 class Okto {
   /// Client Side Api Key received from OKto
   String _apiKey = '';
-  BuildType _buildType = BuildType.staging;
+  Env _env = Env.staging;
 
   String get apiKey => _apiKey;
 
-  BuildType get buildType => _buildType;
+  Env get env => _env;
 
- Future<void> initializeSdk({required String apiKey, required BuildType buildType}) async {
-   this._apiKey = apiKey;
-   this._buildType = buildType;
+  Future<void> initializeSdk(
+      {required String apiKey, required Env env}) async {
+    _apiKey = apiKey;
+    _env = env;
+    final buildType = Utility.getBuildType(env);
     final baseUrl = Utility.getBaseUrl(buildType);
     final serviceConfig = ServiceConfig(
         appName: "okto_sdk",
@@ -51,30 +55,35 @@ class Okto {
           "portfolio": baseUrl,
           "oms": baseUrl
         },
+        buildType: buildType,
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
     await OktoSdk().init(
         OktoCore(
-            swa: "0x0430E673E084367Ba371e0653f28cDA1BFb57DB4",
-            privateKey:
-            "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
-            // apiKey: apiKey,
-            apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
-            maxPriorityFeePerGas: "0xBA43B7400",
-            maxFeePerGas: "0xBA43B7400",
+          swa: "0xb532926d0dBC2799Cf8BE2d6e2F1ef8Bd27CaA0c", // sandbox
+          // saw: 0x0430E673E084367Ba371e0653f28cDA1BFb57DB4// staging
+          privateKey:
+              "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+          // apiKey: apiKey,
+          apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
+          maxPriorityFeePerGas: "0xBA43B7400",
+          maxFeePerGas: "0xBA43B7400",
         ),
         oktoServiceConfig: serviceConfig);
   }
 
-  Future<AuthResponseV2> authenticateV2({required String idToken, String authProvider = 'google'}) async {
-    if(idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
-    final AuthResponseV2 response = await OktoSdk().loginWithIdTokenV2(idToken: idToken, authProvider: authProvider);
+  /// Method to authenticate a new user using the id token received from google_sign_in
+  Future<AuthResponseV2> authenticateV2(
+      {required String idToken, String authProvider = 'google'}) async {
+    if (idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
+    final AuthResponseV2 response = await OktoSdk()
+        .loginWithIdTokenV2(idToken: idToken, authProvider: authProvider);
     return response;
   }
 
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthTokenData> authenticate({required String idToken}) async {
-    if(idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
+    if (idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
     final AuthTokenData response = await OktoSdk().loginWithIdToken(idToken);
     return response;
   }
@@ -84,7 +93,9 @@ class Okto {
   /// @returns AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
   Future<AuthTokenData> authenticateWithUserId(
       {required String userId, required String jwtToken}) async {
-    if(userId.isEmpty || jwtToken.isEmpty) throw InvalidArgument("userId or jwtToken can't be empty");
+    if (userId.isEmpty || jwtToken.isEmpty) {
+      throw InvalidArgument("userId or jwtToken can't be empty");
+    }
     final authTokenResponse = await OktoSdk()
         .authenticateWithUserId(userId: userId, jwtToken: jwtToken);
     return authTokenResponse;
@@ -93,7 +104,9 @@ class Okto {
   /// To send OTP to the given [email].
   /// returns an token along with OTP which will be used to verify the OTP.
   Future<OtpResponse?> sendEmailOtp({required String email}) async {
-    if(email.isEmpty) throw InvalidArgument("userId or idToken can't be empty");
+    if (email.isEmpty) {
+      throw InvalidArgument("userId or idToken can't be empty");
+    }
     try {
       return await OktoSdk().sendEmailOtp(email: email);
     } catch (e) {
@@ -146,7 +159,8 @@ class Okto {
     try {
       final authToken = await OktoSdk().getAuthToken();
       return authToken?.isNotEmpty == true;
-    } catch (e) {
+    } catch (e, s) {
+      print("Error in isLoggedIn: $e $s");
       return false;
     }
   }
@@ -170,7 +184,8 @@ class Okto {
   /// Returns a [WalletResponse] object
   @Deprecated("Wallet will be created on authentication only")
   Future<WalletsData?> createWallet() async {
-    final WalletsData? response = await OktoSdk().oktoUserClient?.createWallet();
+    final WalletsData? response =
+        await OktoSdk().oktoUserClient?.createWallet();
     return response;
   }
 
@@ -216,6 +231,15 @@ class Okto {
     return response;
   }
 
+  /// Method to get the user portfolio activity
+  /// Returns a [ActivityDataV2] object
+  /// Default value of limit is 10 and offset is 1
+  Future<UserSessionInfo?> verifyUserSession() async {
+    final UserSessionInfo? response =
+        await OktoSdk().oktoUserClient?.verifyUserSession();
+    return response;
+  }
+
   /// Method to transfer tokens from one wallet to another
   /// Returns a [OmsDataV2] object
   /// Network Names: "APTOS", "BASE", "POLYGON", "POLYGON_TESTNET_AMOY", "SOLANA", "SOLANA_DEVNET",
@@ -240,8 +264,7 @@ class Okto {
       int limit = 1,
       String? orderId,
       OrderState? orderState,
-      String intentType = 'TOKEN_TRANSFER'
-      }) async {
+      String intentType = 'TOKEN_TRANSFER'}) async {
     String? orderStateToPass;
     switch (orderState) {
       case OrderState.pending:
@@ -326,10 +349,8 @@ class Okto {
   /// Method to get the gas values.
   /// Returns a [GasValueData] object
   /// Use this [GasValueData] for gas values estimate transaction.
-  Future<GasValueData?> getGasValue(
-      {required String orderId}) async {
-    final response =
-    await OktoSdk().oktoUserClient?.getGasValue();
+  Future<GasValueData?> getGasValue({required String orderId}) async {
+    final response = await OktoSdk().oktoUserClient?.getGasValue();
     return response;
   }
 
@@ -345,8 +366,7 @@ class Okto {
   /// Returns a [GasValueData] object
   /// Use this [GasValueData] for estimate and execute transaction.
   Future<String?> executeTransaction(UserOp userOp) async {
-    final response =
-    await OktoSdk().oktoUserClient?.execute(userOp);
+    final response = await OktoSdk().oktoUserClient?.execute(userOp);
     return response;
   }
 
@@ -383,15 +403,15 @@ class Okto {
       required Future<String> Function() gAuthCallback,
       required Function onLoginSuccess}) async {
     String buildtype = '';
-    switch (buildType) {
-      case BuildType.sandbox:
+    switch (env) {
+      case Env.staging:
+        buildtype = 'STAGING';
+        break;
+      case Env.sandbox:
         buildtype = 'SANDBOX';
         break;
-      case BuildType.staging:
-        buildtype = 'SANDBOX';
-        break;
-      case BuildType.production:
-        buildtype = 'SANDBOX';
+      case Env.production:
+        buildtype = 'PRODUCTION';
         break;
     }
 
@@ -416,12 +436,12 @@ class Okto {
       return injectJs;
     }
 
-    final url = switch (buildType) {
-      BuildType.sandbox =>
+    final url = switch (env) {
+      Env.sandbox =>
         'https://okto-sandbox.firebaseapp.com/#/login_screen',
-      BuildType.production =>
+      Env.production =>
         'https://3p.okto.tech/login_screen/#/login_screen',
-      BuildType.staging => 'https://3p.oktostage.com/#/login_screen',
+      Env.staging => 'https://3p.oktostage.com/#/login_screen',
     };
 
     Navigator.push(
@@ -460,15 +480,15 @@ class Okto {
     final authToken = await OktoSdk().oktoUserClient?.authToken ?? "";
     final deviceToken = await OktoSdk().oktoUserClient?.deviceToken ?? "";
     String buildtype = '';
-    switch (buildType) {
-      case BuildType.sandbox:
+    switch (env) {
+      case Env.sandbox:
         buildtype = 'SANDBOX';
         break;
-      case BuildType.staging:
-        buildtype = 'SANDBOX';
+      case Env.staging:
+        buildtype = 'STAGING';
         break;
-      case BuildType.production:
-        buildtype = 'SANDBOX';
+      case Env.production:
+        buildtype = 'PRODUCTION';
         break;
     }
 
@@ -518,10 +538,10 @@ class Okto {
               onWebResourceError: (WebResourceError error) {},
             ),
           )
-          ..loadRequest(Uri.parse(switch (buildType) {
-            BuildType.sandbox => 'https://okto-sandbox.firebaseapp.com',
-            BuildType.production => 'https://3p.okto.tech/',
-            BuildType.staging => 'https://3p.oktostage.com/',
+          ..loadRequest(Uri.parse(switch (env) {
+            Env.sandbox => 'https://okto-sandbox.firebaseapp.com',
+            Env.production => 'https://3p.okto.tech/',
+            Env.staging => 'https://3p.oktostage.com/',
           }));
 
         return LayoutBuilder(builder: (context, constraints) {

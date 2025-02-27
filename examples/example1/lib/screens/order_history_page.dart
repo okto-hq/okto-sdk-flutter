@@ -55,20 +55,21 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                           return const Center(child: CircularProgressIndicator(color: Colors.white));
                         } else if (snapshot.hasError) {
                           return Center(child: Text('Error: ${snapshot.error}'));
-                        } else if (snapshot.hasData) {
+                        } else if (snapshot.hasData && snapshot.data != null) {
                           final orderHistory = snapshot.data!;
+                          if(orderHistory.items?.isEmpty  == true) {
+                            return const Center(child: Text('No order history found'));
+                          }
                           return Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Text('Status: ${orderHistory.status}'),
                                 Text('Total: ${orderHistory.count}'),
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      // itemCount: orderHistory.data.jobs.length,
-                                    itemCount: 10,
+                                    itemCount: orderHistory.items?.length ?? 0,
                                       itemBuilder: (context, index) {
                                       OrderHistoryItemV2? item = orderHistory.items![index];
                                         return Container(

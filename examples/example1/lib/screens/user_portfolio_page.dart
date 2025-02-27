@@ -34,7 +34,10 @@ class _UserPortfolioPageState extends State<UserPortfolioPage> {
               margin: const EdgeInsets.all(40),
               child: const Text(
                 'User Portfolio',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 30),
               ),
             ),
             ElevatedButton(
@@ -51,61 +54,134 @@ class _UserPortfolioPageState extends State<UserPortfolioPage> {
                   : FutureBuilder<PortfolioDataV2?>(
                       future: _userPortfolio,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator(
+                                  color: Colors.white));
                         } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
-                        } else if (snapshot.hasData) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData && snapshot.data != null) {
                           final userPortfolio = snapshot.data!;
-                          return Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: MediaQuery.sizeOf(context).height * 0.6,
-                                  child: ListView.builder(
-                                      itemCount: userPortfolio.groupTokens?[0].tokens?.length,
-                                      itemBuilder: (context, index) {
-                                        return Container(
-                                          color: Colors.blue,
-                                          margin: const EdgeInsets.all(5),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              SelectableText(
-                                                'Token Name: ${userPortfolio.groupTokens?[0].tokens?[index].name}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                              SelectableText(
-                                                'Quantity : ${userPortfolio.groupTokens?[0].tokens?[index].balance}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                              SelectableText(
-                                                'Amount In INR : ${userPortfolio.groupTokens?[0].holdingsPriceInr}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                              SelectableText(
-                                                'Network Name: ${userPortfolio.groupTokens?[0].tokens?[index].networkName}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                              SelectableText(
-                                                'Token Address: ${userPortfolio.groupTokens?[0].tokens?[index].tokenAddress}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                              SelectableText(
-                                                'Token Image url: ${userPortfolio.groupTokens?[0].tokenImage}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                )
+                          final aggregatedData = userPortfolio.aggregatedData;
+                          return Column(
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                      "holding count: ${aggregatedData?.holdingsCount}"),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                      "holding price INR: ${aggregatedData?.holdingsPriceInr}"),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                      "holding price USDT: ${aggregatedData?.holdingsPriceUsdt}"),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                      "Total holding price INR: ${aggregatedData?.totalHoldingPriceInr}"),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                      "Total holding price USDT: ${aggregatedData?.totalHoldingPriceUsdt}")
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              userPortfolio.groupTokens?.isNotEmpty == true
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: MediaQuery.sizeOf(context)
+                                                    .height *
+                                                0.6,
+                                            child: ListView.builder(
+                                                itemCount: userPortfolio
+                                                    .groupTokens?[0]
+                                                    .tokens
+                                                    ?.length,
+                                                itemBuilder: (context, index) {
+                                                  return Container(
+                                                    color: Colors.blue,
+                                                    margin:
+                                                        const EdgeInsets.all(5),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        SelectableText(
+                                                          'Token Name: ${userPortfolio.groupTokens?[0].tokens?[index].name}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 20),
+                                                        ),
+                                                        SelectableText(
+                                                          'Quantity : ${userPortfolio.groupTokens?[0].tokens?[index].balance}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 20),
+                                                        ),
+                                                        SelectableText(
+                                                          'Amount In INR : ${userPortfolio.groupTokens?[0].holdingsPriceInr}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 20),
+                                                        ),
+                                                        SelectableText(
+                                                          'Network Name: ${userPortfolio.groupTokens?[0].tokens?[index].networkName}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 20),
+                                                        ),
+                                                        SelectableText(
+                                                          'Token Address: ${userPortfolio.groupTokens?[0].tokens?[index].tokenAddress}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 20),
+                                                        ),
+                                                        SelectableText(
+                                                          'Token Image url: ${userPortfolio.groupTokens?[0].tokenImage}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 20),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }),
+                                          )
 
-                                // Add more fields here as needed
-                              ],
-                            ),
+                                          // Add more fields here as needed
+                                        ],
+                                      ),
+                                    )
+                                  : Container(),
+                            ],
                           );
                         }
                         return Container();

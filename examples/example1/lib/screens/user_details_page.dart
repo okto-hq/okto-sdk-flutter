@@ -1,6 +1,6 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_sdk/network/models/client/user_model.dart';
+import 'package:okto_sdk/network/models/user_session_info.dart';
 
 class UserDetailsPage extends StatefulWidget {
   const UserDetailsPage({super.key});
@@ -10,11 +10,11 @@ class UserDetailsPage extends StatefulWidget {
 }
 
 class _UserDetailsPageState extends State<UserDetailsPage> {
-  Future<UserData>? _userDetails;
+  Future<UserSessionInfo?>? _userDetails;
 
-  Future<UserData> fetchUserDetails() async {
+  Future<UserSessionInfo?> fetchUserDetails() async {
     try {
-      final userDetails = await okto!.userDetails();
+      final userDetails = await okto!.verifyUserSession();
       return userDetails;
     } catch (e) {
       rethrow;
@@ -32,7 +32,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               alignment: Alignment.center,
               margin: const EdgeInsets.all(40),
               child: const Text(
-                'User Details',
+                'User session',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
               ),
             ),
@@ -42,12 +42,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   _userDetails = fetchUserDetails();
                 });
               },
-              child: const Text('Get User Details'),
+              child: const Text('Verify user session'),
             ),
             Expanded(
               child: _userDetails == null
                   ? Container()
-                  : FutureBuilder<UserData>(
+                  : FutureBuilder<UserSessionInfo?>(
                       future: _userDetails,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -67,19 +67,19 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  'Email: ${userDetails.email}',
+                                  'Client Id: ${userDetails.clientId}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 SelectableText(
-                                  'Created At: ${userDetails.createdAt}',
+                                  'User swa: ${userDetails.userSwa}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 SelectableText(
-                                  'Freezed: ${userDetails.freezed.toString()}',
+                                  'Client SWA: ${userDetails.clientSwa}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 SelectableText(
-                                  'Freezed Reason: ${userDetails.freezeReason}',
+                                  'Is session added: ${userDetails.isSessionAdded}',
                                   style: const TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                               ],

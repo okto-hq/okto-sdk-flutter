@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) =>
                                       const UserDetailsPage()));
                         },
-                        child: const Text('User Details')),
+                        child: const Text('Verify user session')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(

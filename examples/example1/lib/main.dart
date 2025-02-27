@@ -18,8 +18,8 @@ Future<void> main() async {
             'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
       ));
-  // okto = Okto();
-  // await okto?.initializeSdk(apiKey: globals.getApiKey(), buildType: globals.getBuildType());
+  okto = Okto();
+  await okto?.initializeSdk(apiKey: globals.getApiKey(), env: globals.getBuildType());
   runApp(const MyApp());
 }
 
@@ -51,7 +51,6 @@ class MyApp extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasError) {
-            print(snapshot.error.toString());
             return const InitPage();
           } else {
             // Show login or home page based on login status

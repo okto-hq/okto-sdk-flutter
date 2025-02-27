@@ -53,24 +53,26 @@ class _InitPageState extends State<InitPage> {
               if (_selectedChipIndex != -1) {
                 if (_selectedChipIndex == 0) {
                   setState(() {
-                    globals.setBuildType(BuildType.sandbox);
+                    globals.setBuildType(Env.sandbox);
                   });
                 } else if (_selectedChipIndex == 1) {
                   setState(() {
-                    globals.setBuildType(BuildType.staging);
+                    globals.setBuildType(Env.staging);
                   });
                 } else if (_selectedChipIndex == 2) {
                   setState(() {
-                    globals.setBuildType(BuildType.production);
+                    globals.setBuildType(Env.production);
                   });
                 }
                 setState(() {
                   globals.setApiKey(apiController.text);
                 });
-                okto = Okto();
-                await okto?.initializeSdk(
-                    apiKey: globals.getApiKey(),
-                    buildType: globals.getBuildType());
+                if(okto == null) {
+                  okto = Okto();
+                  await okto?.initializeSdk(
+                      apiKey: globals.getApiKey(),
+                      env: globals.getBuildType());
+                }
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const LoginPage()));
               }
