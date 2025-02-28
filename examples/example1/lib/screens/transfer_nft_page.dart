@@ -25,21 +25,29 @@ class _TransferNftPageState extends State<TransferNftPage> {
 
   Future<String?> transferNft() async {
     try {
-      // {
-      //    "caip2Id": "eip155:137",
-      //   "nftId": "b9e16100-446f-4050-84ed-a846d2bae528",
-      //   "recipientWalletAddress": "0x6ABcD0428e3129a6110CC5dCcb4C1BfdA1b4D3C4",
-      //   "collectionAddress": "0x68ee2dddcbb1c03df5fc4b6235d993b8b4d1d0e5",
-      //   "amount": "1",
-      //   "nftType": "ERC721"
-      // }
+      //   caip2Id: 'eip155:137',
+      // nftId: '1',
+      // recipientWalletAddress: '0xEE54970770DFC6cA138D12e0D9Ccc7D20b899089',
+      // amount: "1",
+      // nftType: 'ERC721',
+      // collectionAddress: '0x9501f6020b0cf374918ff3ea0f2817f8fbdd0762'
+
+      if (recipientAddressController.text.isEmpty ||
+          networkIdController.text.isEmpty ||
+          quantityController.text.isEmpty ||
+          nftIdEditController.text.isEmpty ||
+          nftTypeController.text.isEmpty ||
+          collectionAddressController.text.isEmpty) {
+        throw Exception('Please fill all the details');
+      }
+
       final nftTransfer = NftTransferDetails(
-        caip2Id: 'eip155:137',
-        nftId: '1',
-        recipientWalletAddress: '0xEE54970770DFC6cA138D12e0D9Ccc7D20b899089',
-        amount: "1",
-        nftType: 'ERC721',
-        collectionAddress: '0x9501f6020b0cf374918ff3ea0f2817f8fbdd0762'
+          caip2Id: networkIdController.text,
+          nftId: nftIdEditController.text,
+          recipientWalletAddress: recipientAddressController.text,
+          amount: quantityController.text,
+          nftType: nftTypeController.text,
+          collectionAddress: collectionAddressController.text
       );
       // final userOpFromApi = (await okto!.estimateTransaction(nftTransfer))!.userOps!;
       final userOpFromSdk = await NftUserOperation(details: nftTransfer).userOp;
@@ -62,7 +70,10 @@ class _TransferNftPageState extends State<TransferNftPage> {
               margin: const EdgeInsets.all(40),
               child: const Text(
                 'Transfer NFT',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 30),
               ),
             ),
             TextField(
@@ -75,7 +86,8 @@ class _TransferNftPageState extends State<TransferNftPage> {
             ),
             TextField(
               controller: collectionAddressController,
-              decoration: const InputDecoration(label: Text('Collection Address')),
+              decoration:
+                  const InputDecoration(label: Text('Collection Address')),
             ),
             TextField(
               controller: quantityController,
@@ -83,7 +95,8 @@ class _TransferNftPageState extends State<TransferNftPage> {
             ),
             TextField(
               controller: recipientAddressController,
-              decoration: const InputDecoration(label: Text('Recipient Address')),
+              decoration:
+                  const InputDecoration(label: Text('Recipient Address')),
             ),
             TextField(
               controller: nftTypeController,
@@ -103,10 +116,14 @@ class _TransferNftPageState extends State<TransferNftPage> {
                   : FutureBuilder<String?>(
                       future: _transferNft,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator(
+                                  color: Colors.white));
                         } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
                         } else if (snapshot.hasData) {
                           final jobId = snapshot.data!;
                           return Padding(
@@ -116,7 +133,8 @@ class _TransferNftPageState extends State<TransferNftPage> {
                               children: [
                                 Text(
                                   'Order ID: $jobId',
-                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 20),
                                 ),
                               ],
                             ),
