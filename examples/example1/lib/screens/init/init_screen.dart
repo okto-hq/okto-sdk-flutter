@@ -13,7 +13,8 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> {
   Globals globals = Globals.instance;
-  final apiController = TextEditingController();
+  final clientSwaController = TextEditingController();
+  final clientPrivateKey = TextEditingController();
 
   int _selectedChipIndex = -1;
 
@@ -27,10 +28,17 @@ class _InitPageState extends State<InitPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextField(
-            controller: apiController,
+            controller: clientSwaController,
             decoration:
-                const InputDecoration(hintText: 'Enter your client api key'),
+                const InputDecoration(hintText: 'Enter your client swa'),
           ),
+          const SizedBox(height: 16.0),
+          TextField(
+            controller: clientPrivateKey,
+            decoration:
+            const InputDecoration(hintText: 'Enter your client private key'),
+          ),
+          const SizedBox(height: 16.0,),
           Wrap(
             spacing: 8.0,
             children: List<Widget>.generate(
@@ -65,12 +73,16 @@ class _InitPageState extends State<InitPage> {
                   });
                 }
                 setState(() {
-                  globals.setApiKey(apiController.text);
+                  globals.setClientSwa(clientSwaController.text);
                 });
-                if(okto == null) {
+                setState(() {
+                  globals.setClientPrivateKey(clientPrivateKey.text);
+                });
+                if(okto == null ) {
                   okto = Okto();
                   await okto?.initializeSdk(
-                      apiKey: globals.getApiKey(),
+                      swa: globals.getClientSwa(),
+                      privateKey: globals.getClientPrivateKey(),
                       env: globals.getBuildType());
                 }
                 Navigator.push(context,

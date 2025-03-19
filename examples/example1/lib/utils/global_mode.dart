@@ -3,6 +3,8 @@ import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 class Globals {
   Env currentBuildType = Env.sandbox;
   String globalClientApiKey = '';
+  String clientSwa = '';
+  String clientPrivateKey = '';
 
   static final Globals _singleton = Globals._internal();
 
@@ -28,5 +30,21 @@ class Globals {
 
   String getApiKey() {
     return globalClientApiKey;
+  }
+
+  void setClientSwa(String swa) {
+    clientSwa = swa;
+  }
+
+  void setClientPrivateKey(String privateKey) {
+    clientPrivateKey = privateKey;
+  }
+
+  String getClientSwa() {
+    return clientSwa;
+  }
+
+  String getClientPrivateKey() {
+    return clientPrivateKey;
   }
 }

@@ -42,9 +42,10 @@ class Okto {
   Env get env => _env;
 
   Future<void> initializeSdk(
-      {required String apiKey, required Env env}) async {
+      {required String swa, required String privateKey, required Env env}) async {
     _apiKey = apiKey;
     _env = env;
+    debugPrint("Initializing Okto SDK with clientSwa: $swa and privateKey: $privateKey");
     final buildType = Utility.getBuildType(env);
     final baseUrl = Utility.getBaseUrl(buildType);
     final serviceConfig = ServiceConfig(
@@ -59,10 +60,11 @@ class Okto {
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
     await OktoSdk().init(
         OktoCore(
-          swa: "0xb532926d0dBC2799Cf8BE2d6e2F1ef8Bd27CaA0c", // sandbox
-          // saw: 0x0430E673E084367Ba371e0653f28cDA1BFb57DB4// staging
-          privateKey:
-              "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+          swa: swa,
+          // swa: "0xb532926d0dBC2799Cf8BE2d6e2F1ef8Bd27CaA0c", // sandbox
+          privateKey: privateKey,
+          // privateKey:
+          //     "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
           // apiKey: apiKey,
           apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
           maxPriorityFeePerGas: "0xBA43B7400",
@@ -80,25 +82,25 @@ class Okto {
     return response;
   }
 
+  /// Method to authenticate a user using the user id and JWT token
+  /// @params [userId] [jwtToken]
+  /// @returns AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
+  Future<AuthResponseV2> authenticateWithJwt(
+      {required String jwtToken, String authProvider = 'client_jwt'}) async {
+    if (jwtToken.isEmpty) {
+      throw InvalidArgument("userId or jwtToken can't be empty");
+    }
+    final authTokenResponse = await OktoSdk()
+        .loginWithIdTokenV2(idToken: jwtToken, authProvider: authProvider);
+    return authTokenResponse;
+  }
+
   /// Method to authenticate a new user using the id token received from google_sign_in
   /// Pass the idToken received from google_sign_in to authenticate the user
   Future<AuthTokenData> authenticate({required String idToken}) async {
     if (idToken.isEmpty) throw InvalidArgument("idToken can't be empty");
     final AuthTokenData response = await OktoSdk().loginWithIdToken(idToken);
     return response;
-  }
-
-  /// Method to authenticate a user using the user id and JWT token
-  /// @params [userId] [jwtToken]
-  /// @returns AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
-  Future<AuthTokenData> authenticateWithUserId(
-      {required String userId, required String jwtToken}) async {
-    if (userId.isEmpty || jwtToken.isEmpty) {
-      throw InvalidArgument("userId or jwtToken can't be empty");
-    }
-    final authTokenResponse = await OktoSdk()
-        .authenticateWithUserId(userId: userId, jwtToken: jwtToken);
-    return authTokenResponse;
   }
 
   /// To send OTP to the given [email].
