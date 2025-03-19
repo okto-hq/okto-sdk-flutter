@@ -45,7 +45,6 @@ class Okto {
       {required String swa, required String privateKey, required Env env}) async {
     _apiKey = apiKey;
     _env = env;
-    debugPrint("Initializing Okto SDK with clientSwa: $swa and privateKey: $privateKey");
     final buildType = Utility.getBuildType(env);
     final baseUrl = Utility.getBaseUrl(buildType);
     final serviceConfig = ServiceConfig(

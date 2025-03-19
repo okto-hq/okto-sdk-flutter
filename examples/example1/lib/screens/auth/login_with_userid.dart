@@ -42,7 +42,7 @@ class _LoginWithUserIdState extends State<LoginWithUserId> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    await okto!.authenticateWithUserId(userId: userIdController.text, jwtToken: jwtTokenController.text);
+                    await okto!.authenticateWithJwt(jwtToken: jwtTokenController.text);
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
                   } catch (e) {
                     print(e);
