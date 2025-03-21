@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                       MaterialPageRoute(
                           builder: (context) => const LoginWithUserId()));
                 },
-                child: const Text('Login with User Id')),
+                child: const Text('Login with JWT token')),
             const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () {

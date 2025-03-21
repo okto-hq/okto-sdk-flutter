@@ -25,15 +25,15 @@ class _LoginWithUserIdState extends State<LoginWithUserId> {
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(40),
                 child: const Text(
-                  'Login with userId',
+                  'Login with JWT token',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
                 ),
               ),
             ),
-            TextField(
-              controller: userIdController,
-              decoration: const InputDecoration(label: Text('User Id')),
-            ),
+            // TextField(
+            //   controller: userIdController,
+            //   decoration: const InputDecoration(label: Text('User Id')),
+            // ),
             TextField(
               controller: jwtTokenController,
               decoration: const InputDecoration(label: Text('Enter JWT')),

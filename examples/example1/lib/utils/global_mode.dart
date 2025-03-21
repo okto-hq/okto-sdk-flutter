@@ -1,7 +1,7 @@
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
 class Globals {
-  Env currentBuildType = Env.sandbox;
+  Env currentBuildType = Env.staging;
   String globalClientApiKey = '';
   String clientSwa = '';
   String clientPrivateKey = '';

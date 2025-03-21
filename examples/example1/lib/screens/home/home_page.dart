@@ -3,7 +3,8 @@ import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/create_wallet_page.dart';
 import 'package:example/screens/order_details_nft_page.dart';
 import 'package:example/screens/order_history_page.dart';
-import 'package:example/screens/raw_transaction_execute_page.dart';
+import 'package:example/screens/raw_transaction_execute_aptos.dart';
+import 'package:example/screens/raw_transaction_execute_evm.dart';
 import 'package:example/screens/raw_transaction_status.dart';
 import 'package:example/screens/supported_networks_page.dart';
 import 'package:example/screens/supported_tokens_page.dart';
@@ -176,9 +177,20 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const RawTransactioneExecutePage()));
+                                      const RawTransactionExecuteAptos()));
                         },
-                        child: const Text('Raw Transaction Execute')),
+                        child: const Text('Raw Transaction Execute Aptos')
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const RawTransactionExecuteEvm()));
+                        },
+                        child: const Text('Raw Transaction Execute EVM')
+                    ),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(

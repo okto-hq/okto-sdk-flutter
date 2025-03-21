@@ -28,6 +28,7 @@ import 'package:okto_sdk/network/models/wallet_data_v2.dart';
 import 'package:okto_sdk/network/models/whitelisted_network_data_v2.dart';
 import 'package:okto_sdk/network/models/whitelisted_token_data_v2.dart';
 import 'package:okto_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/util/okto_service_config.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'error/invalid_arguement.dart';
@@ -47,7 +48,7 @@ class Okto {
     _env = env;
     final buildType = Utility.getBuildType(env);
     final baseUrl = Utility.getBaseUrl(buildType);
-    final serviceConfig = ServiceConfig(
+    final serviceConfig = OktoServiceConfig(
         appName: "okto_sdk",
         baseUrls: <String, String>{
           "bff": baseUrl,
@@ -56,14 +57,16 @@ class Okto {
           "oms": baseUrl
         },
         buildType: buildType,
-        rpcBaseUrl: Utility.getRpcBaseUrl(buildType));
+        rpcBaseUrl: Utility.getRpcBaseUrl(buildType),);
     await OktoSdk().init(
         OktoCore(
-          swa: swa,
+          // swa: swa,
+          swa: "0x15256FEB5fAea1662Ce9A3fB8A46237B81b6Dfb1", // staging
           // swa: "0xb532926d0dBC2799Cf8BE2d6e2F1ef8Bd27CaA0c", // sandbox
-          privateKey: privateKey,
+          privateKey: '2e0df50c533f55a6835f793c0dd8f004ce4e497221243548a9f1b2f8e6a3f261', // staging.
+          // privateKey: privateKey,
           // privateKey:
-          //     "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",
+          //     "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",// sandbox
           // apiKey: apiKey,
           apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
           maxPriorityFeePerGas: "0xBA43B7400",

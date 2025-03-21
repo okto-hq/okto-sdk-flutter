@@ -18,7 +18,7 @@ Future<void> main() async {
             'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
       ));
-  if(okto == null && globals.getClientSwa().isNotEmpty && globals.getClientPrivateKey().isNotEmpty) {
+  if(okto == null ) {
     okto = Okto();
     await okto?.initializeSdk(
         swa: globals.getClientSwa(),
@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
         future: checkLoginStatus(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Show loading indicator while waiting for the login status
             return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -58,7 +57,6 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasError) {
             return const InitPage();
           } else {
-            // Show login or home page based on login status
             bool isLoggedIn = snapshot.data ?? false;
             if (isLoggedIn) {
               return const HomePage();
