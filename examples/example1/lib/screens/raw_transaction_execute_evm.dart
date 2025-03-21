@@ -81,7 +81,7 @@ class _RawTransactionExecuteEvmState extends State<RawTransactionExecuteEvm> {
                       ),
                       TextField(
                         maxLines: null,
-                        controller: dataEditController,
+                        controller: fromEditController,
                         decoration: const InputDecoration(
                           fillColor: Colors.white,
                           hintText: 'Enter sender address:',
@@ -89,7 +89,7 @@ class _RawTransactionExecuteEvmState extends State<RawTransactionExecuteEvm> {
                       ),
                       TextField(
                         maxLines: null,
-                        controller: dataEditController,
+                        controller: toEditController,
                         decoration: const InputDecoration(
                           fillColor: Colors.white,
                           hintText: 'Enter receiver address:',
@@ -97,7 +97,7 @@ class _RawTransactionExecuteEvmState extends State<RawTransactionExecuteEvm> {
                       ),
                       TextField(
                         maxLines: null,
-                        controller: dataEditController,
+                        controller: valueEditController,
                         decoration: const InputDecoration(
                           fillColor: Colors.white,
                           hintText: 'Enter value:',

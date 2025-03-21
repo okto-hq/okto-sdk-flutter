@@ -18,7 +18,7 @@ Future<void> main() async {
             'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
       ));
-  if(okto == null ) {
+  if(okto == null && globals.getClientSwa().isNotEmpty && globals.getClientPrivateKey().isNotEmpty) {
     okto = Okto();
     await okto?.initializeSdk(
         swa: globals.getClientSwa(),
