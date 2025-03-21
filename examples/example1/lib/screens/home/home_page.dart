@@ -3,21 +3,21 @@ import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/create_wallet_page.dart';
 import 'package:example/screens/order_details_nft_page.dart';
 import 'package:example/screens/order_history_page.dart';
-import 'package:example/screens/raw_transaction_execute_aptos.dart';
-import 'package:example/screens/raw_transaction_execute_evm.dart';
-import 'package:example/screens/raw_transaction_status.dart';
+import 'package:example/screens/transactions/raw_transaction_execute_aptos.dart';
+import 'package:example/screens/transactions/raw_transaction_status.dart';
 import 'package:example/screens/supported_networks_page.dart';
 import 'package:example/screens/supported_tokens_page.dart';
-import 'package:example/screens/transfer_nft_page.dart';
-import 'package:example/screens/transfer_tokens_page.dart';
+import 'package:example/screens/transactions/transfer_nft_page.dart';
+import 'package:example/screens/transactions/transfer_tokens_page.dart';
 import 'package:example/screens/user_details_page.dart';
 import 'package:example/screens/user_portfolio_activity_page.dart';
 import 'package:example/screens/user_portfolio_page.dart';
 import 'package:example/screens/view_wallet_page.dart';
 import 'package:flutter/material.dart';
 
-import '../nft_collection_creation.dart';
-import '../transfer_nft_mint.dart';
+import '../transactions/nft_collection_creation.dart';
+import '../transactions/raw_transaction_execute_evm.dart';
+import '../transactions/transfer_nft_mint.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

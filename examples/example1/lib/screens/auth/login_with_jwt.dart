@@ -2,16 +2,17 @@ import 'package:example/okto.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 
-class LoginWithUserId extends StatefulWidget {
-  const LoginWithUserId({super.key});
+class LoginWithJwt extends StatefulWidget {
+  const LoginWithJwt({super.key});
 
   @override
-  State<LoginWithUserId> createState() => _LoginWithUserIdState();
+  State<LoginWithJwt> createState() => _LoginWithJwtState();
 }
 
-class _LoginWithUserIdState extends State<LoginWithUserId> {
+class _LoginWithJwtState extends State<LoginWithJwt> {
   final userIdController = TextEditingController();
   final jwtTokenController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +42,24 @@ class _LoginWithUserIdState extends State<LoginWithUserId> {
             const SizedBox(height: 50),
             ElevatedButton(
                 onPressed: () async {
+                  setState(() {
+                    _isLoading = true;
+                  });
                   try {
                     await okto!.authenticateWithJwt(jwtToken: jwtTokenController.text);
+                    setState(() {
+                      _isLoading = false;
+                    });
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
                   } catch (e) {
                     print(e);
+                    setState(() {
+                      _isLoading = false;
+                    });
                   }
                 },
-                child: const Text('Login with userId')),
+                child: const Text('Login with JWT')),
+            _isLoading ? const CircularProgressIndicator() : const SizedBox(),
             const SizedBox(height: 20)
           ],
         ),

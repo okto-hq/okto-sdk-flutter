@@ -58,20 +58,13 @@ class Okto {
         },
         buildType: buildType,
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType),);
-    debugPrint("Shubham: client Swa : $swa and private key : $privateKey");
     await OktoSdk().init(
         OktoCore(
           swa: swa,
-          // swa: "0x15256FEB5fAea1662Ce9A3fB8A46237B81b6Dfb1", // staging
-          // swa: "0xb532926d0dBC2799Cf8BE2d6e2F1ef8Bd27CaA0c", // sandbox
-          // privateKey: '2e0df50c533f55a6835f793c0dd8f004ce4e497221243548a9f1b2f8e6a3f261', // staging.
           privateKey: privateKey,
-          // privateKey:
-          //     "2aaa089f7e26ad3d2da3518e1e945d76804372b6bdd044c7f059598c31fa7dcc",// sandbox
-          // apiKey: apiKey,
-          apiKey: "b7a36ee9-80e3-4063-b2a1-f9f482a8db51",
-          maxPriorityFeePerGas: "0xBA43B7400",
-          maxFeePerGas: "0xBA43B7400",
+          apiKey: SdkConstants.staging.clientApiKey,
+          maxPriorityFeePerGas: SdkConstants.maxPriorityFeePerGas,
+          maxFeePerGas: SdkConstants.maxFeePerGas,
         ),
         oktoServiceConfig: serviceConfig);
   }
@@ -86,7 +79,7 @@ class Okto {
   }
 
   /// Method to authenticate a user using the user id and JWT token
-  /// @params [userId] [jwtToken]
+  /// @params [jwtToken]
   /// @returns AUTH_TOKEN, REFRESH_AUTH_TOKEN and DEVICE_TOKEN
   Future<AuthResponseV2> authenticateWithJwt(
       {required String jwtToken, String authProvider = 'client_jwt'}) async {

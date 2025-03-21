@@ -78,7 +78,7 @@ class _ViewWalletPageState extends State<ViewWalletPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               SelectableText(
-                                                'Wallet adress: ${wallets.wallets?[index].address}',
+                                                'Wallet address: ${wallets.wallets?[index].address}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               SelectableText(

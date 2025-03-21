@@ -13,6 +13,7 @@ class LoginWithPhone extends StatefulWidget {
 
 class _LoginWithPhoneState extends State<LoginWithPhone> {
   final phoneController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +42,15 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
           ),
           ElevatedButton(
               onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
                 try {
                   final response = await okto!.sendPhoneOtp(
                       phoneNumber: phoneController.text, countryCode: "IN");
+                  setState(() {
+                    _isLoading = false;
+                  });
                   debugPrint("Sending phone otp: ${response?.token}");
                   Navigator.pushReplacement(
                       context,
@@ -55,9 +62,14 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
                               )));
                 } catch (e) {
                   print(e);
+                  setState(() {
+                    _isLoading = false;
+                  });
                 }
               },
-              child: const Text('Submit')),
+              child: const Text('Submit')
+          ),
+          _isLoading ? const CircularProgressIndicator() : const SizedBox(),
         ],
       )),
     );

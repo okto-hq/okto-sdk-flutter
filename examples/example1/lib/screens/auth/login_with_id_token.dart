@@ -17,6 +17,8 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
   Globals globals1 = Globals.instance;
   String error = '';
   String responseData = '';
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -36,7 +38,10 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
                 margin: const EdgeInsets.all(40),
                 child: const Text(
                   'Login with Id Token',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 30),
                 ),
               ),
             ),
@@ -47,14 +52,27 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
             const SizedBox(height: 50),
             ElevatedButton(
                 onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
                   try {
-                    okto!.authenticateV2(idToken: authIdController.text, authProvider: "google").then((response) {
-                      debugPrint("Authentication response: ${response.toJson()}");
+                    okto!
+                        .authenticateV2(
+                            idToken: authIdController.text,
+                            authProvider: "google")
+                        .then((response) {
+                      debugPrint(
+                          "Authentication response: ${response.toJson()}");
+                      isLoading = false;
                       responseData = jsonEncode(response.toJson());
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()));
                     });
                     // ignore: use_build_context_synchronously
                   } catch (e) {
+                    isLoading = false;
                     print(e.toString());
                     setState(() {
                       error = e.toString();
@@ -62,8 +80,9 @@ class _LoginWithIdTokenState extends State<LoginWithIdToken> {
                   }
                 },
                 child: const Text('Login with Id Token')),
-
-            Text(error.isNotEmpty ? error : responseData),
+            isLoading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : Text(error.isNotEmpty ? error : responseData),
             const SizedBox(height: 20)
           ],
         ),

@@ -43,13 +43,14 @@ class _InitPageState extends State<InitPage> {
             spacing: 8.0,
             children: List<Widget>.generate(
               _options.length,
-              (int index) {
+                  (int index) {
                 return ChoiceChip(
                   label: Text(_options[index]),
                   selected: _selectedChipIndex == index,
                   onSelected: (bool selected) {
                     setState(() {
                       _selectedChipIndex = selected ? index : -1;
+                      prefillDummyValues();
                     });
                   },
                 );
@@ -94,5 +95,20 @@ class _InitPageState extends State<InitPage> {
         ],
       ),
     );
+  }
+
+  void prefillDummyValues() {
+    if (_selectedChipIndex != -1) {
+      if (_selectedChipIndex == 0) {
+        clientSwaController.text = SdkConstants.sandbox.clientSWA;
+        clientPrivateKey.text = SdkConstants.sandbox.clientPrivateKey;
+      } else if (_selectedChipIndex == 1) {
+        clientSwaController.text = SdkConstants.staging.clientSWA;
+        clientPrivateKey.text = SdkConstants.staging.clientPrivateKey;
+      } else if (_selectedChipIndex == 2) {
+        clientSwaController.text = SdkConstants.production.clientSWA;
+        clientPrivateKey.text = SdkConstants.production.clientPrivateKey;
+      }
+    }
   }
 }
