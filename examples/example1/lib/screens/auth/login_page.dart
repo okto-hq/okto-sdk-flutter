@@ -2,6 +2,7 @@ import 'package:example/screens/auth/login_with_email.dart';
 import 'package:example/screens/auth/login_with_google_page.dart';
 import 'package:example/screens/auth/login_with_id_token.dart';
 import 'package:example/screens/auth/login_with_jwt.dart';
+import 'package:example/screens/auth/login_with_whatsapp.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -97,6 +98,15 @@ class _LoginPageState extends State<LoginPage> {
                       });
                 },
                 child: const Text('Onboarding')),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginWithWhatsApp()));
+                },
+                child: const Text('Login with Whatsapp OTP')),
             const SizedBox(
               height: 52,
             ),

@@ -12,7 +12,7 @@ class SdkConstants {
 class STAGING {
   const STAGING();
   String get clientSWA => "0x15256FEB5fAea1662Ce9A3fB8A46237B81b6Dfb1";
-  String get clientPrivateKey => '2e0df50c533f55a6835f793c0dd8f004ce4e497221243548a9f1b2f8e6a3f261';
+  String get clientPrivateKey => '6429139c72d61f3fa8f9197e812031b575ec09852670cfaaafa9db52205f9bb5';
   String get clientApiKey => 'a4a65061-6054-4f6d-ac86-7edfb2558b7c';
 }
 
