@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:example/screens/auth/otp_verification_screen.dart';
+import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_sdk/okto_flutter_sdk.dart';
 
@@ -19,6 +20,7 @@ class _LoginWithWhatsAppState extends State<LoginWithWhatsApp> {
   Completer<String>? _otpCompleter;
 
   bool _isLoading = false;
+  String? _token;
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +56,9 @@ class _LoginWithWhatsAppState extends State<LoginWithWhatsApp> {
                 onPressed: () async {
                   try {
                     final auth = await OktoSdk().authenticateViaWhatsApp(
-                      phone: "8101335201",
-                      otpReceived: () async {
-                        final otp = (await _otpCompleter?.future) ?? '';
-                        _otpCompleter = null;
-                        return otp;
-                      },
+                      phone: phoneController.text.trim(),
                       onOtpSent: (token) {
-                        _otpCompleter = Completer();
+                        _token = token;
                       },
                     );
                     print("AUTH SUCCESS :: $auth");
@@ -77,9 +74,18 @@ class _LoginWithWhatsAppState extends State<LoginWithWhatsApp> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    if (!(_otpCompleter?.isCompleted ?? true)) {
-                      _otpCompleter?.complete(otpController.text);
+                    if (_token == null) {
+                      throw "Token is null";
                     }
+                    final auth = await OktoSdk().verifyWhatsAppOtp(
+                      otp: otpController.text,
+                      token: _token ?? ''
+                    );
+                    final response = await OktoSdk().loginWithIdTokenV2(idToken: auth, authProvider: "okto");
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()));
                   } catch (e) {
                     print(e);
                   }
