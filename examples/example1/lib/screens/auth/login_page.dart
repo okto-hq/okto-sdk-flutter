@@ -7,7 +7,7 @@ import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:okto_sdk/okto_flutter_sdk.dart';
-import 'package:okto_sdk/util/okto_auth_page.dart';
+import 'package:okto_sdk/ui/auth/okto_auth_page.dart';
 
 
 import '../../okto.dart';
