@@ -6,6 +6,9 @@ import 'package:example/screens/auth/login_with_whatsapp.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:okto_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/util/okto_auth_page.dart';
+
 
 import '../../okto.dart';
 import 'login_with_phone.dart';
@@ -107,6 +110,12 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => const LoginWithWhatsApp()));
                 },
                 child: const Text('Login with Whatsapp OTP')),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  launchOktoAuthentication(context: context, authType: "phone_auth");
+                },
+                child: const Text('Okto Auth')),
             const SizedBox(
               height: 52,
             ),
