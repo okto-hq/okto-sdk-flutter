@@ -126,6 +126,16 @@ class _LoginPageState extends State<LoginPage> {
                   });
                 },
                 child: const Text('Okto Auth')),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  OktoSdk().authenticateViaGoogle().then((value) {
+
+                  }).onError((e,s) {
+                    print("INDRAA :: authenticateViaGoogle -> $e");
+                  });
+                },
+                child: const Text('Google')),
             const SizedBox(
               height: 52,
             ),
