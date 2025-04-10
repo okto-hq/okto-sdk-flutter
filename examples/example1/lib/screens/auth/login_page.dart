@@ -130,9 +130,12 @@ class _LoginPageState extends State<LoginPage> {
             ElevatedButton(
                 onPressed: () {
                   OktoSdk().authenticateViaGoogle().then((value) {
-
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()));
                   }).onError((e,s) {
-                    print("INDRAA :: authenticateViaGoogle -> $e");
+                    print("ERROR :: authenticateViaGoogle -> $e");
                   });
                 },
                 child: const Text('Google')),
