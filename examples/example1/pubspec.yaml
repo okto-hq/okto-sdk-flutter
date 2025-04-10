@@ -34,7 +34,8 @@ dependencies:
     path: ../../
 
   okto_sdk:
-#    path: /Users/shubham.pandey/Documents/professional/okto-flutter-sdk-monorepo/okto_flutter_sdk
+#    path: /Users/indrajeet.gupta/Desktop/Indrozz/Projects/okto-flutter-sdk-monorepo/okto_flutter_sdk
+
     git:
       url: git@github.com:okto-hq/okto-flutter-sdk-monorepo.git
       path: okto_flutter_sdk

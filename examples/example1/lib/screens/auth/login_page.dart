@@ -2,9 +2,14 @@ import 'package:example/screens/auth/login_with_email.dart';
 import 'package:example/screens/auth/login_with_google_page.dart';
 import 'package:example/screens/auth/login_with_id_token.dart';
 import 'package:example/screens/auth/login_with_jwt.dart';
+import 'package:example/screens/auth/login_with_whatsapp.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:okto_sdk/network/model/auth_response_v2.dart';
+import 'package:okto_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/ui/auth/okto_auth_page.dart';
+
 
 import '../../okto.dart';
 import 'login_with_phone.dart';
@@ -97,6 +102,43 @@ class _LoginPageState extends State<LoginPage> {
                       });
                 },
                 child: const Text('Onboarding')),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginWithWhatsApp()));
+                },
+                child: const Text('Login with Whatsapp OTP')),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  launchOktoAuthentication(context: context, authType: "phone_auth").then((value) {
+                    if (value is AuthResponseV2) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()));
+                    }
+                  }).onError((e,s) {
+                      print("ERROR :: $e");
+                  });
+                },
+                child: const Text('Okto Auth')),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  OktoSdk().authenticateViaGoogle().then((value) {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()));
+                  }).onError((e,s) {
+                    print("ERROR :: authenticateViaGoogle -> $e");
+                  });
+                },
+                child: const Text('Google')),
             const SizedBox(
               height: 52,
             ),
