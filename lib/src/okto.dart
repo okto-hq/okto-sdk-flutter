@@ -59,14 +59,17 @@ class Okto {
         buildType: buildType,
         rpcBaseUrl: Utility.getRpcBaseUrl(buildType),);
     await OktoSdk().init(
-        OktoCore(
+        vendor: OktoCore(
           swa: swa,
           privateKey: privateKey,
           apiKey: SdkConstants.staging.clientApiKey,
           maxPriorityFeePerGas: SdkConstants.maxPriorityFeePerGas,
           maxFeePerGas: SdkConstants.maxFeePerGas,
         ),
-        oktoServiceConfig: serviceConfig);
+        oktoServiceConfig: serviceConfig,
+        enableAuthTestMode: true,
+        appOAuthRedirectUrl: "oktosdk://auth"
+    );
   }
 
   /// Method to authenticate a new user using the id token received from google_sign_in
