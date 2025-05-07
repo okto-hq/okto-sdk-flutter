@@ -46,7 +46,7 @@ class _LoginWithJwtState extends State<LoginWithJwt> {
                     _isLoading = true;
                   });
                   try {
-                    await okto!.authenticateWithJwt(jwtToken: jwtTokenController.text);
+                    await okto!.authenticateWithJwt(jwtToken: jwtTokenController.text.trim());
                     setState(() {
                       _isLoading = false;
                     });

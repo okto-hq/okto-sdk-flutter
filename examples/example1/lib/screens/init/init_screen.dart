@@ -59,36 +59,32 @@ class _InitPageState extends State<InitPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_selectedChipIndex != -1) {
-                if (_selectedChipIndex == 0) {
-                  setState(() {
+              setState(() {
+                if (_selectedChipIndex != -1) {
+                  if (_selectedChipIndex == 0) {
                     globals.setBuildType(Env.sandbox);
-                  });
-                } else if (_selectedChipIndex == 1) {
-                  setState(() {
+                  } else if (_selectedChipIndex == 1) {
                     globals.setBuildType(Env.staging);
-                  });
-                } else if (_selectedChipIndex == 2) {
-                  setState(() {
+                  } else if (_selectedChipIndex == 2) {
                     globals.setBuildType(Env.production);
-                  });
+                  }
+                  globals.setClientSwa(clientSwaController.text.trim());
+                  globals.setClientPrivateKey(
+                      clientPrivateKey.text.contains("0x")
+                          ? clientPrivateKey.text.trim().replaceFirst("0x", "")
+                          : clientPrivateKey.text.trim());
                 }
-                setState(() {
-                  globals.setClientSwa(clientSwaController.text);
-                });
-                setState(() {
-                  globals.setClientPrivateKey(clientPrivateKey.text);
-                });
-                if(okto == null ) {
-                  okto = Okto();
-                  await okto?.initializeSdk(
-                      swa: globals.getClientSwa(),
-                      privateKey: globals.getClientPrivateKey(),
-                      env: globals.getBuildType());
-                }
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()));
+              });
+
+              if(okto == null ) {
+                okto = Okto();
+                await okto?.initializeSdk(
+                    swa: globals.getClientSwa(),
+                    privateKey: globals.getClientPrivateKey(),
+                    env: globals.getBuildType());
               }
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()), (route) => false);
             },
             child: const Text('Next'),
           ),
