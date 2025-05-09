@@ -14,6 +14,8 @@ class LoginWithEmail extends StatefulWidget {
 class _LoginWithEmailState extends State<LoginWithEmail> {
   final emailIdController = TextEditingController();
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,28 +37,39 @@ class _LoginWithEmailState extends State<LoginWithEmail> {
             TextField(
                 controller: emailIdController,
                 decoration: const InputDecoration(label: Text('Email Id'))),
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
             ElevatedButton(
                 onPressed: () async {
+                  setState(() {
+                    _isLoading = true;
+                  });
                   try {
-                    final response =
+                    final otpResponse =
                         await okto!.sendEmailOtp(email: emailIdController.text);
+                    setState(() {
+                      _isLoading = false;
+                    });
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => OtpVerificationScreen(
                               phoneOrEmail: emailIdController.text,
-                              token: response.token ?? "",
+                              token: otpResponse?.token ?? "",
                               authType: "EMAIL",
                             )));
                   } catch (e) {
                     print(e);
+                    setState(() {
+                      _isLoading = false;
+                    });
                   }
                 },
                 child: const Text('Submit')
             ),
+
+            _isLoading ? const CircularProgressIndicator() : const SizedBox.shrink()
           ],
         )));
   }

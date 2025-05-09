@@ -19,6 +19,7 @@ class _InitPageState extends State<InitPage> {
   int _selectedChipIndex = -1;
 
   final List<String> _options = ['Sandbox', 'Staging', 'Production'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +39,8 @@ class _InitPageState extends State<InitPage> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
                 controller: apiController,
-                decoration: const InputDecoration(hintText: 'Enter your client api key'),
+                decoration: const InputDecoration(
+                    hintText: 'Enter your client api key'),
               ),
             ),
             Wrap(
@@ -63,22 +65,28 @@ class _InitPageState extends State<InitPage> {
                 if (_selectedChipIndex != -1) {
                   if (_selectedChipIndex == 0) {
                     setState(() {
-                      globals.setBuildType(BuildType.sandbox);
+                      globals.setBuildType(Env.sandbox);
                     });
                   } else if (_selectedChipIndex == 1) {
                     setState(() {
-                      globals.setBuildType(BuildType.staging);
+                      globals.setBuildType(Env.staging);
                     });
                   } else if (_selectedChipIndex == 2) {
                     setState(() {
-                      globals.setBuildType(BuildType.production);
+                      globals.setBuildType(Env.production);
                     });
                   }
-                  setState(() {
+                  setState(() async {
                     globals.setApiKey(apiController.text);
-                    okto = Okto(globals.getApiKey(), globals.getBuildType());
+                    okto = Okto();
+                    await okto?.initializeSdk(
+                        apiKey: globals.getApiKey(),
+                        env: globals.getBuildType());
                   });
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginWithGoogle()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginWithGoogle()));
                 }
               },
               child: const Text('Next'),

@@ -22,6 +22,9 @@ class _LoginWithGoogleState extends State<LoginWithGoogle> {
     forceCodeForRefreshToken: true,
   );
   String error = '';
+
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,12 +50,18 @@ class _LoginWithGoogleState extends State<LoginWithGoogle> {
             ),
             ElevatedButton(
                 onPressed: () async {
+                  setState(() {
+                    _isLoading = true;
+                  });
                   try {
                     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
                     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
                     if (googleAuth != null) {
                       final String? idToken = googleAuth.idToken;
                       await okto!.authenticate(idToken: idToken!);
+                      setState(() {
+                        _isLoading = false;
+                      });
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
                     }
                     // ignore: use_build_context_synchronously
@@ -60,11 +69,12 @@ class _LoginWithGoogleState extends State<LoginWithGoogle> {
                     print(e.toString());
                     setState(() {
                       error = e.toString();
+                      _isLoading = false;
                     });
                   }
                 },
                 child: const Text('Login with Google')),
-            Text(error),
+            _isLoading ? const CircularProgressIndicator() : Text(error),
             const SizedBox(height: 20)
           ],
         ),

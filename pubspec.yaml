@@ -17,6 +17,25 @@ dependencies:
   webview_flutter: ^4.8.0
   clipboard: ^0.1.3
   get: 4.6.6
+  pretty_dio_logger: 1.3.1
+  logger: ^2.5.0
+
+  okto_sdk:
+#    path: /Users/indrajeet.gupta/Desktop/Indrozz/Projects/okto-flutter-sdk-monorepo/okto_flutter_sdk
+    git:
+      url: git@github.com:okto-hq/okto-flutter-sdk-monorepo.git
+      path: okto_flutter_sdk
+      ref: main
+
+  okto_network_manager:
+#    path: /Users/indrajeet.gupta/Desktop/Indrozz/Projects/okto-flutter-sdk-monorepo/okto_network_manager
+    git:
+      url: git@github.com:okto-hq/okto-flutter-sdk-monorepo.git
+      path: okto_network_manager
+      ref: main
+
+dependency_overrides:
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:

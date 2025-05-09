@@ -1,8 +1,10 @@
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 
 class Globals {
-  BuildType currentBuildType = BuildType.staging;
+  Env currentBuildType = Env.staging;
   String globalClientApiKey = '';
+  String clientSwa = '';
+  String clientPrivateKey = '';
 
   static final Globals _singleton = Globals._internal();
 
@@ -18,15 +20,31 @@ class Globals {
     globalClientApiKey = apiKey;
   }
 
-  void setBuildType(BuildType buildType) {
+  void setBuildType(Env buildType) {
     currentBuildType = buildType;
   }
 
-  BuildType getBuildType() {
+  Env getBuildType() {
     return currentBuildType;
   }
 
   String getApiKey() {
     return globalClientApiKey;
+  }
+
+  void setClientSwa(String swa) {
+    clientSwa = swa;
+  }
+
+  void setClientPrivateKey(String privateKey) {
+    clientPrivateKey = privateKey;
+  }
+
+  String getClientSwa() {
+    return clientSwa;
+  }
+
+  String getClientPrivateKey() {
+    return clientPrivateKey;
   }
 }

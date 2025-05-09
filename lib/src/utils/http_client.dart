@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:okto_flutter_sdk/src/exceptions/api_exception.dart';
 import 'package:okto_flutter_sdk/src/utils/curl_logging_dio_interceptor.dart';
-import 'package:okto_flutter_sdk/src/utils/enums.dart';
+import 'package:okto_network_manager/enums.dart';
 
 class HttpClient {
   final String apiKey;

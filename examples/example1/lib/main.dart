@@ -1,5 +1,4 @@
 import 'package:example/okto.dart';
-import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/home/home_page.dart';
 import 'package:example/screens/init/init_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,18 +8,23 @@ import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: "Okto-3p-example",
+      name: "Okto-3p-example",
       options: const FirebaseOptions(
         apiKey: 'AIzaSyCdRjCVZlhrq72RuEklEyyxYlBRCYhI2Sw',
         appId: '1:406099696497:android:21d5142deea38dda3574d0',
         messagingSenderId: '406099696497',
         projectId: 'flutterfire-e2e-tests',
         databaseURL:
-        'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
+            'https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app',
         storageBucket: 'flutterfire-e2e-tests.appspot.com',
-      )
-  );
-  okto = Okto(globals.getApiKey(), globals.getBuildType());
+      ));
+  if(okto == null && globals.getClientSwa().isNotEmpty && globals.getClientPrivateKey().isNotEmpty) {
+    okto = Okto();
+    await okto?.initializeSdk(
+        swa: globals.getClientSwa(),
+        privateKey: globals.getClientPrivateKey(),
+        env: globals.getBuildType());
+  }
   runApp(const MyApp());
 }
 
@@ -45,17 +49,14 @@ class MyApp extends StatelessWidget {
         future: checkLoginStatus(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Show loading indicator while waiting for the login status
             return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
               ),
             );
           } else if (snapshot.hasError) {
-            print(snapshot.error.toString());
             return const InitPage();
           } else {
-            // Show login or home page based on login status
             bool isLoggedIn = snapshot.data ?? false;
             if (isLoggedIn) {
               return const HomePage();

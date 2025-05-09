@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/nft_data_v2.dart';
 
 class OrderDetailsNftPage extends StatefulWidget {
   const OrderDetailsNftPage({super.key});
@@ -10,9 +11,9 @@ class OrderDetailsNftPage extends StatefulWidget {
 }
 
 class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
-  Future<OrderDetailsNftResponse>? _orderDetailsNft;
+  Future<NftDataV2?>? _orderDetailsNft;
 
-  Future<OrderDetailsNftResponse> getOrderDetailsNft() async {
+  Future<NftDataV2?> getOrderDetailsNft() async {
     try {
       final orderDetails = await okto!.orderDetailsNft();
       return orderDetails;
@@ -47,7 +48,7 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
             Expanded(
               child: _orderDetailsNft == null
                   ? Container()
-                  : FutureBuilder<OrderDetailsNftResponse>(
+                  : FutureBuilder<NftDataV2?>(
                       future: _orderDetailsNft,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -61,18 +62,18 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Status: ${orderDetails.status}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 20),
-                                ),
-                                Text(
-                                  'Total: ${orderDetails.data.total}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 20),
-                                ),
+                                // Text(
+                                //   'Status: ${orderDetails.status}',
+                                //   style: const TextStyle(color: Colors.white, fontSize: 20),
+                                // ),
+                                // Text(
+                                //   'Total: ${orderDetails.data.total}',
+                                //   style: const TextStyle(color: Colors.white, fontSize: 20),
+                                // ),
                                 SizedBox(
                                   height: MediaQuery.sizeOf(context).height * 0.6,
                                   child: ListView.builder(
-                                      itemCount: orderDetails.data.details.length,
+                                      // itemCount: orderDetails.data.details.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           color: Colors.blue,
@@ -81,51 +82,51 @@ class _OrderDetailsNftPageState extends State<OrderDetailsNftPage> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Collection Address: ${orderDetails.data.details[index].collectionAddress}',
+                                                'Collection Address: ${orderDetails.details?[index].collectionAddress}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Collection Id : ${orderDetails.data.details[index].collectionId}',
+                                                'Collection Id : ${orderDetails.details?[index].collectionId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Collection Image : ${orderDetails.data.details[index].collectionImage}',
+                                                'Collection Image : ${orderDetails.details?[index].collectionImage}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Collection Name : ${orderDetails.data.details[index].collectionName}',
+                                                'Collection Name : ${orderDetails.details?[index].collectionName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Description : ${orderDetails.data.details[index].desctiption}',
+                                                'Description : ${orderDetails.details?[index].description}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Explorer Smart Contract Url: ${orderDetails.data.details[index].explorerSmartContractUrl}',
+                                                'Explorer Smart Contract Url: ${orderDetails.details?[index].explorerSmartContractUrl}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Id : ${orderDetails.data.details[index].id}',
+                                                'Id : ${orderDetails.details?[index].nftId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Network Id: ${orderDetails.data.details[index].networkId}',
+                                                'Network Id: ${orderDetails.details?[index].networkId}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Network Name: ${orderDetails.data.details[index].networkName}',
+                                                'Network Name: ${orderDetails.details?[index].networkName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                               Text(
-                                                'Nft Name: ${orderDetails.data.details[index].nftName}',
+                                                'Nft Name: ${orderDetails.details?[index].nftName}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
+                                              // Text(
+                                              //   'Nft Token Id: ${orderDetails.details[index].nftTokenId}',
+                                              //   style: const TextStyle(color: Colors.white, fontSize: 20),
+                                              // ),
                                               Text(
-                                                'Nft Token Id: ${orderDetails.data.details[index].nftTokenId}',
-                                                style: const TextStyle(color: Colors.white, fontSize: 20),
-                                              ),
-                                              Text(
-                                                'Type: ${orderDetails.data.details[index].type}',
+                                                'Type: ${orderDetails.details?[index].entityType}',
                                                 style: const TextStyle(color: Colors.white, fontSize: 20),
                                               ),
                                             ],

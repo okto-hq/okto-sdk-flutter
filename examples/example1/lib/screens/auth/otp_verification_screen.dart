@@ -1,7 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/auth_token_model.dart';
 import 'package:pinput/pinput.dart';
 
 import '../home/home_page.dart';
@@ -112,10 +112,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (otp.length != 6) return;
     try {
       if(widget.authType == "PHONE") {
-        AuthTokenResponse? response = await okto!
+        AuthTokenData? response = await okto!
             .verifyPhoneOtp(phoneNumber: widget.phoneOrEmail, otp: otp, token: widget.token);
       } else if(widget.authType == "EMAIL") {
-        AuthTokenResponse? response = await okto!
+        AuthTokenData? response = await okto!
             .verifyEmailOtp(emailId: widget.phoneOrEmail, otp: otp, token: widget.token);
       }
       setState(() {

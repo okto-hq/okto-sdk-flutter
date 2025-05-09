@@ -13,11 +13,13 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> {
   Globals globals = Globals.instance;
-  final apiController = TextEditingController();
+  final clientSwaController = TextEditingController();
+  final clientPrivateKey = TextEditingController();
 
   int _selectedChipIndex = -1;
 
   final List<String> _options = ['Sandbox', 'Staging', 'Production'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,20 +28,29 @@ class _InitPageState extends State<InitPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextField(
-            controller: apiController,
-            decoration: const InputDecoration(hintText: 'Enter your client api key'),
+            controller: clientSwaController,
+            decoration:
+                const InputDecoration(hintText: 'Enter your client swa'),
           ),
+          const SizedBox(height: 16.0),
+          TextField(
+            controller: clientPrivateKey,
+            decoration:
+            const InputDecoration(hintText: 'Enter your client private key'),
+          ),
+          const SizedBox(height: 16.0,),
           Wrap(
             spacing: 8.0,
             children: List<Widget>.generate(
               _options.length,
-              (int index) {
+                  (int index) {
                 return ChoiceChip(
                   label: Text(_options[index]),
                   selected: _selectedChipIndex == index,
                   onSelected: (bool selected) {
                     setState(() {
                       _selectedChipIndex = selected ? index : -1;
+                      prefillDummyValues();
                     });
                   },
                 );
@@ -47,32 +58,53 @@ class _InitPageState extends State<InitPage> {
             ).toList(),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (_selectedChipIndex != -1) {
-                if (_selectedChipIndex == 0) {
-                  setState(() {
-                    globals.setBuildType(BuildType.sandbox);
-                  });
-                } else if (_selectedChipIndex == 1) {
-                  setState(() {
-                    globals.setBuildType(BuildType.staging);
-                  });
-                } else if (_selectedChipIndex == 2) {
-                  setState(() {
-                    globals.setBuildType(BuildType.production);
-                  });
+            onPressed: () async {
+              setState(() {
+                if (_selectedChipIndex != -1) {
+                  if (_selectedChipIndex == 0) {
+                    globals.setBuildType(Env.sandbox);
+                  } else if (_selectedChipIndex == 1) {
+                    globals.setBuildType(Env.staging);
+                  } else if (_selectedChipIndex == 2) {
+                    globals.setBuildType(Env.production);
+                  }
+                  globals.setClientSwa(clientSwaController.text.trim());
+                  globals.setClientPrivateKey(
+                      clientPrivateKey.text.contains("0x")
+                          ? clientPrivateKey.text.trim().replaceFirst("0x", "")
+                          : clientPrivateKey.text.trim());
                 }
-                setState(() {
-                  globals.setApiKey(apiController.text);
-                  okto = Okto(globals.getApiKey(),globals.getBuildType());
-                });
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+              });
+
+              if(okto == null ) {
+                okto = Okto();
+                await okto?.initializeSdk(
+                    swa: globals.getClientSwa(),
+                    privateKey: globals.getClientPrivateKey(),
+                    env: globals.getBuildType());
               }
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()), (route) => false);
             },
             child: const Text('Next'),
           ),
         ],
       ),
     );
+  }
+
+  void prefillDummyValues() {
+    if (_selectedChipIndex != -1) {
+      if (_selectedChipIndex == 0) {
+        clientSwaController.text = SdkConstants.sandbox.clientSWA;
+        clientPrivateKey.text = SdkConstants.sandbox.clientPrivateKey;
+      } else if (_selectedChipIndex == 1) {
+        clientSwaController.text = SdkConstants.staging.clientSWA;
+        clientPrivateKey.text = SdkConstants.staging.clientPrivateKey;
+      } else if (_selectedChipIndex == 2) {
+        clientSwaController.text = SdkConstants.production.clientSWA;
+        clientPrivateKey.text = SdkConstants.production.clientPrivateKey;
+      }
+    }
   }
 }

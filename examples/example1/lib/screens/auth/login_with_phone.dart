@@ -13,6 +13,7 @@ class LoginWithPhone extends StatefulWidget {
 
 class _LoginWithPhoneState extends State<LoginWithPhone> {
   final phoneController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,28 +37,39 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
               controller: phoneController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(label: Text('Phone number'))),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           ElevatedButton(
               onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
                 try {
                   final response = await okto!.sendPhoneOtp(
                       phoneNumber: phoneController.text, countryCode: "IN");
-                  debugPrint("Sending phone otp: ${response.token}");
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  debugPrint("Sending phone otp: ${response?.token}");
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => OtpVerificationScreen(
                                 phoneOrEmail: phoneController.text,
-                                token: response.token ?? "",
+                                token: response?.token ?? "",
                                 authType: "PHONE",
                               )));
                 } catch (e) {
                   print(e);
+                  setState(() {
+                    _isLoading = false;
+                  });
                 }
               },
-              child: const Text('Submit')),
+              child: const Text('Submit')
+          ),
+          _isLoading ? const CircularProgressIndicator() : const SizedBox(),
         ],
       )),
     );

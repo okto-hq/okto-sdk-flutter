@@ -1,6 +1,7 @@
 import 'package:example/okto.dart';
 import 'package:flutter/material.dart';
 import 'package:okto_flutter_sdk/okto_flutter_sdk.dart';
+import 'package:okto_sdk/network/models/client/raw_transaction_status_model.dart';
 
 class RawTransactionStatusPage extends StatefulWidget {
   const RawTransactionStatusPage({super.key});
@@ -11,9 +12,9 @@ class RawTransactionStatusPage extends StatefulWidget {
 
 class _RawTransactionStatusPageState extends State<RawTransactionStatusPage> {
   final jobIdController = TextEditingController();
-  Future<RawTransactionStatusResponse>? _rawTransactionStatus;
+  Future<RawTransactionStatusResponse?>? _rawTransactionStatus;
 
-  Future<RawTransactionStatusResponse> rawTransactionStatus() async {
+  Future<RawTransactionStatusResponse?> rawTransactionStatus() async {
     try {
       final rawTransaction = await okto!.rawTransactionStatus(orderId: jobIdController.text);
       return rawTransaction;
@@ -52,7 +53,7 @@ class _RawTransactionStatusPageState extends State<RawTransactionStatusPage> {
             Expanded(
               child: _rawTransactionStatus == null
                   ? Container()
-                  : FutureBuilder<RawTransactionStatusResponse>(
+                  : FutureBuilder<RawTransactionStatusResponse?>(
                       future: _rawTransactionStatus,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

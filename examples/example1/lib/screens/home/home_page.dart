@@ -1,21 +1,23 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:example/okto.dart';
 import 'package:example/screens/auth/login_page.dart';
 import 'package:example/screens/create_wallet_page.dart';
 import 'package:example/screens/order_details_nft_page.dart';
 import 'package:example/screens/order_history_page.dart';
-import 'package:example/screens/raw_transaction_execute_page.dart';
-import 'package:example/screens/raw_transaction_status.dart';
+import 'package:example/screens/transactions/raw_transaction_execute_aptos.dart';
+import 'package:example/screens/transactions/raw_transaction_status.dart';
 import 'package:example/screens/supported_networks_page.dart';
 import 'package:example/screens/supported_tokens_page.dart';
-import 'package:example/screens/transfer_nft_page.dart';
-import 'package:example/screens/transfer_tokens_page.dart';
+import 'package:example/screens/transactions/transfer_nft_page.dart';
+import 'package:example/screens/transactions/transfer_tokens_page.dart';
 import 'package:example/screens/user_details_page.dart';
 import 'package:example/screens/user_portfolio_activity_page.dart';
 import 'package:example/screens/user_portfolio_page.dart';
 import 'package:example/screens/view_wallet_page.dart';
 import 'package:flutter/material.dart';
+
+import '../transactions/nft_collection_creation.dart';
+import '../transactions/raw_transaction_execute_evm.dart';
+import '../transactions/transfer_nft_mint.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,7 +60,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) =>
                                       const UserDetailsPage()));
                         },
-                        child: const Text('User Details')),
+                        child: const Text('Verify user session')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -67,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) =>
                                       const CreateWalletPage()));
                         },
-                        child: const Text('Create Wallet')),
+                        child: const Text('Estimate')),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -149,15 +151,46 @@ class _HomePageState extends State<HomePage> {
                                       const OrderDetailsNftPage()));
                         },
                         child: const Text('Order Details NFT')),
+
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const RawTransactioneExecutePage()));
+                                  const TransferNftMint()));
                         },
-                        child: const Text('Raw Transaction Execute')),
+                        child: const Text('Nft Mint')),
+
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const NftCollectionCreation()));
+                        },
+                        child: const Text('Nft collection creation')),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RawTransactionExecuteAptos()));
+                        },
+                        child: const Text('Raw Transaction Execute Aptos')
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const RawTransactionExecuteEvm()));
+                        },
+                        child: const Text('Raw Transaction Execute EVM')
+                    ),
                     ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -176,19 +209,22 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await okto!.logout();
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                child: const Text('Logout')),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await okto!.logout();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()));
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                  child: const Text('Logout')),
+            ),
           ],
         ),
       ),
